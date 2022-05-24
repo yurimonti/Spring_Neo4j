@@ -25,6 +25,10 @@ public class PointOfInterest {
 
     private Long lon;
 
+    private Object orari; //TODO
+
+    private int durata; //TODO
+
     //private Map<String,String> inputText;
     private List<String> inputTextNames;
     private List<String> inputTextValues;
