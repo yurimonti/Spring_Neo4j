@@ -26,18 +26,22 @@ public class EnteService {
         return category.getTagString();
     }
 
-    public void createPoi(Ente ente,String nome,String description,Long lat,Long lon){
+    public void createPoi(Ente ente, String nome, String description, Long lat, Long lon, Collection<Category> categories){
         PointOfInterest poi = new PointOfInterest(nome,description,lat,lon);
-        System.out.println(poi);
+        for(Category category: categories){
+            poi.getCategories().add(category);
+            //category.getTagBool().forEach(t -> poi.getInputSelect().putIfAbsent(t,Boolean.FALSE));
+            for(String s : category.getTagBool()){
+                if(!poi.getInputSelectNames().contains(s)) poi.getInputSelectNames().add(s);
+            }
+            for(String s : category.getTagString()){
+                if(!poi.getInputTextNames().contains(s)) poi.getInputTextNames().add(s);
+            }
+        }
+
         City city = ente.getCity();
         pointOfIntRepository.save(poi);
         city.getPointOfInterests().add(poi);
         cityRepository.save(city);
-        System.out.println(poi);
-    }
-
-    public void createProva(String nome,String description,Long lat,Long lon){
-        PointOfInterest poi = new PointOfInterest(nome,description,lat,lon);
-        pointOfIntRepository.save(poi);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
-import java.util.Collection;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -19,22 +19,38 @@ public class PointOfInterest {
 
     private String name;
 
-    /*private City city;*/
-
     private String description;
 
     private Long lat;
 
     private Long lon;
+
+    //private Map<String,String> inputText;
+    private List<String> inputTextNames;
+    private List<String> inputTextValues;
+
+    //private Map<String,Boolean> inputSelect;
+    private List<String> inputSelectNames;
+    private List<Boolean> inputSelectValues;
+
+
     @Relationship(type = "POI_HAS_SOME")
     private Collection<Category> categories;
 
-    public PointOfInterest(String name, String description, /*City city,*/ Long lat, Long lon) {
+    public PointOfInterest(String name, String description, Long lat, Long lon) {
         this();
         this.name = name;
         this.description = description;
-        /*this.city = city;*/
         this.lat = lat;
         this.lon = lon;
+        this.categories = new ArrayList<>();
+        this.inputTextNames = new ArrayList<>();
+        this.inputTextValues = new ArrayList<>();
+        this.inputSelectNames = new ArrayList<>();
+        this.inputSelectValues = new ArrayList<>();
+        //this.inputSelect = new HashMap<>();
+        //this.inputText = new HashMap<>();
+
     }
+
 }

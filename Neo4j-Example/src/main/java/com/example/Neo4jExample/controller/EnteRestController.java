@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -44,25 +45,16 @@ public class EnteRestController {
     public ResponseEntity createPOI(@RequestBody Map<String,Object> body){
         Ente ente1 = enteRepository.findByUsername((String) body.get("username"));
         String nomePoi = (String) body.get("poiName");
-        System.out.println(nomePoi);
         String descrizione = (String) body.get("poiDescription");
-        System.out.println(descrizione);
-        String lat = (String) body.get("lat");
-        Long latLong = Long.parseLong(lat);
-        System.out.println(latLong);
-        String lon = (String) body.get("lon");
-        System.out.println(lon);
-        enteService.createPoi(ente1,nomePoi,descrizione,latLong,latLong);
+        Long latLong = Long.parseLong((String) body.get("lat"));
+        Long lonLong = Long.parseLong((String) body.get("lon"));
+        Collection<String> categories = (Collection<String>) body.get("categories");
+        Collection<Category> asdf = categories.stream().map(s -> categoryRepository.findAll().stream()
+                .filter(category -> Objects.equals(category.getName(), s)).findFirst().get()).collect(Collectors.toList());
+        //System.out.println(asdf);
+        enteService.createPoi(ente1,nomePoi,descrizione,latLong,lonLong,asdf);
         return ResponseEntity.ok(HttpStatus.OK);
     }
-
-    @PostMapping("/ente/createProva")
-    public ResponseEntity<HttpStatus> createProva(){
-        PointOfInterest poi = new PointOfInterest("n","n",2562L,2655L);
-        pointOfIntRepository.save(poi);
-        return ResponseEntity.ok(HttpStatus.OK);
-    }
-
 
 }
 

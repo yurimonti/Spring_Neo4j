@@ -13,6 +13,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 @SpringBootApplication
 public class Neo4jExampleApplication {
 
@@ -20,6 +23,48 @@ public class Neo4jExampleApplication {
 		SpringApplication.run(Neo4jExampleApplication.class, args);
 	}
 
+
+	private void initCategorisDB(CategoryRepository categoryRepository){
+		Collection<Category> categories = new ArrayList<>();
+		Category Gastronomia = new Category("Gastronomia");
+		setTags(Gastronomia,"ingresso animali", "accessibilita disabili");
+		categories.add(Gastronomia);
+		Category Naturalistica = new Category("Naturalistica");
+		setTags(Naturalistica,"ingresso animali", "accessibilita disabili","costo","selfie");
+		categories.add(Naturalistica);
+		Category Fontanella = new Category("Fontanella");
+		setTags(Fontanella,"ingresso animali", "potabile");
+		categories.add(Fontanella);
+		Category ZonaParcheggio = new Category("ZonaParcheggio");
+		setTags(ZonaParcheggio, "accessibilita disabili","costo");
+		categories.add(ZonaParcheggio);
+		Category Architetturale = new Category("Architetturale");
+		setTags(Architetturale,"ingresso animali", "accessibilita disabili","costo","selfie");
+		categories.add(Architetturale);
+		Category Religioso = new Category("Religioso");
+		setTags(Religioso,"ingresso animali", "accessibilita disabili","costo");
+		categories.add(Religioso);
+		Category Culturale = new Category("Culturale");
+		setTags(Culturale,"ingresso animali", "accessibilita disabili","costo");
+		categories.add(Culturale);
+		Category Mobilita = new Category("Mobilita");
+		setTags(Mobilita,"costo");
+		categories.add(Mobilita);
+
+		categoryRepository.saveAll(categories);
+	}
+
+	private void setTags(Category category, String ... args){
+		for(String a : args){
+			switch (a){
+				case "ingresso animali" :
+				case "potabile" :
+				case "selfie" :
+				case "accessibilita disabili" : category.getTagBool().add(a);break;
+				default : category.getTagString().add(a);
+			}
+		}
+	}
 
 	@Bean
     CommandLineRunner initDatabase(EnteRepository enteRepository, CityRepository cityRepository,
@@ -35,10 +80,7 @@ public class Neo4jExampleApplication {
 			Ente ente1 = new Ente("ente1","ente1","ente1");
 			ente1.setCity(camerino);
 			enteRepository.save(ente1);
-			Category naturalistica = new Category("Naturalistica");
-			naturalistica.getTagString().add("disabili");
-			naturalistica.getTagString().add("cane");
-			categoryRepository.save(naturalistica);
+			this.initCategorisDB(categoryRepository);
 			/*Ente ente = new Ente("Marco","Montanari","marco.montanari");
 			City city = new City("Camerino");
 			ente.setCity(city);
