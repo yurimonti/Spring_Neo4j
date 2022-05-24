@@ -1,0 +1,12 @@
+com/example/Neo4jExample/repository/PointOfIntRepository.class
+com/example/Neo4jExample/repository/CategoryRepository.class
+com/example/Neo4jExample/model/ManagesThis.class
+com/example/Neo4jExample/model/City.class
+com/example/Neo4jExample/controller/EnteRestController.class
+com/example/Neo4jExample/service/EnteService.class
+com/example/Neo4jExample/model/Category.class
+com/example/Neo4jExample/Neo4jExampleApplication.class
+com/example/Neo4jExample/model/Ente.class
+com/example/Neo4jExample/repository/EnteRepository.class
+com/example/Neo4jExample/repository/CityRepository.class
+com/example/Neo4jExample/model/PointOfInterest.class

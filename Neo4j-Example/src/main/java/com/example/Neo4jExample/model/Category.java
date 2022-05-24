@@ -1,0 +1,29 @@
+package com.example.Neo4jExample.model;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+@NoArgsConstructor
+@Data
+@Node
+public class Category {
+    @Id @GeneratedValue
+    private Long id;
+    private String name;
+
+    private Collection<String> tagString;
+    private Collection<String> tagBool;
+
+    public Category(String name) {
+        this();
+        this.name = name;
+        this.tagString = new ArrayList<>();
+        this.tagBool = new ArrayList<>();
+    }
+}
