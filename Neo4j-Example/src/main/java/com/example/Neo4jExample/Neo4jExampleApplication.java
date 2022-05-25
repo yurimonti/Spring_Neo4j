@@ -3,10 +3,8 @@ package com.example.Neo4jExample;
 import com.example.Neo4jExample.model.Category;
 import com.example.Neo4jExample.model.City;
 import com.example.Neo4jExample.model.Ente;
-import com.example.Neo4jExample.repository.CategoryRepository;
-import com.example.Neo4jExample.repository.CityRepository;
-import com.example.Neo4jExample.repository.EnteRepository;
-import com.example.Neo4jExample.repository.PointOfIntRepository;
+import com.example.Neo4jExample.model.Tag;
+import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.EnteService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -67,20 +65,41 @@ public class Neo4jExampleApplication {
 	}
 
 	@Bean
-    CommandLineRunner initDatabase(EnteRepository enteRepository, CityRepository cityRepository,
+	CommandLineRunner initDatabase(EnteRepository enteRepository, CityRepository cityRepository,
 								   PointOfIntRepository pointOfIntRepository, EnteService enteService,
-								   CategoryRepository categoryRepository){
-        return args -> {
+								   CategoryRepository categoryRepository, TagRepository tagRepository){
+		return args -> {
 			pointOfIntRepository.deleteAll();
 			cityRepository.deleteAll();
 			enteRepository.deleteAll();
 			categoryRepository.deleteAll();
+			tagRepository.deleteAll();
 			City camerino = new City("Camerino");
 			cityRepository.save(camerino);
 			Ente ente1 = new Ente("ente1","ente1","ente1");
 			ente1.setCity(camerino);
 			enteRepository.save(ente1);
-			this.initCategorisDB(categoryRepository);
+			//this.initCategorisDB(categoryRepository);
+
+			Tag tag1 = new Tag("ingresso animali",true);
+			Tag tag2 = new Tag("accessibilita disabili",false);
+			Tag tag3 = new Tag("potabile",true);
+			tagRepository.save(tag1);
+			tagRepository.save(tag2);
+			tagRepository.save(tag3);
+			Category prova1 = new Category("Chiesa");
+			Category prova2 = new Category("Biblioteca");
+			prova1.getTag().add(tag1);
+			prova2.getTag().add(tag1);
+			prova2.getTag().add(tag2);
+			categoryRepository.save(prova1);
+			categoryRepository.save(prova2);
+
+
+
+
+			//this.provaNodiTag(categoryRepository,tagRepository);
+
 			/*Ente ente = new Ente("Marco","Montanari","marco.montanari");
 			City city = new City("Camerino");
 			ente.setCity(city);
@@ -88,6 +107,6 @@ public class Neo4jExampleApplication {
 			enteRepository.save(ente);
 			enteService.createPOI(ente,"Università Inf",
 					"desc",Long.getLong("5678"),Long.getLong("546734"));*/
-        };
+		};
     }
 }

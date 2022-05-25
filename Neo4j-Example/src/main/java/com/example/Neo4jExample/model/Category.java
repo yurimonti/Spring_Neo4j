@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,12 +18,16 @@ public class Category {
     private Long id;
     private String name;
 
+    @Relationship(type = "CATEGORY_HAS_TAG",direction = Relationship.Direction.OUTGOING)
+    private Collection<Tag> tag;
+
     private Collection<String> tagString;
     private Collection<String> tagBool;
 
     public Category(String name) {
         this();
         this.name = name;
+        this.tag = new ArrayList<>();
         this.tagString = new ArrayList<>();
         this.tagBool = new ArrayList<>();
     }
