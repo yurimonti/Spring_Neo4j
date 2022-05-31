@@ -1,4 +1,4 @@
-package com.example.Neo4jExample.model;
+package com.example.Neo4jExample.model2;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +26,6 @@ public class Ente {
     @NonNull
     private String username;
     @Relationship(type = "MANAGES_THIS",direction = Relationship.Direction.OUTGOING)
-    private City city;
+    private CityNode city;
 
 }

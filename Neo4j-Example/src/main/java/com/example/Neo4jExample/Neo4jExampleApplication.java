@@ -1,6 +1,7 @@
 package com.example.Neo4jExample;
 
 import com.example.Neo4jExample.model.*;
+import com.example.Neo4jExample.model2.Ente;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.EnteService;
 import org.springframework.boot.CommandLineRunner;
@@ -64,7 +65,7 @@ public class Neo4jExampleApplication {
 	@Bean
 	CommandLineRunner initDatabase(EnteRepository enteRepository, CityRepository cityRepository,
 								   PointOfIntRepository pointOfIntRepository, EnteService enteService,
-								   CategoryRepository categoryRepository, TagRepository tagRepository, MacroCategoryRepository macroCategoryRepository){
+								   CategoryRepository categoryRepository, TagRepository tagRepository, PoiTypeRepository macroCategoryRepository){
 		return args -> {
 			pointOfIntRepository.deleteAll();
 			cityRepository.deleteAll();

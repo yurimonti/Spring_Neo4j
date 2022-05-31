@@ -1,19 +1,16 @@
 package com.example.Neo4jExample.controller;
 
 import com.example.Neo4jExample.model.Category;
-import com.example.Neo4jExample.model.Ente;
-import com.example.Neo4jExample.model.PointOfInterest;
+import com.example.Neo4jExample.model2.Ente;
 import com.example.Neo4jExample.repository.CategoryRepository;
 import com.example.Neo4jExample.repository.EnteRepository;
 import com.example.Neo4jExample.repository.PointOfIntRepository;
 import com.example.Neo4jExample.service.EnteService;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
