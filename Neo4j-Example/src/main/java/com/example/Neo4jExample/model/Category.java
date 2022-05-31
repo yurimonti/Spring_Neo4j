@@ -21,6 +21,9 @@ public class Category {
     @Relationship(type = "CATEGORY_HAS_TAG",direction = Relationship.Direction.OUTGOING)
     private Collection<Tag> tag;
 
+    @Relationship(type = "SUBCATEGORY_OF",direction = Relationship.Direction.OUTGOING)
+    private Collection<MacroCategory> macroCategories;
+
     private Collection<String> tagString;
     private Collection<String> tagBool;
 
@@ -30,5 +33,6 @@ public class Category {
         this.tag = new ArrayList<>();
         this.tagString = new ArrayList<>();
         this.tagBool = new ArrayList<>();
+        this.macroCategories = new ArrayList<>();
     }
 }

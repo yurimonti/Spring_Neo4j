@@ -1,9 +1,6 @@
 package com.example.Neo4jExample.service;
 
-import com.example.Neo4jExample.model.Category;
-import com.example.Neo4jExample.model.City;
-import com.example.Neo4jExample.model.Ente;
-import com.example.Neo4jExample.model.PointOfInterest;
+import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.CategoryRepository;
 import com.example.Neo4jExample.repository.CityRepository;
 import com.example.Neo4jExample.repository.EnteRepository;
@@ -26,8 +23,9 @@ public class EnteService {
         return category.getTagString();
     }
 
-    public void createPoi(Ente ente, String nome, String description, Long lat, Long lon, Collection<Category> categories){
-        PointOfInterest poi = new PointOfInterest(nome,description,lat,lon);
+    public void createPoi(Ente ente, String nome, String description, double lat, double lon, Collection<Category> categories){
+        PointOfInterest poi = new PointOfInterest(nome,description);
+        poi.setCoordinate(new Coordinate(lon,lat));
         for(Category category: categories){
             poi.getCategories().add(category);
             //category.getTagBool().forEach(t -> poi.getInputSelect().putIfAbsent(t,Boolean.FALSE));

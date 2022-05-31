@@ -21,39 +21,34 @@ public class PointOfInterest {
 
     private String description;
 
-    private Long lat;
-
-    private Long lon;
-
     private Object orari; //TODO
 
     private int durata; //TODO
-
-    //private Map<String,String> inputText;
+    
     private List<String> inputTextNames;
     private List<String> inputTextValues;
 
-    //private Map<String,Boolean> inputSelect;
     private List<String> inputSelectNames;
     private List<Boolean> inputSelectValues;
 
 
-    @Relationship(type = "POI_HAS_SOME")
+    @Relationship(type = "POI_HAS_COORDINATES",direction = Relationship.Direction.OUTGOING)
+    private Coordinate coordinate;
+
+    @Relationship(type = "POI_HAS_SOME",direction = Relationship.Direction.OUTGOING)
     private Collection<Category> categories;
 
-    public PointOfInterest(String name, String description, Long lat, Long lon) {
+    public PointOfInterest(String name, String description) {
         this();
         this.name = name;
+
         this.description = description;
-        this.lat = lat;
-        this.lon = lon;
+        this.coordinate = new Coordinate();
         this.categories = new ArrayList<>();
         this.inputTextNames = new ArrayList<>();
         this.inputTextValues = new ArrayList<>();
         this.inputSelectNames = new ArrayList<>();
         this.inputSelectValues = new ArrayList<>();
-        //this.inputSelect = new HashMap<>();
-        //this.inputText = new HashMap<>();
 
     }
 

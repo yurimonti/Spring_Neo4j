@@ -1,9 +1,6 @@
 package com.example.Neo4jExample;
 
-import com.example.Neo4jExample.model.Category;
-import com.example.Neo4jExample.model.City;
-import com.example.Neo4jExample.model.Ente;
-import com.example.Neo4jExample.model.Tag;
+import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.EnteService;
 import org.springframework.boot.CommandLineRunner;
@@ -67,7 +64,7 @@ public class Neo4jExampleApplication {
 	@Bean
 	CommandLineRunner initDatabase(EnteRepository enteRepository, CityRepository cityRepository,
 								   PointOfIntRepository pointOfIntRepository, EnteService enteService,
-								   CategoryRepository categoryRepository, TagRepository tagRepository){
+								   CategoryRepository categoryRepository, TagRepository tagRepository, MacroCategoryRepository macroCategoryRepository){
 		return args -> {
 			pointOfIntRepository.deleteAll();
 			cityRepository.deleteAll();
@@ -87,11 +84,23 @@ public class Neo4jExampleApplication {
 			tagRepository.save(tag1);
 			tagRepository.save(tag2);
 			tagRepository.save(tag3);
+			MacroCategory prova3 =  new MacroCategory("Culturale");
+			MacroCategory prova4 =  new MacroCategory("Spirituale");
+			MacroCategory prova5 =  new MacroCategory("Architetturale");
 			Category prova1 = new Category("Chiesa");
 			Category prova2 = new Category("Biblioteca");
+			prova1.getMacroCategories().add(prova3);
+			prova1.getMacroCategories().add(prova4);
+			prova1.getMacroCategories().add(prova5);
+			prova2.getMacroCategories().add(prova3);
+			prova2.getMacroCategories().add(prova5);
+			Object asdf = Boolean.TRUE;
 			prova1.getTag().add(tag1);
 			prova2.getTag().add(tag1);
 			prova2.getTag().add(tag2);
+			macroCategoryRepository.save(prova3);
+			macroCategoryRepository.save(prova4);
+			macroCategoryRepository.save(prova5);
 			categoryRepository.save(prova1);
 			categoryRepository.save(prova2);
 
