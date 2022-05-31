@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Arrays;
+import java.util.List;
 
 @SpringBootApplication
 public class Neo4jExampleApplication {
@@ -43,7 +44,9 @@ public class Neo4jExampleApplication {
 			timeSlotRepository.deleteAll();
 			Ente enteProva = new Ente("ente1","ente1","ente1");
 			CityNode camerino = new CityNode("Camerino");
-			//camerino.setCoordinate(new Coordinate(43.139850, 13.069172));
+			Coordinate coordCitta = new Coordinate(43.139850, 13.069172);
+			coordinateRepository.save(coordCitta);
+			camerino.setCoordinate(coordCitta);
 			cityRepository.save(camerino);
 			enteProva.setCity(camerino);
 			enteRepository.save(enteProva);
@@ -56,33 +59,75 @@ public class Neo4jExampleApplication {
 			tagRepository.save(tag3);
 
 			CategoryNode culturale =  new CategoryNode("Culturale");
+			categoryRepository.save(culturale);
 			CategoryNode spirituale =  new CategoryNode("Spirituale");
+			categoryRepository.save(spirituale);
 			CategoryNode architetturale =  new CategoryNode("Architetturale");
+			categoryRepository.save(architetturale);
 			CategoryNode gastronomia =  new CategoryNode("Gastronomia");
+			categoryRepository.save(gastronomia);
 			CategoryNode naturalistica =  new CategoryNode("Naturalistica");
+			categoryRepository.save(naturalistica);
 			CategoryNode fontanella =  new CategoryNode("Fontanella");
+			categoryRepository.save(fontanella);
 			CategoryNode zonaParcheggio =  new CategoryNode("ZonaParcheggio");
+			categoryRepository.save(zonaParcheggio);
 			CategoryNode mobilita =  new CategoryNode("Mobilita");
-			categoryRepository.saveAll(Arrays.asList(culturale,spirituale,architetturale,gastronomia,naturalistica,
-					fontanella,zonaParcheggio,mobilita));
+			categoryRepository.save(mobilita);
+
 			PoiType chiesa = new PoiType("Chiesa");
 			chiesa.getCategories().addAll(Arrays.asList(culturale,spirituale,architetturale));
-			/*PoiType biblioteca = new PoiType("Biblioteca",culturale);
-			PoiType statua = new PoiType("Statua",culturale);
-			PoiType museo = new PoiType("Museo",architetturale,culturale);
-			PoiType ristorante = new PoiType("Ristorante",gastronomia);
-			PoiType parco = new PoiType("Parco",naturalistica);
-			PoiType enoteca = new PoiType("Enoteca",gastronomia,naturalistica);
-			PoiType bosco = new PoiType("Bosco",naturalistica);
-			PoiType parcoGiochi = new PoiType("Parco Giochi",naturalistica);
-			PoiType piazza = new PoiType("Piazza",culturale,architetturale);
-			PoiType monumento = new PoiType("Monumento",architetturale,culturale);
-			PoiType sostaCamper = new PoiType("Sosta Camper",zonaParcheggio);
-			PoiType sostaMacchine = new PoiType("Sosta Macchine",zonaParcheggio);*/
-
+			chiesa.getTags().addAll(Arrays.asList(tag1,tag2));
 			poiTypeRepository.save(chiesa);
-			/*poiTypeRepository.saveAll(Arrays.asList(chiesa,biblioteca,statua,museo,ristorante,parco,enoteca,bosco
-					,parco,parcoGiochi,piazza,monumento,sostaCamper,sostaMacchine));*/
+			PoiType biblioteca = new PoiType("Biblioteca");
+			biblioteca.getCategories().add(culturale);
+			poiTypeRepository.save(biblioteca);
+			PoiType statua = new PoiType("Statua");
+			statua.getCategories().add(culturale);
+			poiTypeRepository.save(statua);
+			PoiType museo = new PoiType("Museo");
+			museo.getCategories().addAll(Arrays.asList(culturale,architetturale));
+			poiTypeRepository.save(museo);
+			PoiType ristorante = new PoiType("Ristorante");
+			ristorante.getCategories().add(gastronomia);
+			poiTypeRepository.save(ristorante);
+			PoiType parco = new PoiType("Parco");
+			parco.getCategories().add(naturalistica);
+			poiTypeRepository.save(parco);
+			PoiType enoteca = new PoiType("Enoteca");
+			enoteca.getCategories().addAll(Arrays.asList(gastronomia,naturalistica));
+			poiTypeRepository.save(enoteca);
+			PoiType bosco = new PoiType("Bosco");
+			bosco.getCategories().add(naturalistica);
+			poiTypeRepository.save(bosco);
+			PoiType parcoGiochi = new PoiType("Parco Giochi");
+			parcoGiochi.getCategories().add(naturalistica);
+			poiTypeRepository.save(parcoGiochi);
+			PoiType piazza = new PoiType("Piazza");
+			piazza.getCategories().addAll(Arrays.asList(culturale,architetturale));
+			poiTypeRepository.save(piazza);
+			PoiType monumento = new PoiType("Monumento");
+			monumento.getCategories().addAll(Arrays.asList(culturale,architetturale));
+			poiTypeRepository.save(monumento);
+			PoiType sostaCamper = new PoiType("Sosta Camper");
+			sostaCamper.getCategories().add(zonaParcheggio);
+			poiTypeRepository.save(sostaCamper);
+			PoiType sostaMacchine = new PoiType("Sosta Macchine");
+			sostaMacchine.getCategories().add(zonaParcheggio);
+			poiTypeRepository.save(sostaMacchine);
+
+			PointOfInterestNode pointProva = new PointOfInterestNode("Chiesa San Venanzio", "è una chiesa");
+			pointProva.getTypes().add(chiesa);
+			PoiTagRel poiTagRel1 = new PoiTagRel(tag1);
+			PoiTagRel poiTagRel2 = new PoiTagRel(tag2);
+			poiTagRel1.setBooleanValue(false);
+			poiTagRel2.setBooleanValue(true);
+			pointProva.getTagValues().addAll(Arrays.asList(poiTagRel1,poiTagRel2));
+			pointOfIntRepository.save(pointProva);
+			camerino.getPointOfInterests().add(pointProva);
+			cityRepository.save(camerino);
+
+
 
 		};
 	}
