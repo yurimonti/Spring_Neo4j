@@ -8,7 +8,8 @@ import org.springframework.data.neo4j.core.schema.Node;
 
 @Data @NoArgsConstructor @Node
 public class Address {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
     private String street;
     private Integer number;

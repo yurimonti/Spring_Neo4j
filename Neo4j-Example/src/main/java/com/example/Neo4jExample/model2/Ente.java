@@ -12,20 +12,23 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 import java.util.UUID;
 
 @NoArgsConstructor
-@RequiredArgsConstructor
 @Data
 @Node
 public class Ente {
     @Id
     @GeneratedValue(GeneratedValue.UUIDGenerator.class)
     private UUID id;
-    @NonNull
     private String name;
-    @NonNull
     private String surname;
-    @NonNull
+
     private String username;
+    
     @Relationship(type = "MANAGES_THIS",direction = Relationship.Direction.OUTGOING)
     private CityNode city;
 
+    public Ente( String name,  String surname, String username) {
+        this.name = name;
+        this.surname = surname;
+        this.username = username;
+    }
 }

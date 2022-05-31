@@ -17,13 +17,13 @@ public class CityNode {
     private String name;
     @Relationship(type = "CONTAINED",direction = Relationship.Direction.INCOMING)
     private Collection<PointOfInterestNode> pointOfInterests;
+
     @Relationship(type = "CITY_HAS_COORDS",direction = Relationship.Direction.OUTGOING)
     private Coordinate coordinate;
 
-    public CityNode(String name,Coordinate coordinate) {
+    public CityNode(String name) {
         this();
         this.name = name;
-        this.coordinate = coordinate;
         this.pointOfInterests = new ArrayList<>();
     }
 }

@@ -29,6 +29,7 @@ public class PointOfInterestNode {
 
     @Relationship(type = "POI_HAS_TYPE")
     private Collection<PoiType> types;
+
     @Relationship(type = "POI_HAS_CONTACT")
     private Contact contact;
 
@@ -36,21 +37,17 @@ public class PointOfInterestNode {
     private Collection<PoiTagRel> tagValues;
 
 
-    public PointOfInterestNode(String name, String description, Coordinate coordinate) {
+    public PointOfInterestNode(String name, String description) {
         this();
         this.name = name;
         this.description = description;
-        this.coordinate= coordinate;
         this.types = new ArrayList<>();
+        this.tagValues = new ArrayList<>();
     }
 
-    public PointOfInterestNode(String name, String description, Coordinate coordinate,Contact contact,TimeSlot timeSlot,
-                               Integer timeToVisit,Address address,URL link) {
-        this(name,description,coordinate);
-        this.contact= contact;
-        this.timeSlot= timeSlot;
+    public PointOfInterestNode(String name, String description, Integer timeToVisit,URL link) {
+        this(name,description);
         this.timeToVisit = timeToVisit;
-        this.address=address;
         this.link = link;
     }
 

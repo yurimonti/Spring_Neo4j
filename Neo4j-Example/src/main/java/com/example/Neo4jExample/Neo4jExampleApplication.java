@@ -1,16 +1,13 @@
 package com.example.Neo4jExample;
 
-import com.example.Neo4jExample.model.*;
-import com.example.Neo4jExample.model2.Ente;
+import com.example.Neo4jExample.model2.*;
 import com.example.Neo4jExample.repository.*;
-import com.example.Neo4jExample.service.EnteService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 
 @SpringBootApplication
 public class Neo4jExampleApplication {
@@ -18,8 +15,103 @@ public class Neo4jExampleApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(Neo4jExampleApplication.class, args);
 	}
+	@Bean
+	CommandLineRunner initDatabase(AddressRepository addressRepository, CategoryRepository categoryRepository,
+								   CityRepository cityRepository,ContactRepository contactRepository,
+								   CoordinateRepository coordinateRepository,DishNodeRepository dishNodeRepository,
+								   EnteRepository enteRepository, FoodSectionNodeRepository foodSectionNodeRepository,
+								   MenuNodeRepository menuNodeRepository,PointOfIntRepository pointOfIntRepository,
+								   PoiTypeRepository poiTypeRepository, RestaurantPoiRepository restaurantPoiRepository,
+								   TagRepository tagRepository, TimeSlotRepository timeSlotRepository){
+		return args -> {
+			/*this.deleteRepositories(addressRepository,categoryRepository,cityRepository,contactRepository,
+					coordinateRepository,dishNodeRepository,enteRepository,foodSectionNodeRepository,menuNodeRepository,
+					pointOfIntRepository,poiTypeRepository,restaurantPoiRepository,tagRepository,timeSlotRepository);*/
+			addressRepository.deleteAll();
+			categoryRepository.deleteAll();
+			cityRepository.deleteAll();
+			contactRepository.deleteAll();
+			coordinateRepository.deleteAll();
+			dishNodeRepository.deleteAll();
+			enteRepository.deleteAll();
+			foodSectionNodeRepository.deleteAll();
+			menuNodeRepository.deleteAll();
+			pointOfIntRepository.deleteAll();
+			poiTypeRepository.deleteAll();
+			restaurantPoiRepository.deleteAll();
+			tagRepository.deleteAll();
+			timeSlotRepository.deleteAll();
+			Ente enteProva = new Ente("ente1","ente1","ente1");
+			CityNode camerino = new CityNode("Camerino");
+			//camerino.setCoordinate(new Coordinate(43.139850, 13.069172));
+			cityRepository.save(camerino);
+			enteProva.setCity(camerino);
+			enteRepository.save(enteProva);
 
+			TagNode tag1 = new TagNode("ingresso animali",true);
+			TagNode tag2 = new TagNode("accessibilita disabili",false);
+			TagNode tag3 = new TagNode("potabile",true);
+			tagRepository.save(tag1);
+			tagRepository.save(tag2);
+			tagRepository.save(tag3);
 
+			CategoryNode culturale =  new CategoryNode("Culturale");
+			CategoryNode spirituale =  new CategoryNode("Spirituale");
+			CategoryNode architetturale =  new CategoryNode("Architetturale");
+			CategoryNode gastronomia =  new CategoryNode("Gastronomia");
+			CategoryNode naturalistica =  new CategoryNode("Naturalistica");
+			CategoryNode fontanella =  new CategoryNode("Fontanella");
+			CategoryNode zonaParcheggio =  new CategoryNode("ZonaParcheggio");
+			CategoryNode mobilita =  new CategoryNode("Mobilita");
+			categoryRepository.saveAll(Arrays.asList(culturale,spirituale,architetturale,gastronomia,naturalistica,
+					fontanella,zonaParcheggio,mobilita));
+			PoiType chiesa = new PoiType("Chiesa");
+			chiesa.getCategories().addAll(Arrays.asList(culturale,spirituale,architetturale));
+			/*PoiType biblioteca = new PoiType("Biblioteca",culturale);
+			PoiType statua = new PoiType("Statua",culturale);
+			PoiType museo = new PoiType("Museo",architetturale,culturale);
+			PoiType ristorante = new PoiType("Ristorante",gastronomia);
+			PoiType parco = new PoiType("Parco",naturalistica);
+			PoiType enoteca = new PoiType("Enoteca",gastronomia,naturalistica);
+			PoiType bosco = new PoiType("Bosco",naturalistica);
+			PoiType parcoGiochi = new PoiType("Parco Giochi",naturalistica);
+			PoiType piazza = new PoiType("Piazza",culturale,architetturale);
+			PoiType monumento = new PoiType("Monumento",architetturale,culturale);
+			PoiType sostaCamper = new PoiType("Sosta Camper",zonaParcheggio);
+			PoiType sostaMacchine = new PoiType("Sosta Macchine",zonaParcheggio);*/
+
+			poiTypeRepository.save(chiesa);
+			/*poiTypeRepository.saveAll(Arrays.asList(chiesa,biblioteca,statua,museo,ristorante,parco,enoteca,bosco
+					,parco,parcoGiochi,piazza,monumento,sostaCamper,sostaMacchine));*/
+
+		};
+	}
+
+	/*private void deleteRepositories(AddressRepository addressRepository, CategoryRepository categoryRepository,
+									CityRepository cityRepository,ContactRepository contactRepository,
+									CoordinateRepository coordinateRepository,DishNodeRepository dishNodeRepository,
+									EnteRepository enteRepository, FoodSectionNodeRepository foodSectionNodeRepository,
+									MenuNodeRepository menuNodeRepository,PointOfIntRepository pointOfIntRepository,
+									PoiTypeRepository poiTypeRepository, RestaurantPoiRepository restaurantPoiRepository,
+									TagRepository tagRepository, TimeSlotRepository timeSlotRepository){
+
+		addressRepository.deleteAll();
+		categoryRepository.deleteAll();
+		cityRepository.deleteAll();
+		contactRepository.deleteAll();
+		coordinateRepository.deleteAll();
+		dishNodeRepository.deleteAll();
+		enteRepository.deleteAll();
+		foodSectionNodeRepository.deleteAll();
+		menuNodeRepository.deleteAll();
+		pointOfIntRepository.deleteAll();
+		poiTypeRepository.deleteAll();
+		restaurantPoiRepository.deleteAll();
+		tagRepository.deleteAll();
+		timeSlotRepository.deleteAll();
+	}*/
+
+	/*
 	private void initCategorisDB(CategoryRepository categoryRepository){
 		Collection<Category> categories = new ArrayList<>();
 		Category Gastronomia = new Category("Gastronomia");
@@ -47,7 +139,7 @@ public class Neo4jExampleApplication {
 		setTags(Mobilita,"costo");
 		categories.add(Mobilita);
 
-		categoryRepository.saveAll(categories);
+		//categoryRepository.saveAll(categories);
 	}
 
 	private void setTags(Category category, String ... args){
@@ -61,7 +153,8 @@ public class Neo4jExampleApplication {
 			}
 		}
 	}
-
+	*/
+	/*
 	@Bean
 	CommandLineRunner initDatabase(EnteRepository enteRepository, CityRepository cityRepository,
 								   PointOfIntRepository pointOfIntRepository, EnteService enteService,
@@ -95,7 +188,6 @@ public class Neo4jExampleApplication {
 			prova1.getMacroCategories().add(prova5);
 			prova2.getMacroCategories().add(prova3);
 			prova2.getMacroCategories().add(prova5);
-			Object asdf = Boolean.TRUE;
 			prova1.getTag().add(tag1);
 			prova2.getTag().add(tag1);
 			prova2.getTag().add(tag2);
@@ -108,15 +200,15 @@ public class Neo4jExampleApplication {
 
 
 
-			//this.provaNodiTag(categoryRepository,tagRepository);
+			this.provaNodiTag(categoryRepository,tagRepository);
 
-			/*Ente ente = new Ente("Marco","Montanari","marco.montanari");
+			Ente ente = new Ente("Marco","Montanari","marco.montanari");
 			City city = new City("Camerino");
 			ente.setCity(city);
 			cityRepository.save(city);
 			enteRepository.save(ente);
 			enteService.createPOI(ente,"Università Inf",
-					"desc",Long.getLong("5678"),Long.getLong("546734"));*/
+					"desc",Long.getLong("5678"),Long.getLong("546734"));
 		};
-    }
+    }*/
 }

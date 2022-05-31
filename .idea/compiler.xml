@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Neo4j-Example" target="11" />
+      <module name="Neo4j-Example" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

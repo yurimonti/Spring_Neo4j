@@ -7,5 +7,4 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 @Repository
 public interface EnteRepository extends Neo4jRepository<Ente, UUID> {
-    Ente findByUsername(String username);
 }
