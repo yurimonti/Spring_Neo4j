@@ -1,6 +1,5 @@
 package com.example.Neo4jExample.model2;
 
-import com.example.Neo4jExample.model.FoodSection;
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.Node;
 

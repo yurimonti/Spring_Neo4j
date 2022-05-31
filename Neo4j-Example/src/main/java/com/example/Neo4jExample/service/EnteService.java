@@ -1,9 +1,5 @@
 package com.example.Neo4jExample.service;
 
-import com.example.Neo4jExample.model.Category;
-import com.example.Neo4jExample.model.City;
-import com.example.Neo4jExample.model.Ente;
-import com.example.Neo4jExample.model.PointOfInterest;
 import com.example.Neo4jExample.repository.CategoryRepository;
 import com.example.Neo4jExample.repository.CityRepository;
 import com.example.Neo4jExample.repository.EnteRepository;

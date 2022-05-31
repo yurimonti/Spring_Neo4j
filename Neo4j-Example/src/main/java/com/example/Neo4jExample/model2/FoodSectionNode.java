@@ -1,6 +1,5 @@
 package com.example.Neo4jExample.model2;
 
-import com.example.Neo4jExample.model.Dish;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
