@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CategoryRepository extends Neo4jRepository<Category,Long> {
-
+    Category findByName(String name);
 }

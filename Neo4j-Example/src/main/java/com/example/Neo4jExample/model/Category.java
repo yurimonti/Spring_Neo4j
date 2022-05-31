@@ -19,7 +19,7 @@ public class Category {
     private String name;
 
     @Relationship(type = "CATEGORY_HAS_TAG",direction = Relationship.Direction.OUTGOING)
-    private Collection<Tag> tag;
+    private Collection<CatHasTag> tag;
 
     private Collection<String> tagString;
     private Collection<String> tagBool;

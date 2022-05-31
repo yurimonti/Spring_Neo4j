@@ -26,7 +26,7 @@ public class EnteService {
         return category.getTagString();
     }
 
-    public void createPoi(Ente ente, String nome, String description, Long lat, Long lon, Collection<Category> categories){
+    public void createPoi(Ente ente, String nome, String description, Double lat, Double lon, Collection<Category> categories){
         PointOfInterest poi = new PointOfInterest(nome,description,lat,lon);
         for(Category category: categories){
             poi.getCategories().add(category);

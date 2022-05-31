@@ -21,9 +21,9 @@ public class PointOfInterest {
 
     private String description;
 
-    private Long lat;
+    private Double lat;
 
-    private Long lon;
+    private Double lon;
 
     private Object orari; //TODO
 
@@ -41,7 +41,7 @@ public class PointOfInterest {
     @Relationship(type = "POI_HAS_SOME")
     private Collection<Category> categories;
 
-    public PointOfInterest(String name, String description, Long lat, Long lon) {
+    public PointOfInterest(String name, String description, Double lat, Double lon) {
         this();
         this.name = name;
         this.description = description;
