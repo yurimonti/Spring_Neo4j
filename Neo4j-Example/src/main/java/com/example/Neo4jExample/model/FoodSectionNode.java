@@ -1,4 +1,4 @@
-package com.example.Neo4jExample.model2;
+package com.example.Neo4jExample.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,16 +12,19 @@ import java.util.Collection;
 
 @Data
 @Node
-public class MenuNode {
+@NoArgsConstructor
+public class FoodSectionNode {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @Relationship(type = "HAS_FOODSECTION",direction = Relationship.Direction.OUTGOING)
-    private Collection<FoodSectionNode> foodSections;
+    private String name;
+    @Relationship(type = "HAS_DISHE",direction = Relationship.Direction.OUTGOING)
+    private Collection<DishNode> dishes;
 
-    public MenuNode() {
-        this.foodSections = new ArrayList<>();
+    public FoodSectionNode(String name) {
+        this.name = name;
+        this.dishes = new ArrayList<>();
     }
 }

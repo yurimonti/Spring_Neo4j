@@ -1,21 +1,21 @@
-package com.example.Neo4jExample.model2;
+package com.example.Neo4jExample.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
-@Data
 @NoArgsConstructor
+@Data
 @Node
-public class TagNode {
+public class CategoryNode {
+
     @Id
     private String name;
-    private Boolean isBooleanType;
 
-    public TagNode(String name, Boolean isBooleanType) {
+    public CategoryNode(String name) {
+        this();
         this.name = name;
-        this.isBooleanType = isBooleanType;
     }
+
 }

@@ -1,4 +1,4 @@
-package com.example.Neo4jExample.model2;
+package com.example.Neo4jExample.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

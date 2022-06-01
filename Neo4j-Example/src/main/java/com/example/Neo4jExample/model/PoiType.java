@@ -1,4 +1,4 @@
-package com.example.Neo4jExample.model2;
+package com.example.Neo4jExample.model;
 
 //import com.example.Neo4jExample.model.Category;
 import lombok.Data;
@@ -8,7 +8,6 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 @Node

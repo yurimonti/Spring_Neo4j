@@ -1,6 +1,6 @@
 package com.example.Neo4jExample;
 
-import com.example.Neo4jExample.model2.*;
+import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Arrays;
-import java.util.List;
 
 @SpringBootApplication
 public class Neo4jExampleApplication {
@@ -116,7 +115,8 @@ public class Neo4jExampleApplication {
 			sostaMacchine.getCategories().add(zonaParcheggio);
 			poiTypeRepository.save(sostaMacchine);
 
-			PointOfInterestNode pointProva = new PointOfInterestNode("Chiesa San Venanzio", "è una chiesa");
+			PointOfInterestNode pointProva = new PointOfInterestNode("Chiesa San Venanzio",
+					"è una chiesa");
 			pointProva.getTypes().add(chiesa);
 			PoiTagRel poiTagRel1 = new PoiTagRel(tag1);
 			PoiTagRel poiTagRel2 = new PoiTagRel(tag2);
@@ -126,8 +126,6 @@ public class Neo4jExampleApplication {
 			pointOfIntRepository.save(pointProva);
 			camerino.getPointOfInterests().add(pointProva);
 			cityRepository.save(camerino);
-
-
 
 		};
 	}
