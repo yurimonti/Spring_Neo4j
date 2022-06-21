@@ -1,18 +1,23 @@
 package com.example.Neo4jExample.service;
 
 import com.example.Neo4jExample.model.*;
+import com.example.Neo4jExample.repository.CategoryRepository;
 import com.example.Neo4jExample.repository.CityRepository;
+import com.example.Neo4jExample.repository.PoiTypeRepository;
 import com.example.Neo4jExample.repository.PointOfIntRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
 public class ProvaService {
     private final PointOfIntRepository pointOfIntRepository;
     private final CityRepository cityRepository;
+    private final CategoryRepository categoryRepository;
+    private final PoiTypeRepository poiTypeRepository;
 
     public PointOfInterestNode createPoi(Ente ente, String name, String description, Coordinate coordinate,
                                          Address address,Contact contact,Boolean needTicket,Integer timeToVisit,
@@ -35,5 +40,31 @@ public class ProvaService {
         if(coords.length==2) coordinate = new Coordinate(lat,coords[0]);
         else coordinate = new Coordinate(lat,coords[0],coords[1]);
         return coordinate;
+    }
+
+    public Collection<PoiType> getPoiTypes(){
+        return poiTypeRepository.findAll();
+    }
+
+    public Collection<PoiType> getPoiTypes(Collection<CategoryNode> categoriesFilter){
+        return getPoiTypes().stream().filter(t->
+                t.getCategories().containsAll(categoriesFilter)).toList();
+    }
+
+    public Collection<CategoryNode> getCategories(){
+        return categoryRepository.findAll();
+    }
+
+    public PointOfInterestNode createPoi(Ente ente,String name,String description,
+                                         Address address,Coordinate coordinate,Collection<PoiType> poiTypes,
+                                         Collection<PoiTagRel> tagsAndValues){
+        PointOfInterestNode poi = new PointOfInterestNode(name,description,coordinate,address);
+        poi.getTypes().addAll(poiTypes);
+        poi.getTagValues().addAll(tagsAndValues);
+        pointOfIntRepository.save(poi);
+        CityNode city = ente.getCity();
+        city.getPointOfInterests().add(poi);
+        cityRepository.save(city);
+        return poi;
     }
 }

@@ -16,7 +16,6 @@ import java.util.Collection;
 public class PointOfInterestNode {
     @Id @GeneratedValue
     private Long id;
-
     private String name;
     private String description;
     private Coordinate coordinate;
@@ -45,7 +44,13 @@ public class PointOfInterestNode {
         this.tagValues = new ArrayList<>();
     }
 
-    public PointOfInterestNode(String name, String description, Integer timeToVisit,URL link) {
+    public PointOfInterestNode(String name, String description, Coordinate coordinate, Address address) {
+        this(name,description);
+        this.coordinate = coordinate;
+        this.address = address;
+    }
+
+    public PointOfInterestNode(String name, String description, Integer timeToVisit, URL link) {
         this(name,description);
         this.timeToVisit = timeToVisit;
         this.link = link;

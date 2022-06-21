@@ -51,11 +51,13 @@ public class Neo4jExampleApplication {
 			enteRepository.save(enteProva);
 
 			TagNode tag1 = new TagNode("ingresso animali",true);
-			TagNode tag2 = new TagNode("accessibilita disabili",false);
+			TagNode tag2 = new TagNode("accessibilita disabili",true);
 			TagNode tag3 = new TagNode("potabile",true);
+			TagNode tag4 = new TagNode("costo",false);
 			tagRepository.save(tag1);
 			tagRepository.save(tag2);
 			tagRepository.save(tag3);
+			tagRepository.save(tag4);
 
 			CategoryNode culturale =  new CategoryNode("Culturale");
 			categoryRepository.save(culturale);
@@ -86,6 +88,7 @@ public class Neo4jExampleApplication {
 			poiTypeRepository.save(statua);
 			PoiType museo = new PoiType("Museo");
 			museo.getCategories().addAll(Arrays.asList(culturale,architetturale));
+			museo.getTags().addAll(Arrays.asList(tag1,tag2,tag4));
 			poiTypeRepository.save(museo);
 			PoiType ristorante = new PoiType("Ristorante");
 			ristorante.getCategories().add(gastronomia);
@@ -117,6 +120,9 @@ public class Neo4jExampleApplication {
 
 			PointOfInterestNode pointProva = new PointOfInterestNode("Chiesa San Venanzio",
 					"è una chiesa");
+			Coordinate pointProvaCoords = new Coordinate(43.13797,13.07336);
+			coordinateRepository.save(pointProvaCoords);
+			pointProva.setCoordinate(pointProvaCoords);
 			pointProva.getTypes().add(chiesa);
 			PoiTagRel poiTagRel1 = new PoiTagRel(tag1);
 			PoiTagRel poiTagRel2 = new PoiTagRel(tag2);
