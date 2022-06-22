@@ -3,10 +3,15 @@ package com.example.Neo4jExample.controller;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.ProvaService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 @RestController
@@ -83,4 +88,12 @@ public class ProvaController {
         return Objects.isNull(poi) ? ResponseEntity.internalServerError().body(null) : ResponseEntity.ok(poi);
     }
 
+    @PostMapping("/provaSer")
+    public ResponseEntity<Collection<TagNode>> prova(@RequestBody Map<String,Object> body){
+        Gson gson = new Gson();
+        String json = gson.toJson(body.get("tags"));
+        Type collectionType = new TypeToken<Collection<TagNode>>(){}.getType();
+        Collection<TagNode> tags = gson.fromJson(json, collectionType);
+        return ResponseEntity.ok(tags);
+    }
 }
