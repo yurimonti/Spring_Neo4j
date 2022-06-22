@@ -5,6 +5,8 @@ import com.example.Neo4jExample.repository.CategoryRepository;
 import com.example.Neo4jExample.repository.CityRepository;
 import com.example.Neo4jExample.repository.PoiTypeRepository;
 import com.example.Neo4jExample.repository.PointOfIntRepository;
+import com.example.Neo4jExample.service.util.MySerializer;
+import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class ProvaService {
     private final CityRepository cityRepository;
     private final CategoryRepository categoryRepository;
     private final PoiTypeRepository poiTypeRepository;
+    private final MySerializer<Collection<TagNode>> tagsSerializer;
 
     public PointOfInterestNode createPoi(Ente ente, String name, String description, Coordinate coordinate,
                                          Address address,Contact contact,Boolean needTicket,Integer timeToVisit,
@@ -66,5 +69,10 @@ public class ProvaService {
         city.getPointOfInterests().add(poi);
         cityRepository.save(city);
         return poi;
+    }
+
+    public Collection<TagNode> tagNodeCollectionFromJson(Object json){
+        return tagsSerializer.deserialize(tagsSerializer.serialize(json),
+                new TypeToken<Collection<TagNode>>(){}.getType());
     }
 }

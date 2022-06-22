@@ -3,15 +3,14 @@ package com.example.Neo4jExample.controller;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.ProvaService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.Neo4jExample.service.util.MyGsonSerializer;
+import com.example.Neo4jExample.service.util.MySerializer;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Type;
 import java.util.*;
 
 @RestController
@@ -70,7 +69,7 @@ public class ProvaController {
                 poiTypes.add(poiTypeRepository.findById(type).get());
             }
         }
-        Collection<Map<String,Object>> poiTagRels = (Collection<Map<String,java.lang.Object>>) body.get("tags");
+        Collection<Map<String,Object>> poiTagRels = (Collection<Map<String,Object>>) body.get("tags");
         Collection<PoiTagRel> values = new ArrayList<>();
         for (Map<String,Object> map:poiTagRels){
             String tag = (String)map.get("tag");
@@ -91,9 +90,7 @@ public class ProvaController {
     @PostMapping("/provaSer")
     public ResponseEntity<Collection<TagNode>> prova(@RequestBody Map<String,Object> body){
         Gson gson = new Gson();
-        String json = gson.toJson(body.get("tags"));
-        Type collectionType = new TypeToken<Collection<TagNode>>(){}.getType();
-        Collection<TagNode> tags = gson.fromJson(json, collectionType);
+        Collection<TagNode> tags = provaService.tagNodeCollectionFromJson(body.get("tags"));
         return ResponseEntity.ok(tags);
     }
 }
