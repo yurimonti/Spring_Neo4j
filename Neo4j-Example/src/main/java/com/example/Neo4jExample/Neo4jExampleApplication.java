@@ -8,6 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 @SpringBootApplication
 public class Neo4jExampleApplication {
