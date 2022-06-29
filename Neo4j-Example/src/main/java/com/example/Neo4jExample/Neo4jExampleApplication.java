@@ -76,64 +76,209 @@ public class Neo4jExampleApplication {
 			CategoryNode mobilita =  new CategoryNode("Mobilita");
 			categoryRepository.save(mobilita);
 
+
+
 			PoiType chiesa = new PoiType("Chiesa");
 			chiesa.getCategories().addAll(Arrays.asList(culturale,spirituale,architetturale));
 			chiesa.getTags().addAll(Arrays.asList(tag1,tag2));
 			poiTypeRepository.save(chiesa);
+
+			PoiType monastero = new PoiType("Monastero");
+			monastero.getCategories().addAll(Arrays.asList(culturale,spirituale,architetturale));
+			monastero.getTags().addAll(Arrays.asList(tag1,tag2));
+			poiTypeRepository.save(monastero);
+
+			PoiType rocca = new PoiType("Rocca");
+			rocca.getCategories().addAll(Arrays.asList(culturale,architetturale));
+			rocca.getTags().addAll(Arrays.asList(tag1,tag2));
+			poiTypeRepository.save(rocca);
+
+			PoiType palazzo = new PoiType("Palazzo");
+			palazzo.getCategories().addAll(Arrays.asList(culturale,architetturale));
+			palazzo.getTags().addAll(Arrays.asList(tag1,tag2));
+			poiTypeRepository.save(palazzo);
+
+			PoiType tempio = new PoiType("Tempio");
+			tempio.getCategories().addAll(Arrays.asList(culturale,spirituale,architetturale));
+			tempio.getTags().addAll(Arrays.asList(tag1,tag2));
+			poiTypeRepository.save(tempio);
+
+			PoiType santuario = new PoiType("Santuario");
+			santuario.getCategories().addAll(Arrays.asList(culturale,spirituale,architetturale));
+			santuario.getTags().addAll(Arrays.asList(tag1,tag2));
+			poiTypeRepository.save(santuario);
+
+			PoiType cattedrale = new PoiType("Cattedrale");
+			cattedrale.getCategories().addAll(Arrays.asList(culturale,spirituale,architetturale));
+			cattedrale.getTags().addAll(Arrays.asList(tag1,tag2));
+			poiTypeRepository.save(cattedrale);
+
+			PoiType basilica = new PoiType("Basilica");
+			basilica.getCategories().addAll(Arrays.asList(culturale,spirituale,architetturale));
+			basilica.getTags().addAll(Arrays.asList(tag1,tag2));
+			poiTypeRepository.save(basilica);
+
+			PoiType lago = new PoiType("Lago");
+			lago.getCategories().add(naturalistica);
+			lago.getTags().addAll(Arrays.asList(tag1,tag2));
+			poiTypeRepository.save(lago);
+
 			PoiType biblioteca = new PoiType("Biblioteca");
-			biblioteca.getCategories().add(culturale);
+			biblioteca.getCategories().addAll(Arrays.asList(culturale,architetturale));
+			biblioteca.getTags().addAll(Arrays.asList(tag1,tag2));
 			poiTypeRepository.save(biblioteca);
+
+			PoiType teatro = new PoiType("Teatro");
+			teatro.getCategories().addAll(Arrays.asList(culturale,architetturale));
+			teatro.getTags().addAll(Arrays.asList(tag1,tag2));
+			poiTypeRepository.save(teatro);
+
+			PoiType mulino = new PoiType("Mulino");
+			mulino.getCategories().addAll(Arrays.asList(culturale,architetturale));
+			mulino.getTags().addAll(Arrays.asList(tag1,tag2));
+			poiTypeRepository.save(mulino);
+
+			PoiType giardino = new PoiType("Giardino");
+			giardino.getCategories().addAll(Arrays.asList(culturale,architetturale));
+			giardino.getTags().addAll(Arrays.asList(tag1,tag2));
+			poiTypeRepository.save(giardino);
+
+
 			PoiType statua = new PoiType("Statua");
 			statua.getCategories().add(culturale);
 			poiTypeRepository.save(statua);
+
 			PoiType museo = new PoiType("Museo");
 			museo.getCategories().addAll(Arrays.asList(culturale,architetturale));
 			museo.getTags().addAll(Arrays.asList(tag1,tag2,tag4));
 			poiTypeRepository.save(museo);
+
 			PoiType ristorante = new PoiType("Ristorante");
 			ristorante.getCategories().add(gastronomia);
 			poiTypeRepository.save(ristorante);
+
 			PoiType parco = new PoiType("Parco");
 			parco.getCategories().add(naturalistica);
 			poiTypeRepository.save(parco);
+
 			PoiType enoteca = new PoiType("Enoteca");
 			enoteca.getCategories().addAll(Arrays.asList(gastronomia,naturalistica));
 			poiTypeRepository.save(enoteca);
+
 			PoiType bosco = new PoiType("Bosco");
 			bosco.getCategories().add(naturalistica);
 			poiTypeRepository.save(bosco);
+
 			PoiType parcoGiochi = new PoiType("Parco Giochi");
 			parcoGiochi.getCategories().add(naturalistica);
 			poiTypeRepository.save(parcoGiochi);
+
 			PoiType piazza = new PoiType("Piazza");
 			piazza.getCategories().addAll(Arrays.asList(culturale,architetturale));
 			poiTypeRepository.save(piazza);
+
 			PoiType monumento = new PoiType("Monumento");
 			monumento.getCategories().addAll(Arrays.asList(culturale,architetturale));
 			poiTypeRepository.save(monumento);
+
 			PoiType sostaCamper = new PoiType("Sosta Camper");
 			sostaCamper.getCategories().add(zonaParcheggio);
 			poiTypeRepository.save(sostaCamper);
+
 			PoiType sostaMacchine = new PoiType("Sosta Macchine");
 			sostaMacchine.getCategories().add(zonaParcheggio);
 			poiTypeRepository.save(sostaMacchine);
 
-			PointOfInterestNode pointProva = new PointOfInterestNode("Chiesa San Venanzio",
-					"è una chiesa");
-			Coordinate pointProvaCoords = new Coordinate(43.13797,13.07336);
-			coordinateRepository.save(pointProvaCoords);
-			pointProva.setCoordinate(pointProvaCoords);
-			pointProva.getTypes().add(chiesa);
-			PoiTagRel poiTagRel1 = new PoiTagRel(tag1);
-			PoiTagRel poiTagRel2 = new PoiTagRel(tag2);
-			poiTagRel1.setBooleanValue(false);
-			poiTagRel2.setBooleanValue(true);
-			pointProva.getTagValues().addAll(Arrays.asList(poiTagRel1,poiTagRel2));
-			pointOfIntRepository.save(pointProva);
-			camerino.getPointOfInterests().add(pointProva);
+
+
+			Coordinate pointProvaCoords;
+			pointProvaCoords = new Coordinate(43.1392,13.0732);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Monastero di S. Chiara",camerino, monastero, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1483,13.102);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Chiesa e Convento dei Cappuccini di Renacavata",camerino, monastero, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.131,13.063);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Rocca Borgesca",camerino, rocca, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1885,13.0638);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Rocca d'Ajello",camerino, rocca, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1103,13.1258);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Rocca Varano",camerino, rocca, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1357,13.0687);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Palazzo Ducale dei Da Varano",camerino, palazzo, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1373,13.0724);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Tempio dell'Annunziata",camerino, tempio, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1369,13.0671);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Area di sosta di Via Macario Muzio",camerino, sostaMacchine, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1393,13.0727);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Chiesa di S. Chiara",camerino, chiesa, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1358,13.0684);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Cattedrale di Santa Maria Annunziata",camerino, cattedrale, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1347,13.0647);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Chiesa di S. Filippo Neri",camerino, chiesa, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1319,13.0638);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Santuario di S. Maria in Via",camerino, santuario, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1377,13.0736);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Basilica di S. Venanzio Martire",camerino, basilica, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1468,13.1303);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Santuario Maria Madre della Misericordia",camerino, santuario, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.0911,13.1165);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Lago di Polverina",camerino, lago, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.136,13.0692);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Biblioteca comunale Valentiniana",camerino, biblioteca, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1658,13.0584);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Mulino Bottacchiari",camerino, mulino, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1362,13.07);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Orto Botanico Carmela Cortini Università di Camerino",camerino, museo, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1377,13.0713);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Polo museale di S. Domenico - Museo civico e archeologico – Pinacoteca civica Girolamo di Giovanni",camerino, museo, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1353,13.067);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Teatro Filippo Marchetti",camerino, teatro, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1885,13.0638);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Giardini della Rocca d'Ajello",camerino, giardino, pointProvaCoords);
+
+			pointProvaCoords = new Coordinate(43.1358,13.0698);
+			createPoiProva(coordinateRepository, pointOfIntRepository, "Orto botanico di Camerino",camerino, giardino, pointProvaCoords);
+
+
 			cityRepository.save(camerino);
 
 		};
+	}
+
+
+
+	public void createPoiProva(CoordinateRepository coordinateRepository, PointOfIntRepository pointOfIntRepository
+			,String nome, CityNode camerino, PoiType type, Coordinate coordinate) {
+		PointOfInterestNode pointProva = new PointOfInterestNode(nome, "prova prova, 1,2,3, prova");
+		coordinateRepository.save(coordinate);
+		pointProva.setCoordinate(coordinate);
+		pointProva.getTypes().add(type);
+		for(TagNode tag : type.getTags()){
+			PoiTagRel poiTagRel = new PoiTagRel(tag);
+			poiTagRel.setBooleanValue(tag.getIsBooleanType());
+			pointProva.getTagValues().add(poiTagRel);
+		}
+		pointOfIntRepository.save(pointProva);
+		camerino.getPointOfInterests().add(pointProva);
 	}
 
 	/*private void deleteRepositories(AddressRepository addressRepository, CategoryRepository categoryRepository,
