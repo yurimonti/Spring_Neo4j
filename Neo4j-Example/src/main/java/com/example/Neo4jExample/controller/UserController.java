@@ -13,10 +13,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class UserController {
@@ -36,6 +37,9 @@ public class UserController {
 
     @PostMapping("/addPoi")
     public ResponseEntity<PoiRequestNode> addPoi(@RequestBody Map<String,Object> body){
+        //PointOfInterestNode poi = (PointOfInterestNode) body.get("originalPoi");
+
+
         String name = (String)body.get("name");
         String username = "An User";
         String description = (String)body.get("description");
@@ -48,22 +52,31 @@ public class UserController {
         Integer number = Integer.parseInt((String) body.get("number"));
         Address address = provaService.createAddress(street,number);
         Collection<String> types = (Collection<String>) body.get("types");
-        Collection<PoiType> poiTypes = new ArrayList<>();
+
+        Collection<PoiType> poiTypes = types.stream()
+                .filter(a -> poiTypeRepository.findById(a).isPresent())
+                .map(a -> poiTypeRepository.findById(a).get())
+                .collect(Collectors.toList());
+        /*Collection<PoiType> poiTypes = new ArrayList<>();
         for (String type: types) {
             if(poiTypeRepository.findById(type).isPresent()) {
                 poiTypes.add(poiTypeRepository.findById(type).get());
             }
         }
+         */
         Collection<Map<String,Object>> poiTagRels = (Collection<Map<String,Object>>) body.get("tags");
         Collection<PoiTagRel> values = new ArrayList<>();
-        for (Map<String,Object> map:poiTagRels){
+        for (Map<String,Object> map : poiTagRels){
             String tag = (String)map.get("tag");
             TagNode tagNode = tagRepository.findById(tag).orElse(null);
             PoiTagRel poiTagRel = new PoiTagRel(tagNode);
-            if(!Objects.isNull(tagNode) && tagNode.getIsBooleanType()){
-                Boolean value = Boolean.parseBoolean((String)map.get("value"));
-                poiTagRel.setBooleanValue(value);
-            }else poiTagRel.setStringValue((String)map.get("value"));
+            if(!Objects.isNull(tagNode)){
+                if(tagNode.getIsBooleanType()){
+                    Boolean value = Boolean.parseBoolean((String)map.get("value"));
+                    poiTagRel.setBooleanValue(value);
+                }
+                else poiTagRel.setStringValue((String)map.get("value"));
+            }
             values.add(poiTagRel);
         }
         PoiRequestNode poiRequestNode = new PoiRequestNode(name,description,city,coordinate,address,poiTypes);
@@ -72,4 +85,8 @@ public class UserController {
         poiRequestRepository.save(poiRequestNode);
         return ResponseEntity.ok(poiRequestNode);
     }
+
+
+
+
 }

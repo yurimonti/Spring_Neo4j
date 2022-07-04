@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/ente")
+@RequestMapping("/ente")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class EnteController {
@@ -60,15 +60,25 @@ public class EnteController {
             String tag = (String)map.get("tag");
             TagNode tagNode = tagRepository.findById(tag).orElse(null);
             PoiTagRel poiTagRel = new PoiTagRel(tagNode);
-            if(!Objects.isNull(tagNode) && tagNode.getIsBooleanType()){
-                Boolean value = Boolean.parseBoolean((String)map.get("value"));
-                poiTagRel.setBooleanValue(value);
-            }else poiTagRel.setStringValue((String)map.get("value"));
+            if(!Objects.isNull(tagNode)){
+                if(tagNode.getIsBooleanType()){
+                    Boolean value = Boolean.parseBoolean((String)map.get("value"));
+                    poiTagRel.setBooleanValue(value);
+                }
+                else poiTagRel.setStringValue((String)map.get("value"));
+            }
             values.add(poiTagRel);
         }
-/*        Collection<PoiTagRel> poiTagRelsColl = new ArrayList<>();
-        Collections.addAll(poiTagRelsColl, poiTagRels);*/
         PointOfInterestNode poi = provaService.createPoi(ente,name,description,address,coordinate,poiTypes,values);
         return Objects.isNull(poi) ? ResponseEntity.internalServerError().body(null) : ResponseEntity.ok(poi);
     }
+
+
+    @GetMapping("/notifies")
+    public ResponseEntity<Collection<PoiRequestNode>> getRequestFromUsers(){
+        return ResponseEntity.ok(poiRequestRepository.findAll());
+    }
+
+
+
 }

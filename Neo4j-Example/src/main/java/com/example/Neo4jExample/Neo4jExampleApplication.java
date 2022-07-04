@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -265,6 +266,27 @@ public class Neo4jExampleApplication {
 
 
 			cityRepository.save(camerino);
+
+
+			Collection<PoiType> aaa =  new ArrayList<>();
+			aaa.add(chiesa);
+
+			pointProvaCoords = new Coordinate(43.13747,13.07314);
+			coordinateRepository.save(pointProvaCoords);
+			Address bbb = new Address("via",3);
+			addressRepository.save(bbb);
+
+			PoiRequestNode poiRequestNode = new PoiRequestNode("Fontanella Chiesa San Venanzio","asdf"
+					,camerino,pointProvaCoords,bbb, aaa);
+			poiRequestNode.setUsername("Genoveffo");
+
+
+			poiRequestRepository.save(poiRequestNode);
+
+
+
+
+
 
 		};
 	}

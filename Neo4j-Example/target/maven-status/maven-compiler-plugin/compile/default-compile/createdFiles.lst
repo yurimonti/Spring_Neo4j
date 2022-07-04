@@ -1,4 +1,8 @@
-com/example/Neo4jExample/model/ItineraryNode.class
-com/example/Neo4jExample/repository/PoiRequestRepository.class
-com/example/Neo4jExample/dto/CityDTO.class
-com/example/Neo4jExample/model/PoiRequestNode.class
+com\example\Neo4jExample\controller\UserController.class
+com\example\Neo4jExample\repository\ItineraryRepository.class
+com\example\Neo4jExample\model\ItineraryNode.class
+com\example\Neo4jExample\dto\CityDTO.class
+com\example\Neo4jExample\model\PoiRequestNode.class
+com\example\Neo4jExample\repository\PoiRequestRepository.class
+com\example\Neo4jExample\controller\DefaultController.class
+com\example\Neo4jExample\controller\EnteController.class
