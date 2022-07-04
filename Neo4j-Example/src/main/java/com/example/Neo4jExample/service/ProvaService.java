@@ -1,10 +1,7 @@
 package com.example.Neo4jExample.service;
 
 import com.example.Neo4jExample.model.*;
-import com.example.Neo4jExample.repository.CategoryRepository;
-import com.example.Neo4jExample.repository.CityRepository;
-import com.example.Neo4jExample.repository.PoiTypeRepository;
-import com.example.Neo4jExample.repository.PointOfIntRepository;
+import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.util.MySerializer;
 import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +17,8 @@ public class ProvaService {
     private final CityRepository cityRepository;
     private final CategoryRepository categoryRepository;
     private final PoiTypeRepository poiTypeRepository;
+    private final CoordinateRepository coordinateRepository;
+    private final AddressRepository addressRepository;
     private final MySerializer<Collection<TagNode>> tagsSerializer;
 
     public PointOfInterestNode createPoi(Ente ente, String name, String description, Coordinate coordinate,
@@ -74,5 +73,18 @@ public class ProvaService {
     public Collection<TagNode> tagNodeCollectionFromJson(Object json){
         return tagsSerializer.deserialize(tagsSerializer.serialize(json),
                 new TypeToken<Collection<TagNode>>(){}.getType());
+    }
+
+    public Address createAddress(String street,Integer number){
+        Address result = new Address(street,number);
+        addressRepository.save(result);
+        return result;
+    }
+
+    public Coordinate createCoordsFromString(String lat, String lng){
+        Coordinate result = new Coordinate(Double.parseDouble(lat),
+                Double.parseDouble(lng));
+        coordinateRepository.save(result);
+        return result;
     }
 }

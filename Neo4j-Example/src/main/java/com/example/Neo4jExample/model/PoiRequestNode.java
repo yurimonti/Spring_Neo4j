@@ -6,54 +6,49 @@ import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
+
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 
 @Data
 @NoArgsConstructor
 @Node
-public class PointOfInterestNode {
-    @Id @GeneratedValue
+public class PoiRequestNode {
+    @Id
+    @GeneratedValue
     private Long id;
     private String name;
     private String description;
+    private CityNode city;
     private Coordinate coordinate;
     private TimeSlot timeSlot;
-    private Integer timeToVisit;//tempo medio durata di visita
+    private Integer timeToVisit;
     private Address address;
     private Boolean needTicket;
-    private Collection<String> contributors;
-    private URL link;//url sito
+    private URL link;
+    private String username;
 
+    private PointOfInterestNode pointOfInterestNode;
     @Relationship(type = "POI_HAS_TYPE")
     private Collection<PoiType> types;
-
     @Relationship(type = "POI_HAS_CONTACT")
     private Contact contact;
-
     @Relationship(type = "TAG_VALUE",direction = Relationship.Direction.OUTGOING)
     private Collection<PoiTagRel> tagValues;
 
-
-    public PointOfInterestNode(String name, String description) {
-        this();
+    public PoiRequestNode(String name, String description, CityNode city, Coordinate coordinate, Address address,
+                          Collection<PoiType> types){
         this.name = name;
         this.description = description;
-        this.types = new ArrayList<>();
-        this.tagValues = new ArrayList<>();
-    }
-
-    public PointOfInterestNode(String name, String description, Coordinate coordinate, Address address) {
-        this(name,description);
+        this.city = city;
         this.coordinate = coordinate;
         this.address = address;
+        this.types = types;
     }
 
-    public PointOfInterestNode(String name, String description, Integer timeToVisit, URL link) {
-        this(name,description);
-        this.timeToVisit = timeToVisit;
-        this.link = link;
+    public PoiRequestNode(String name, String description,CityNode city, Coordinate coordinate, Address address,
+                          Collection<PoiType> types, Collection<PoiTagRel> tagValues) {
+        this(name,description,city,coordinate,address,types);
+        this.tagValues = tagValues;
     }
-
 }

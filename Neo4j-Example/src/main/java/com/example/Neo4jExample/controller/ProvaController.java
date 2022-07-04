@@ -1,12 +1,11 @@
 package com.example.Neo4jExample.controller;
 
+import com.example.Neo4jExample.dto.CityDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.ProvaService;
-import com.example.Neo4jExample.service.util.MyGsonSerializer;
 import com.example.Neo4jExample.service.util.MySerializer;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,21 +18,28 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ProvaController {
     private final ProvaService provaService;
-
     private final CoordinateRepository coordinateRepository;
-
     private final PointOfIntRepository pointOfIntRepository;
-
     private final PoiTypeRepository poiTypeRepository;
-
     private final EnteRepository enteRepository;
     private final AddressRepository addressRepository;
-
     private final TagRepository tagRepository;
+    private final CityRepository cityRepository;
+    private final ItineraryRepository itineraryRepository;
+    private final PoiRequestRepository poiRequestRepository;
+    private final MySerializer<CityDTO> cityDTOMySerializer;
 
     @GetMapping("/poi/all")
     public ResponseEntity<Collection<PointOfInterestNode>> getAllPois(){
         return ResponseEntity.ok(pointOfIntRepository.findAll());
+    }
+
+    @GetMapping("/city/all")
+    public ResponseEntity<Collection<CityDTO>> getAllCities(){
+        Collection<CityDTO> result = new ArrayList<>();
+        Collection<CityNode> cities = cityRepository.findAll();
+        cities.forEach(cityNode -> result.add(new CityDTO(cityNode.getId(),cityNode.getName())));
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/category/all")
@@ -93,4 +99,44 @@ public class ProvaController {
         Collection<TagNode> tags = provaService.tagNodeCollectionFromJson(body.get("tags"));
         return ResponseEntity.ok(tags);
     }
+
+    /**
+     * prova per aggiungere un itinerario nel sistema
+     * aggiunge tutti i poi di Camerino in un unico itinerario per prova
+     * @return itinerario creato
+     */
+    @PostMapping("/addItinerary")
+    public ResponseEntity<ItineraryNode> provaAddItinerary(){
+        ItineraryNode itineraryNode = new ItineraryNode(cityRepository.findByName("Camerino"),
+                pointOfIntRepository.findAll());
+        itineraryRepository.save(itineraryNode);
+        return ResponseEntity.ok(itineraryNode);
+    }
+
+    @PostMapping("/user/addPoi")
+    public ResponseEntity<PoiRequestNode> addPoi(@RequestBody Map<String,Object> body){
+        String name = (String)body.get("name");
+        String username = "An User";
+        String description = (String)body.get("description");
+        CityDTO cityDto = cityDTOMySerializer.deserialize(
+                cityDTOMySerializer.serialize(body.get("city")),CityDTO.class);
+        CityNode city = cityRepository.findById(cityDto.getId()).orElseThrow();
+        Coordinate coordinate = provaService.createCoordsFromString(
+                (String)body.get("lat"),(String)body.get("lon"));
+        String street = (String) body.get("street");
+        Integer number = Integer.parseInt((String) body.get("number"));
+        Address address = provaService.createAddress(street,number);
+        Collection<String> types = (Collection<String>) body.get("types");
+        Collection<PoiType> poiTypes = new ArrayList<>();
+        for (String type: types) {
+            if(poiTypeRepository.findById(type).isPresent()) {
+                poiTypes.add(poiTypeRepository.findById(type).get());
+            }
+        }
+        PoiRequestNode poiRequestNode = new PoiRequestNode(name,description,city,coordinate,address,poiTypes);
+        poiRequestNode.setUsername(username);
+        poiRequestRepository.save(poiRequestNode);
+        return ResponseEntity.ok(poiRequestNode);
+    }
+
 }
