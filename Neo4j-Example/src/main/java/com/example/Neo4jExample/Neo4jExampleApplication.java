@@ -24,7 +24,8 @@ public class Neo4jExampleApplication {
 								   EnteRepository enteRepository, FoodSectionNodeRepository foodSectionNodeRepository,
 								   MenuNodeRepository menuNodeRepository,PointOfIntRepository pointOfIntRepository,
 								   PoiTypeRepository poiTypeRepository, RestaurantPoiRepository restaurantPoiRepository,
-								   TagRepository tagRepository, TimeSlotRepository timeSlotRepository){
+								   TagRepository tagRepository, TimeSlotRepository timeSlotRepository,
+								   ItineraryRepository itineraryRepo,PoiRequestRepository poiRequestRepository){
 		return args -> {
 			/*this.deleteRepositories(addressRepository,categoryRepository,cityRepository,contactRepository,
 					coordinateRepository,dishNodeRepository,enteRepository,foodSectionNodeRepository,menuNodeRepository,
@@ -43,6 +44,8 @@ public class Neo4jExampleApplication {
 			restaurantPoiRepository.deleteAll();
 			tagRepository.deleteAll();
 			timeSlotRepository.deleteAll();
+			itineraryRepo.deleteAll();
+			poiRequestRepository.deleteAll();
 			Ente enteProva = new Ente("ente1","ente1","ente1");
 			CityNode camerino = new CityNode("Camerino");
 			Coordinate coordCitta = new Coordinate(43.139850, 13.069172);
