@@ -14,13 +14,13 @@ public class PoiTagRel {
     private Long id;
 
     @TargetNode
-    private TagNode tagNode;
+    private TagNode tag;
 
     private Boolean booleanValue;
 
     private String stringValue;
 
-    public PoiTagRel(TagNode tagNode) {
-        this.tagNode = tagNode;
+    public PoiTagRel(TagNode tag) {
+        this.tag = tag;
     }
 }

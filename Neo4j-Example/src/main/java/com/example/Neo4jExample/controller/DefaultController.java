@@ -35,9 +35,8 @@ public class DefaultController {
 
     @GetMapping("/city/all")
     public ResponseEntity<Collection<CityDTO>> getAllCities(){
-        Collection<CityDTO> result = new ArrayList<>();
         Collection<CityNode> cities = cityRepository.findAll();
-        cities.forEach(cityNode -> result.add(new CityDTO(cityNode.getId(),cityNode.getName())));
+        Collection<CityDTO> result = new ArrayList<>(cities.stream().map(CityDTO::new).toList());
         return ResponseEntity.ok(result);
     }
 

@@ -7,10 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @SpringBootApplication
 public class Neo4jExampleApplication {
@@ -268,26 +265,24 @@ public class Neo4jExampleApplication {
 			cityRepository.save(camerino);
 
 
-			Collection<PoiType> aaa =  new ArrayList<>();
-			aaa.add(chiesa);
+			Collection<PoiType> poiTypesRequest =  new ArrayList<>();
+			poiTypesRequest.add(chiesa);
 
 			pointProvaCoords = new Coordinate(43.13747,13.07314);
 			coordinateRepository.save(pointProvaCoords);
-			Address bbb = new Address("via",3);
-			addressRepository.save(bbb);
+			Address addressRequest = new Address("via",3);
+			addressRepository.save(addressRequest);
 
 			PoiRequestNode poiRequestNode = new PoiRequestNode("Fontanella Chiesa San Venanzio","asdf"
-					,camerino,pointProvaCoords,bbb, aaa);
+					,camerino,pointProvaCoords,addressRequest, poiTypesRequest);
 			poiRequestNode.setUsername("Genoveffo");
 
-
+			PoiTagRel poiTagRel1 = new PoiTagRel(tag1);
+			poiTagRel1.setBooleanValue(true);
+			PoiTagRel poiTagRel2 = new PoiTagRel(tag2);
+			poiTagRel2.setBooleanValue(true);
+			poiRequestNode.setTagValues(Arrays.asList(poiTagRel1,poiTagRel2));
 			poiRequestRepository.save(poiRequestNode);
-
-
-
-
-
-
 		};
 	}
 

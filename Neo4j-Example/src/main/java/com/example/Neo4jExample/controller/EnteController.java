@@ -1,6 +1,7 @@
 package com.example.Neo4jExample.controller;
 
 import com.example.Neo4jExample.dto.CityDTO;
+import com.example.Neo4jExample.dto.PoiRequestDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.ProvaService;
@@ -13,13 +14,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/ente")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class EnteController {
-
     private final ProvaService provaService;
     private final CoordinateRepository coordinateRepository;
     private final PointOfIntRepository pointOfIntRepository;
@@ -75,10 +76,14 @@ public class EnteController {
 
 
     @GetMapping("/notifies")
-    public ResponseEntity<Collection<PoiRequestNode>> getRequestFromUsers(){
-        return ResponseEntity.ok(poiRequestRepository.findAll());
+    public ResponseEntity<Collection<PoiRequestDTO>> getRequestFromUsers(@RequestParam String username){
+        Ente ente = enteRepository.findByUsername(username);
+        Collection<PoiRequestNode> result = poiRequestRepository.findAll().stream().filter(poiRequestNode ->
+                poiRequestNode.getCity().getId().equals(ente.getCity().getId())).toList();
+        Collection<PoiRequestDTO> poiRequestDTOS = new ArrayList<>();
+        result.forEach(poiRequestNode -> poiRequestDTOS.add(new PoiRequestDTO(poiRequestNode)));
+        return ResponseEntity.ok(poiRequestDTOS);
     }
-
 
 
 }

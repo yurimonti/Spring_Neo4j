@@ -51,9 +51,8 @@ public class UserController {
         String street = (String) body.get("street");
         Integer number = Integer.parseInt((String) body.get("number"));
         Address address = provaService.createAddress(street,number);
-        Collection<String> types = (Collection<String>) body.get("types");
-
-        Collection<PoiType> poiTypes = types.stream()
+        /*Collection<String> types = (Collection<String>) body.get("types");*/
+        Collection<PoiType> poiTypes = ((Collection<String>) body.get("types")).stream()
                 .filter(a -> poiTypeRepository.findById(a).isPresent())
                 .map(a -> poiTypeRepository.findById(a).get())
                 .collect(Collectors.toList());
