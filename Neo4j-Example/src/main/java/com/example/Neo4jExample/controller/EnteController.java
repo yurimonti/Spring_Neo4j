@@ -79,10 +79,31 @@ public class EnteController {
     public ResponseEntity<Collection<PoiRequestDTO>> getRequestFromUsers(@RequestParam String username){
         Ente ente = enteRepository.findByUsername(username);
         Collection<PoiRequestNode> result = poiRequestRepository.findAll().stream().filter(poiRequestNode ->
-                poiRequestNode.getCity().getId().equals(ente.getCity().getId())).toList();
+                poiRequestNode.getCity().getId().equals(ente.getCity().getId()))
+                .filter(poiRequestNode -> Objects.isNull(poiRequestNode.getAccepted())).toList();
         Collection<PoiRequestDTO> poiRequestDTOS = new ArrayList<>();
         result.forEach(poiRequestNode -> poiRequestDTOS.add(new PoiRequestDTO(poiRequestNode)));
         return ResponseEntity.ok(poiRequestDTOS);
+    }
+
+    /**
+     * set Request to accepted or denied in uniformity to toSet
+     * @param username of Ente
+     * @param toSet value of accepted to set
+     * @param id of Request
+     * @return status of operation
+     */
+    @PostMapping("/notifies")
+    public ResponseEntity<Collection<PoiRequestDTO>> setRequestTo(@RequestParam String username,
+                                                                  @RequestParam boolean toSet,
+                                                                  @RequestParam Long id){
+        Ente ente = enteRepository.findByUsername(username);
+        PoiRequestNode poiRequestNode = null;
+        if(poiRequestRepository.findById(id).isPresent()) poiRequestNode = poiRequestRepository.findById(id).get();
+        if(Objects.isNull(poiRequestNode)) return ResponseEntity.noContent().build();
+        poiRequestNode.setAccepted(toSet);
+        poiRequestRepository.save(poiRequestNode);
+        return ResponseEntity.ok().build();
     }
 
 

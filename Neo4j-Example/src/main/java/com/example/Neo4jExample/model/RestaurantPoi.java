@@ -14,9 +14,7 @@ public class RestaurantPoi {
 
     @Id @GeneratedValue
     private Long id;
-
     private String owner;
-
     @Relationship(type = "HAS_MENU",direction = Relationship.Direction.OUTGOING)
     private MenuNode menu;
 

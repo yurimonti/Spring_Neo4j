@@ -21,6 +21,7 @@ public class PoiRequestNode {
     private String description;
     private CityNode city;
     private Coordinate coordinate;
+    private Boolean accepted;
     private TimeSlot timeSlot;
     private Integer timeToVisit;
     private Address address;
@@ -44,6 +45,7 @@ public class PoiRequestNode {
         this.coordinate = coordinate;
         this.address = address;
         this.types = types;
+        this.accepted = null;
     }
 
     public PoiRequestNode(String name, String description,CityNode city, Coordinate coordinate, Address address,
