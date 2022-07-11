@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.*;
 
 @RestController
@@ -27,6 +28,18 @@ public class DefaultController {
     private final ItineraryRepository itineraryRepository;
     private final PoiRequestRepository poiRequestRepository;
     private final MySerializer<CityDTO> cityDTOMySerializer;
+
+
+    @GetMapping("/")
+    public ResponseEntity<Date> provaDate(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        LocalTime localTime = LocalTime.parse("08:30");
+        calendar.set(Calendar.HOUR_OF_DAY,localTime.getHour());
+        calendar.set(Calendar.MINUTE,localTime.getMinute());
+        calendar.set(Calendar.SECOND,localTime.getSecond());
+        return ResponseEntity.ok(calendar.getTime());
+    }
 
     @GetMapping("/poi/all")
     public ResponseEntity<Collection<PointOfInterestNode>> getAllPois(){

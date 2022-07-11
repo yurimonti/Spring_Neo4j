@@ -2,11 +2,15 @@ package com.example.Neo4jExample;
 
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
+import com.example.Neo4jExample.service.ProvaService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.io.Console;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.*;
 
 @SpringBootApplication
@@ -14,6 +18,20 @@ public class Neo4jExampleApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Neo4jExampleApplication.class, args);
+	}
+
+	/**
+	 * set Timer to update pois time open
+	 */
+	private void timerToUpdateTimeSlots(ProvaService provaService,Collection<PointOfInterestNode> pois) {
+		new Timer().scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				//TODO: inserire metodo per aggiornare se il poi è aggiornato
+				//TODO: vedere se funziona
+				provaService.updateOpenPois(pois,new Date());
+			}
+		},0,1000*5);
 	}
 	@Bean
 	CommandLineRunner initDatabase(AddressRepository addressRepository, CategoryRepository categoryRepository,
@@ -23,7 +41,8 @@ public class Neo4jExampleApplication {
 								   MenuNodeRepository menuNodeRepository,PointOfIntRepository pointOfIntRepository,
 								   PoiTypeRepository poiTypeRepository, RestaurantPoiRepository restaurantPoiRepository,
 								   TagRepository tagRepository, TimeSlotRepository timeSlotRepository,
-								   ItineraryRepository itineraryRepo,PoiRequestRepository poiRequestRepository){
+								   ItineraryRepository itineraryRepo,PoiRequestRepository poiRequestRepository,
+								   ProvaService provaService){
 		return args -> {
 			/*this.deleteRepositories(addressRepository,categoryRepository,cityRepository,contactRepository,
 					coordinateRepository,dishNodeRepository,enteRepository,foodSectionNodeRepository,menuNodeRepository,
@@ -273,6 +292,7 @@ public class Neo4jExampleApplication {
 			Address addressRequest = new Address("via",3);
 			addressRepository.save(addressRequest);
 
+			//creare una request aggiunta poi di prova
 			PoiRequestNode poiRequestNode = new PoiRequestNode("Fontanella Chiesa San Venanzio","asdf"
 					,camerino,pointProvaCoords,addressRequest, poiTypesRequest);
 			poiRequestNode.setUsername("Genoveffo");
@@ -283,9 +303,34 @@ public class Neo4jExampleApplication {
 			poiTagRel2.setBooleanValue(true);
 			poiRequestNode.setTagValues(Arrays.asList(poiTagRel1,poiTagRel2));
 			poiRequestRepository.save(poiRequestNode);
+
+			//creare un timeslot di prova
+			Collection<LocalTime> monday = new ArrayList<>();
+			monday.add(LocalTime.parse("08:30"));
+			monday.add(LocalTime.parse("13:00"));
+			Collection<LocalTime> tuesday = new ArrayList<>();
+			tuesday.add(LocalTime.parse("08:30"));
+			tuesday.add(LocalTime.parse("13:00"));
+			Collection<LocalTime> wednesday = new ArrayList<>();
+			wednesday.add(LocalTime.parse("08:30"));
+			wednesday.add(LocalTime.parse("13:00"));
+			Collection<LocalTime> thursday = new ArrayList<>();
+			thursday.add(LocalTime.parse("08:30"));
+			thursday.add(LocalTime.parse("13:00"));
+			Collection<LocalTime> friday = new ArrayList<>();
+			friday.add(LocalTime.parse("08:30"));
+			friday.add(LocalTime.parse("13:00"));
+			Collection<LocalTime> saturday = new ArrayList<>();
+			saturday.add(LocalTime.parse("08:30"));
+			saturday.add(LocalTime.parse("13:00"));
+			Collection<LocalTime> sunday = new ArrayList<>();
+			sunday.add(LocalTime.parse("08:30"));
+			sunday.add(LocalTime.parse("13:00"));
+			timeSlotRepository.save(new TimeSlot(monday,tuesday,wednesday,thursday,friday,saturday,sunday));
+			//TODO: vedere se funziona
+			timerToUpdateTimeSlots(provaService,pointOfIntRepository.findAll());
 		};
 	}
-
 
 
 	public void createPoiProva(CoordinateRepository coordinateRepository, PointOfIntRepository pointOfIntRepository

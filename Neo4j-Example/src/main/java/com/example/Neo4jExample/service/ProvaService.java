@@ -7,8 +7,10 @@ import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ public class ProvaService {
     private final CoordinateRepository coordinateRepository;
     private final AddressRepository addressRepository;
     private final MySerializer<Collection<TagNode>> tagsSerializer;
+
 
     public PointOfInterestNode createPoi(Ente ente, String name, String description, Coordinate coordinate,
                                          Address address,Contact contact,Boolean needTicket,Integer timeToVisit,
@@ -86,5 +89,47 @@ public class ProvaService {
                 Double.parseDouble(lng));
         coordinateRepository.save(result);
         return result;
+    }
+
+    /**
+     * check and update if poi is open in a certain date
+     * @param poi to check
+     */
+    public void updateOpenPoi(PointOfInterestNode poi,Calendar calendar){
+        Collection<LocalTime> day = switch (calendar.get(Calendar.DAY_OF_WEEK)) {
+            case Calendar.MONDAY -> poi.getTimeSlot().getMonday();
+            case Calendar.TUESDAY -> poi.getTimeSlot().getTuesday();
+            case Calendar.WEDNESDAY -> poi.getTimeSlot().getWednesday();
+            case Calendar.THURSDAY -> poi.getTimeSlot().getThursday();
+            case Calendar.FRIDAY -> poi.getTimeSlot().getFriday();
+            case Calendar.SATURDAY -> poi.getTimeSlot().getSaturday();
+            case Calendar.SUNDAY -> poi.getTimeSlot().getSunday();
+            default -> new ArrayList<>();
+        };
+        boolean toSet = false;
+        LocalTime[] times = day.toArray(LocalTime[]::new);
+        Instant instant = calendar.toInstant();
+        ZoneId zoneId = TimeZone.getDefault().toZoneId();
+        LocalTime toCompare = LocalTime.ofInstant(instant, zoneId);
+        int l = times.length;
+        if(l==2 && times[0].equals(times[1])) toSet = true;
+        else if (l>2){
+            if((times[0].isBefore(toCompare) && times[1].isAfter(toCompare))||
+                    (times[2].isBefore(toCompare) && times[3].isAfter(toCompare))) toSet = true;
+        }else{
+            if(times[0].isBefore(toCompare) && times[1].isAfter(toCompare)) toSet = true;
+        }
+        poi.getTimeSlot().setTimeOpen(toSet);
+    }
+
+    /**
+     * check and update if all pois are open in a certain date
+     * @param pois to check
+     * @param date to validating the check
+     */
+    public void updateOpenPois(Collection<PointOfInterestNode> pois,Date date){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        pois.forEach(pointOfInterestNode -> updateOpenPoi(pointOfInterestNode,calendar));
     }
 }

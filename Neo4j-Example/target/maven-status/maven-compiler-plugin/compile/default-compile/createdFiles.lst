@@ -3,5 +3,6 @@ com/example/Neo4jExample/dto/StatusEnum.class
 com/example/Neo4jExample/dto/CategoryDTO.class
 com/example/Neo4jExample/dto/PoiTypeDTO.class
 com/example/Neo4jExample/dto/PoiTagRelDTO.class
+com/example/Neo4jExample/Neo4jExampleApplication$1.class
 com/example/Neo4jExample/dto/CoordinateDTO.class
 com/example/Neo4jExample/dto/TagDTO.class
