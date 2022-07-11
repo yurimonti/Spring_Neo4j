@@ -21,6 +21,7 @@ public class ProvaService {
     private final PoiTypeRepository poiTypeRepository;
     private final CoordinateRepository coordinateRepository;
     private final AddressRepository addressRepository;
+    private final TimeSlotRepository timeSlotRepository;
     private final MySerializer<Collection<TagNode>> tagsSerializer;
 
 
@@ -97,29 +98,32 @@ public class ProvaService {
      */
     public void updateOpenPoi(PointOfInterestNode poi,Calendar calendar){
         Collection<LocalTime> day = switch (calendar.get(Calendar.DAY_OF_WEEK)) {
-            case Calendar.MONDAY -> poi.getTimeSlot().getMonday();
-            case Calendar.TUESDAY -> poi.getTimeSlot().getTuesday();
-            case Calendar.WEDNESDAY -> poi.getTimeSlot().getWednesday();
-            case Calendar.THURSDAY -> poi.getTimeSlot().getThursday();
-            case Calendar.FRIDAY -> poi.getTimeSlot().getFriday();
-            case Calendar.SATURDAY -> poi.getTimeSlot().getSaturday();
-            case Calendar.SUNDAY -> poi.getTimeSlot().getSunday();
+            case Calendar.MONDAY -> poi.getHours().getMonday();
+            case Calendar.TUESDAY -> poi.getHours().getTuesday();
+            case Calendar.WEDNESDAY -> poi.getHours().getWednesday();
+            case Calendar.THURSDAY -> poi.getHours().getThursday();
+            case Calendar.FRIDAY -> poi.getHours().getFriday();
+            case Calendar.SATURDAY -> poi.getHours().getSaturday();
+            case Calendar.SUNDAY -> poi.getHours().getSunday();
             default -> new ArrayList<>();
         };
         boolean toSet = false;
-        LocalTime[] times = day.toArray(LocalTime[]::new);
         Instant instant = calendar.toInstant();
         ZoneId zoneId = TimeZone.getDefault().toZoneId();
         LocalTime toCompare = LocalTime.ofInstant(instant, zoneId);
-        int l = times.length;
-        if(l==2 && times[0].equals(times[1])) toSet = true;
+        int l = day.size();
+        if(l==1) toSet = true;
         else if (l>2){
-            if((times[0].isBefore(toCompare) && times[1].isAfter(toCompare))||
-                    (times[2].isBefore(toCompare) && times[3].isAfter(toCompare))) toSet = true;
+            if((day.stream().toList().get(0).isBefore(toCompare) && day.stream().toList().get(1).isAfter(toCompare))||
+                    (day.stream().toList().get(2).isBefore(toCompare) &&
+                            day.stream().toList().get(3).isAfter(toCompare))) toSet = true;
         }else{
-            if(times[0].isBefore(toCompare) && times[1].isAfter(toCompare)) toSet = true;
+            if(day.stream().toList().get(0).isBefore(toCompare) && day.stream().toList().get(1).isAfter(toCompare))
+                toSet = true;
         }
-        poi.getTimeSlot().setTimeOpen(toSet);
+        poi.getHours().setTimeOpen(toSet);
+        timeSlotRepository.save(poi.getHours());
+        pointOfIntRepository.save(poi);
     }
 
     /**

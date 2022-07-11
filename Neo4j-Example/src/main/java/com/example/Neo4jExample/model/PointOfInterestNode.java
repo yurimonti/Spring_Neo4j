@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Data
-@NoArgsConstructor
 @Node
 public class PointOfInterestNode {
     @Id @GeneratedValue
@@ -19,7 +18,7 @@ public class PointOfInterestNode {
     private String name;
     private String description;
     private Coordinate coordinate;
-    private TimeSlot timeSlot;
+    private TimeSlot hours;
     private Integer timeToVisit;//tempo medio durata di visita
     private Address address;
     private Boolean needTicket;
@@ -35,19 +34,28 @@ public class PointOfInterestNode {
     @Relationship(type = "TAG_VALUE",direction = Relationship.Direction.OUTGOING)
     private Collection<PoiTagRel> tagValues;
 
+    public PointOfInterestNode(){
+        this.types = new ArrayList<>();
+        this.tagValues = new ArrayList<>();
+        this.contributors = new ArrayList<>();
+    }
 
     public PointOfInterestNode(String name, String description) {
         this();
         this.name = name;
         this.description = description;
-        this.types = new ArrayList<>();
-        this.tagValues = new ArrayList<>();
     }
 
     public PointOfInterestNode(String name, String description, Coordinate coordinate, Address address) {
         this(name,description);
         this.coordinate = coordinate;
         this.address = address;
+    }
+
+    public PointOfInterestNode(String name, String description, Coordinate coordinate, Address address,
+                               TimeSlot hours) {
+        this(name,description,coordinate,address);
+        this.hours = hours;
     }
 
     public PointOfInterestNode(String name, String description, Integer timeToVisit, URL link) {
