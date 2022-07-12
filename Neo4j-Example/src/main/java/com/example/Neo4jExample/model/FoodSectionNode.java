@@ -8,6 +8,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 @Data
@@ -24,7 +25,13 @@ public class FoodSectionNode {
     private Collection<DishNode> dishes;
 
     public FoodSectionNode(String name) {
+        this();
         this.name = name;
         this.dishes = new ArrayList<>();
+    }
+
+    public FoodSectionNode(String name,DishNode ...dishes) {
+        this(name);
+        this.dishes.addAll(Arrays.asList(dishes));
     }
 }

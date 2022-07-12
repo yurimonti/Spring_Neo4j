@@ -24,9 +24,15 @@ public class ProvaService {
     private final TimeSlotRepository timeSlotRepository;
     private final MySerializer<Collection<TagNode>> tagsSerializer;
 
+    private final EnteRepository enteRepository;
+
+    public Ente getEnteFromUser(UserNode user){
+        return enteRepository.findAll().stream().filter(ente -> ente.getUser().equals(user)).findFirst().orElseThrow();
+    }
+
 
     public PointOfInterestNode createPoi(Ente ente, String name, String description, Coordinate coordinate,
-                                         Address address,Contact contact,Boolean needTicket,Integer timeToVisit,
+                                         Address address,Contact contact,Double ticketPrice,Integer timeToVisit,
                                          PoiType ...type){
         PointOfInterestNode pointOfInterestNode = new PointOfInterestNode(name,description);
         pointOfInterestNode.setCoordinate(coordinate);
@@ -34,7 +40,7 @@ public class ProvaService {
         pointOfInterestNode.setAddress(address);
         pointOfInterestNode.setContact(contact);
         pointOfInterestNode.setTimeToVisit(timeToVisit);
-        pointOfInterestNode.setNeedTicket(needTicket);
+        pointOfInterestNode.setTicketPrice(ticketPrice);
         pointOfIntRepository.save(pointOfInterestNode);
         ente.getCity().getPointOfInterests().add(pointOfInterestNode);
         cityRepository.save(ente.getCity());
@@ -61,10 +67,13 @@ public class ProvaService {
         return categoryRepository.findAll();
     }
 
+    //TODO: aggiungere timeToVisit e needTicket
     public PointOfInterestNode createPoi(Ente ente,String name,String description,
                                          Address address,Coordinate coordinate,Collection<PoiType> poiTypes,
-                                         Collection<PoiTagRel> tagsAndValues){
-        PointOfInterestNode poi = new PointOfInterestNode(name,description,coordinate,address);
+                                         Collection<PoiTagRel> tagsAndValues,TimeSlot timeSlot,Double ticketPrice,
+                                         Contact contact,Integer timeToVisit){
+        PointOfInterestNode poi = new PointOfInterestNode(name,description,coordinate,address,timeSlot,timeToVisit,
+                ticketPrice,contact);
         poi.getTypes().addAll(poiTypes);
         poi.getTagValues().addAll(tagsAndValues);
         pointOfIntRepository.save(poi);
@@ -112,16 +121,18 @@ public class ProvaService {
         ZoneId zoneId = TimeZone.getDefault().toZoneId();
         LocalTime toCompare = LocalTime.ofInstant(instant, zoneId);
         int l = day.size();
+        //FIXME: tutto il giorno 00:00 alle 23:59
+        //FIXME: refactor
         if(l==1) toSet = true;
         else if (l>2){
             if((day.stream().toList().get(0).isBefore(toCompare) && day.stream().toList().get(1).isAfter(toCompare))||
                     (day.stream().toList().get(2).isBefore(toCompare) &&
                             day.stream().toList().get(3).isAfter(toCompare))) toSet = true;
-        }else{
+        }else if(l==2){
             if(day.stream().toList().get(0).isBefore(toCompare) && day.stream().toList().get(1).isAfter(toCompare))
                 toSet = true;
         }
-        poi.getHours().setTimeOpen(toSet);
+        poi.getHours().setIsOpen(toSet);
         timeSlotRepository.save(poi.getHours());
         pointOfIntRepository.save(poi);
     }
@@ -135,5 +146,22 @@ public class ProvaService {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         pois.forEach(pointOfInterestNode -> updateOpenPoi(pointOfInterestNode,calendar));
+    }
+
+    public void changePoiFromRequest(PoiRequestNode poiRequestNode){
+        PointOfInterestNode result = poiRequestNode.getPointOfInterestNode();
+        result.setHours(poiRequestNode.getTimeSlot());
+        result.setCoordinate(poiRequestNode.getCoordinate());
+        result.setTicketPrice(poiRequestNode.getTicketPrice());
+        result.setContact(poiRequestNode.getContact());
+        result.setName(poiRequestNode.getName());
+        result.setDescription(poiRequestNode.getDescription());
+        result.setTimeToVisit(poiRequestNode.getTimeToVisit());
+        result.setAddress(poiRequestNode.getAddress());
+        result.getContributors().add(poiRequestNode.getUsername());
+        result.setLink(poiRequestNode.getLink());
+        result.setTypes(poiRequestNode.getTypes());
+        result.setTagValues(poiRequestNode.getTagValues());
+        pointOfIntRepository.save(result);
     }
 }

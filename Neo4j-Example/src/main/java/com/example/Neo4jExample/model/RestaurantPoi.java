@@ -14,11 +14,12 @@ public class RestaurantPoi {
 
     @Id @GeneratedValue
     private Long id;
-    private String owner;
+    private Commerciante owner;
     @Relationship(type = "HAS_MENU",direction = Relationship.Direction.OUTGOING)
     private MenuNode menu;
 
-    public RestaurantPoi(String owner){
+    public RestaurantPoi(Commerciante owner){
+        this();
         this.owner = owner;
         this.menu = new MenuNode();
     }

@@ -16,17 +16,13 @@ public class Ente {
     @Id
     @GeneratedValue(GeneratedValue.UUIDGenerator.class)
     private UUID id;
-    private String name;
-    private String surname;
 
-    private String username;
+    private UserNode user;
     
     @Relationship(type = "MANAGES_THIS",direction = Relationship.Direction.OUTGOING)
     private CityNode city;
 
-    public Ente( String name,  String surname, String username) {
-        this.name = name;
-        this.surname = surname;
-        this.username = username;
+    public Ente( UserNode user) {
+        this.user = user;
     }
 }

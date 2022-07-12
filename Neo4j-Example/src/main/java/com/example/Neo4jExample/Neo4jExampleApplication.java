@@ -24,8 +24,6 @@ public class Neo4jExampleApplication {
 		new Timer().scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				//TODO: inserire metodo per aggiornare se il poi è aggiornato
-				//TODO: vedere se funziona
 				provaService.updateOpenPois(pois,new Date());
 			}
 		},0,1000*60);
@@ -39,9 +37,21 @@ public class Neo4jExampleApplication {
 								   PoiTypeRepository poiTypeRepository, RestaurantPoiRepository restaurantPoiRepository,
 								   TagRepository tagRepository, TimeSlotRepository timeSlotRepository,
 								   ItineraryRepository itineraryRepo,PoiRequestRepository poiRequestRepository,
-								   ProvaService provaService){
+								   ProvaService provaService,UserNodeRepository userNodeRepository,
+								   UserRoleRepository userRoleRepository){
 		return args -> {
-
+			//prova user
+			userNodeRepository.deleteAll();
+			userRoleRepository.deleteAll();
+			Collection<UserRole> roles = new ArrayList<>();
+			UserRole userRole = new UserRole("user");
+			UserRole enteRole = new UserRole("ente");
+			UserRole commercianteRole = new UserRole("commerciante");
+			UserRole adminRole = new UserRole("admin");
+			Collections.addAll(roles,userRole,adminRole,commercianteRole,enteRole);
+			userRoleRepository.saveAll(roles);
+			userNodeRepository.save(new UserNode("nome","cognome","email","password",
+					"username",userRole,adminRole,enteRole,commercianteRole));
 			//cancella tutto prima di avviare il db
 			addressRepository.deleteAll();
 			categoryRepository.deleteAll();
@@ -61,7 +71,10 @@ public class Neo4jExampleApplication {
 			poiRequestRepository.deleteAll();
 
 			//creazione ente e citta'
-			Ente enteProva = new Ente("ente1","ente1","ente1");
+			UserNode userEnteCamerino = new UserNode("mario","rossi","email","password",
+					"ente_camerino",enteRole);
+			userNodeRepository.save(userEnteCamerino);
+			Ente enteProva = new Ente(userEnteCamerino);
 			CityNode camerino = new CityNode("Camerino");
 			Coordinate coordCitta = new Coordinate(43.139850, 13.069172);
 			coordinateRepository.save(coordCitta);

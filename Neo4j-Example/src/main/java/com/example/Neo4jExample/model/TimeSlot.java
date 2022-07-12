@@ -6,13 +6,11 @@ import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 @Data
-@NoArgsConstructor
 @Node
 public class TimeSlot {
     @Id @GeneratedValue
@@ -26,7 +24,18 @@ public class TimeSlot {
     private Collection<LocalTime> saturday;
     private Collection<LocalTime> sunday;
 
-    private Boolean timeOpen;
+    private Boolean isOpen;
+
+    public TimeSlot(){
+        this.monday = new ArrayList<>();
+        this.tuesday = new ArrayList<>();
+        this.wednesday = new ArrayList<>();
+        this.thursday = new ArrayList<>();
+        this.friday = new ArrayList<>();
+        this.saturday = new ArrayList<>();
+        this.sunday = new ArrayList<>();
+        this.isOpen = false;
+    }
 
     public TimeSlot(
             Collection<LocalTime> monday,Collection<LocalTime> tuesday,Collection<LocalTime> wednesday,
@@ -39,7 +48,7 @@ public class TimeSlot {
         this.friday = friday;
         this.saturday = saturday;
         this.sunday = sunday;
-        this.timeOpen = false;
+        this.isOpen = false;
     }
 
     /*private String startDayOfWeek;

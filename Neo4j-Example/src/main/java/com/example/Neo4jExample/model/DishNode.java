@@ -7,6 +7,7 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 @Data
@@ -23,5 +24,10 @@ public class DishNode {
         this.name = name;
         this.price = price;
         this.ingradients = new ArrayList<>();
+    }
+
+    public DishNode(String name,Double price,String ...ingradients){
+        this(name, price);
+        this.ingradients.addAll(Arrays.asList(ingradients));
     }
 }

@@ -21,7 +21,7 @@ public class PointOfInterestNode {
     private TimeSlot hours;
     private Integer timeToVisit;//tempo medio durata di visita
     private Address address;
-    private Boolean needTicket;
+    private Double ticketPrice;
     private Collection<String> contributors;
     private URL link;//url sito
 
@@ -58,10 +58,34 @@ public class PointOfInterestNode {
         this.hours = hours;
     }
 
+    public PointOfInterestNode(String name, String description, Coordinate coordinate, Address address,
+                               TimeSlot hours,Integer timeToVisit,Double ticketPrice,Contact contact) {
+        this(name,description,coordinate,address,hours);
+        this.timeToVisit = timeToVisit;
+        this.ticketPrice = ticketPrice;
+        this.contact = contact;
+    }
+
     public PointOfInterestNode(String name, String description, Integer timeToVisit, URL link) {
         this(name,description);
         this.timeToVisit = timeToVisit;
         this.link = link;
+    }
+
+    public PointOfInterestNode(PoiRequestNode request){
+        this();
+        this.name = request.getName();
+        this.description = request.getDescription();
+        this.coordinate = request.getCoordinate();
+        this.hours = request.getTimeSlot();
+        this.timeToVisit = request.getTimeToVisit();
+        this.address = request.getAddress();
+        this.ticketPrice = request.getTicketPrice();
+        this.contributors.add(request.getUsername());
+        this.link = request.getLink();
+        this.types = request.getTypes();
+        this.contact = request.getContact();
+        this.tagValues = request.getTagValues();
     }
 
 }

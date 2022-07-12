@@ -18,16 +18,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class DefaultController {
     private final ProvaService provaService;
-    private final CoordinateRepository coordinateRepository;
     private final PointOfIntRepository pointOfIntRepository;
-    private final PoiTypeRepository poiTypeRepository;
-    private final EnteRepository enteRepository;
-    private final AddressRepository addressRepository;
-    private final TagRepository tagRepository;
     private final CityRepository cityRepository;
-    private final ItineraryRepository itineraryRepository;
-    private final PoiRequestRepository poiRequestRepository;
-    private final MySerializer<CityDTO> cityDTOMySerializer;
 
 
     @GetMapping("/")
