@@ -14,10 +14,10 @@ public class Contact {
     @GeneratedValue
     private Long id;
     private String email;
-    private Integer cellNumber;
+    private String cellNumber;
     private String fax;
 
-    public Contact(String email, Integer cellNumber, String fax) {
+    public Contact(String email, String cellNumber, String fax) {
         this();
         this.email = email;
         this.cellNumber = cellNumber;

@@ -18,9 +18,9 @@ public class PoiRequestDTO {
     private String description;
     private CityDTO city;
     private CoordinateDTO coordinate;
-    private TimeSlot timeSlot;
+    private TimeSlotDTO timeSlot;
     private Integer timeToVisit;
-    private Address address;
+    private AddressDTO address;
     private Double ticketPrice;
     private URL link;
     private String username;
@@ -40,6 +40,7 @@ public class PoiRequestDTO {
             else if(poiRequestNode.getAccepted()) this.status = StatusEnum.ACCEPTED;
                 else this.status = StatusEnum.REJECTED;
     }
+
     //TODO:aggiungere su ogni Request gli attributi mancanti
     public PoiRequestDTO(PoiRequestNode poiRequestNode){
         this.id = poiRequestNode.getId();
@@ -50,6 +51,7 @@ public class PoiRequestDTO {
         this.tagValues = new ArrayList<>();
         this.city = new CityDTO(poiRequestNode.getCity());
         this.coordinate = new CoordinateDTO(poiRequestNode.getCoordinate());
+        this.timeSlot = new TimeSlotDTO(poiRequestNode.getTimeSlot());
         this.username = poiRequestNode.getUsername();
         this.ticketPrice = poiRequestNode.getTicketPrice();
         this.contact = poiRequestNode.getContact();

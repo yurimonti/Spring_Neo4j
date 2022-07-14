@@ -386,7 +386,7 @@ public class Neo4jExampleApplication {
 			//------------------- Fine Creazione Poi --------------------
 
 			//creare una request aggiunta poi di prova
-			Collection<PoiType> poiTypesRequest =  new ArrayList<>();
+			/*Collection<PoiType> poiTypesRequest =  new ArrayList<>();
 			poiTypesRequest.add(chiesa);
 
 			pointProvaCoords = new Coordinate(43.13747,13.07314);
@@ -403,7 +403,7 @@ public class Neo4jExampleApplication {
 			PoiTagRel poiTagRel2 = new PoiTagRel(tag2);
 			poiTagRel2.setBooleanValue(true);
 			poiRequestNode.setTagValues(Arrays.asList(poiTagRel1,poiTagRel2));
-			poiRequestRepository.save(poiRequestNode);
+			poiRequestRepository.save(poiRequestNode);*/
 
 			//Timer che verifica e setta se un poi e' aperto o meno secondo l'istante corrente
 			timerToUpdateTimeSlots(provaService,pointOfIntRepository.findAll());

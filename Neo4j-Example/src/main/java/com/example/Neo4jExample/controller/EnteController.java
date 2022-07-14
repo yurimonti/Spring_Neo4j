@@ -46,7 +46,7 @@ public class EnteController {
         Double lon = Double.parseDouble((String)body.get("lon"));
         Coordinate coordinate = new Coordinate(lat,lon);
         //TODO: da fare
-        Contact contact = new Contact((String)body.get("email"),Integer.parseInt((String)body.get("phone")),
+        Contact contact = new Contact((String)body.get("email"),(String)body.get("phone"),
                 (String)body.get("fax"));
         contactRepository.save(contact);
         Integer timeToVisit = Integer.parseInt((String) body.get("timeToVisit"));
@@ -87,7 +87,7 @@ public class EnteController {
             PoiTagRel poiTagRel = new PoiTagRel(tagNode);
             if(!Objects.isNull(tagNode)){
                 if(tagNode.getIsBooleanType()){
-                    Boolean value = Boolean.parseBoolean((String)map.get("value"));
+                    Boolean value = (boolean)map.get("value");
                     poiTagRel.setBooleanValue(value);
                 }
                 else poiTagRel.setStringValue((String)map.get("value"));
