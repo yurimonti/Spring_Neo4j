@@ -4,6 +4,9 @@ import com.example.Neo4jExample.model.TagNode;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a data transfer object for the class TagNode
+ */
 @Data
 @NoArgsConstructor
 public class TagDTO {

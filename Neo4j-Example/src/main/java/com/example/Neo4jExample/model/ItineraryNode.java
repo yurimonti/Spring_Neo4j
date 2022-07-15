@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
+/**
+ * Represents an itinerary
+ */
 @Node
 @Data
 @NoArgsConstructor

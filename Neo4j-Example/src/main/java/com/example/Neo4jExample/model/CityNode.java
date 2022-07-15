@@ -9,7 +9,13 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.ArrayList;
 import java.util.Collection;
-@Data @NoArgsConstructor @Node
+
+/**
+ * Represents a city
+ */
+@Data
+@NoArgsConstructor
+@Node
 public class CityNode {
     @Id
     @GeneratedValue

@@ -1,6 +1,5 @@
 package com.example.Neo4jExample.model;
 
-//import com.example.Neo4jExample.model.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -10,6 +9,9 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Represents a POI type
+ */
 @Node
 @NoArgsConstructor
 @Data
@@ -28,8 +30,4 @@ public class PoiType {
         this.tags= new ArrayList<>();
     }
 
-/*    public PoiType(String name, CategoryNode ...categories) {
-        this(name);
-        this.categories.addAll(Arrays.asList(categories));
-    }*/
 }

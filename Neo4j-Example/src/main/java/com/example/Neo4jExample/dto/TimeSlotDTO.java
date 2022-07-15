@@ -6,6 +6,9 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Represents a data transfer object for the class Timeslot
+ */
 @Data
 public class TimeSlotDTO {
     private Collection<String> monday;

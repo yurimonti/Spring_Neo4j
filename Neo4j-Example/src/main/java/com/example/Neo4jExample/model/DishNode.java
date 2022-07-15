@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * Represents a dish with its price and ingredients
+ */
 @Data
 @NoArgsConstructor
 @Node
@@ -18,16 +21,16 @@ public class DishNode {
     private Long id;
     private String name;
     private Double price;
-    private Collection<String> ingradients;
+    private Collection<String> ingredients;
 
     public DishNode(String name, Double price) {
         this.name = name;
         this.price = price;
-        this.ingradients = new ArrayList<>();
+        this.ingredients = new ArrayList<>();
     }
 
     public DishNode(String name,Double price,String ...ingradients){
         this(name, price);
-        this.ingradients.addAll(Arrays.asList(ingradients));
+        this.ingredients.addAll(Arrays.asList(ingradients));
     }
 }

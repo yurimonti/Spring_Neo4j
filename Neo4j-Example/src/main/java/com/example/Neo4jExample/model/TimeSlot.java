@@ -10,10 +10,15 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Represents a weekly schedule
+ */
 @Data
 @Node
 public class TimeSlot {
-    @Id @GeneratedValue
+
+    @Id
+    @GeneratedValue
     private Long id;
 
     private Collection<LocalTime> monday;
@@ -50,18 +55,4 @@ public class TimeSlot {
         this.sunday = sunday;
         this.isOpen = false;
     }
-
-    /*private String startDayOfWeek;
-    private String endDayOfWeek;
-    private String startTime;
-    private String endTime;
-
-    private Boolean isOpen;
-
-    public TimeSlot(String startDayOfWeek, String endDayOfWeek, String startTime, String endTime) {
-        this.startDayOfWeek = startDayOfWeek;
-        this.endDayOfWeek = endDayOfWeek;
-        this.startTime = startTime;
-        this.endTime = endTime;
-    }*/
 }

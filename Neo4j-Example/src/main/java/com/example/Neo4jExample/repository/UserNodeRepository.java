@@ -6,5 +6,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserNodeRepository extends Neo4jRepository<UserNode,String> {
+
+    /**
+     * Gets a User from its username
+     * @param username the username of the user
+     * @return a UserNode
+     */
     UserNode findByUsername(String username);
 }

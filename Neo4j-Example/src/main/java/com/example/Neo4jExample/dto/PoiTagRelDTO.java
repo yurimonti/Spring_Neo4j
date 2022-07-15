@@ -7,6 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+
+/**
+ * Represents a data transfer object for the class PoiTagRel
+ */
 @Data
 @NoArgsConstructor
 public class PoiTagRelDTO {

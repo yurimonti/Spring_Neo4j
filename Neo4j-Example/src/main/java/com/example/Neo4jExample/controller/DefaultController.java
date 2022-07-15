@@ -2,15 +2,11 @@ package com.example.Neo4jExample.controller;
 
 import com.example.Neo4jExample.dto.CityDTO;
 import com.example.Neo4jExample.model.*;
-import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.ProvaService;
-import com.example.Neo4jExample.service.util.MySerializer;
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalTime;
 import java.util.*;
 
 @RestController
@@ -18,42 +14,44 @@ import java.util.*;
 @RequiredArgsConstructor
 public class DefaultController {
     private final ProvaService provaService;
-    private final PointOfIntRepository pointOfIntRepository;
-    private final CityRepository cityRepository;
 
-
-    @GetMapping("/")
-    public ResponseEntity<Date> provaDate(){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        LocalTime localTime = LocalTime.parse("08:30");
-        calendar.set(Calendar.HOUR_OF_DAY,localTime.getHour());
-        calendar.set(Calendar.MINUTE,localTime.getMinute());
-        calendar.set(Calendar.SECOND,localTime.getSecond());
-        return ResponseEntity.ok(calendar.getTime());
-    }
-
+    /**
+     * Gets all the pois
+     * @return a collection with all the pois
+     */
     @GetMapping("/poi/all")
     public ResponseEntity<Collection<PointOfInterestNode>> getAllPois(){
-        return ResponseEntity.ok(pointOfIntRepository.findAll());
+        return ResponseEntity.ok(provaService.getAllPois());
     }
 
+    /**
+     * Gets all the cities
+     * @return a collection with all the cities
+     */
     @GetMapping("/city/all")
     public ResponseEntity<Collection<CityDTO>> getAllCities(){
-        Collection<CityNode> cities = cityRepository.findAll();
-        Collection<CityDTO> result = new ArrayList<>(cities.stream().map(CityDTO::new).toList());
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(provaService.getAllCitiesAsDTOs());
     }
 
+    /**
+     * Gets all the categories
+     * @return a collection with all the categories
+     */
     @GetMapping("/category/all")
     public ResponseEntity<Collection<CategoryNode>> getCategoryAll(){
         return ResponseEntity.ok().body(provaService.getCategories());
     }
 
+    /**
+     * Gets all the poi types that have all the categories in the filter
+     * @param filter the categories to use as a filter
+     * @return all the poi types if the filter is empty else a collection of poi types filtered
+     */
     @PostMapping("/poiType/all")
     public ResponseEntity<Collection<PoiType>> getPoiTypeFiltered(@RequestBody Collection<CategoryNode> filter){
-        Collection<PoiType> result = provaService.getPoiTypes();
-        if(filter.size()>0) result = provaService.getPoiTypes(filter);
+        Collection<PoiType> result;
+        if(filter.size()==0) result = provaService.getAllPoiTypes();
+        else result = provaService.getPoiTypes(filter);
         return ResponseEntity.ok().body(result);
     }
 

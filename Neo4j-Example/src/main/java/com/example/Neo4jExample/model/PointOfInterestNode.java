@@ -10,16 +10,21 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Represents a point of interest
+ */
 @Data
 @Node
 public class PointOfInterestNode {
-    @Id @GeneratedValue
+
+    @Id
+    @GeneratedValue
     private Long id;
     private String name;
     private String description;
     private Coordinate coordinate;
     private TimeSlot hours;
-    private Integer timeToVisit;//tempo medio durata di visita
+    private Integer timeToVisit; //tempo medio durata di visita
     private Address address;
     private Double ticketPrice;
     private Collection<String> contributors;
@@ -52,6 +57,18 @@ public class PointOfInterestNode {
         this.address = address;
     }
 
+
+    //TODO controllare
+    //questo mi serve, controllare se gli altri si possono eliminare
+    public PointOfInterestNode(String name, String description, Coordinate coordinate, Address address, Integer timeToVisit, Double ticketPrice) {
+        this(name,description);
+        this.coordinate = coordinate;
+        this.address = address;
+        this.timeToVisit = timeToVisit;
+        this.ticketPrice = ticketPrice;
+    }
+
+
     public PointOfInterestNode(String name, String description, Coordinate coordinate, Address address,
                                TimeSlot hours) {
         this(name,description,coordinate,address);
@@ -72,6 +89,10 @@ public class PointOfInterestNode {
         this.link = link;
     }
 
+    /**
+     * Create a POI from the specified PoiRequest
+     * @param request The PoiRequest
+     */
     public PointOfInterestNode(PoiRequestNode request){
         this();
         this.name = request.getName();
@@ -87,5 +108,6 @@ public class PointOfInterestNode {
         this.contact = request.getContact();
         this.tagValues = request.getTagValues();
     }
+
 
 }

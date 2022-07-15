@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * Represents a section of the menu
+ */
 @Data
 @Node
 @NoArgsConstructor

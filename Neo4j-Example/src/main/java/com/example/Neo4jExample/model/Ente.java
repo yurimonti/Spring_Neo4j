@@ -9,6 +9,9 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.UUID;
 
+/**
+ * Represents a type of user
+ */
 @NoArgsConstructor
 @Data
 @Node

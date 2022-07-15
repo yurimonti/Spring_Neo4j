@@ -4,6 +4,9 @@ import com.example.Neo4jExample.model.CategoryNode;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a data transfer object for the class CategoryNode
+ */
 @Data
 @NoArgsConstructor
 public class CategoryDTO {

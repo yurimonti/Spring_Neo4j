@@ -8,8 +8,12 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Represents a request of creation or modification of a POI
+ */
 @Data
 @NoArgsConstructor
 @Node
@@ -37,7 +41,7 @@ public class PoiRequestNode {
     @Relationship(type = "TAG_VALUE",direction = Relationship.Direction.OUTGOING)
     private Collection<PoiTagRel> tagValues;
 
-    public PoiRequestNode(String name, String description, CityNode city, Coordinate coordinate, Address address,
+    /*public PoiRequestNode(String name, String description, CityNode city, Coordinate coordinate, Address address,
                           Collection<PoiType> types){
         this.name = name;
         this.description = description;
@@ -46,15 +50,15 @@ public class PoiRequestNode {
         this.address = address;
         this.types = types;
         this.accepted = null;
-    }
+    }*/
 
-    public PoiRequestNode(String name, String description,CityNode city, Coordinate coordinate, Address address,
+    /*public PoiRequestNode(String name, String description,CityNode city, Coordinate coordinate, Address address,
                           Collection<PoiType> types, Collection<PoiTagRel> tagValues){
         this(name,description,city,coordinate,address,types);
         this.tagValues = tagValues;
-    }
+    }*/
 
-    public PoiRequestNode(String name, String description,CityNode city, Coordinate coordinate, Address address,
+    /*public PoiRequestNode(String name, String description,CityNode city, Coordinate coordinate, Address address,
                           Collection<PoiType> types, Collection<PoiTagRel> tagValues,TimeSlot timeSlot,
                           Integer timeToVisit, Double ticketPrice,String username,Contact contact) {
         this(name,description,city,coordinate,address,types,tagValues);
@@ -63,5 +67,24 @@ public class PoiRequestNode {
         this.ticketPrice = ticketPrice;
         this.username = username;
         this.contact = contact;
+    }*/
+
+    public PoiRequestNode(String username, String name, String description, CityNode city, Coordinate coord, Address address, Integer timeToVisit, Double ticketPrice){
+        this.username = username;
+        this.name = name;
+        this.description = description;
+        this.city = city;
+        this.coordinate = coord;
+        this.address = address;
+        this.timeToVisit = timeToVisit;
+        this.ticketPrice = ticketPrice;
+        this.accepted = null;
+        this.timeSlot = null;
+        this.types = new ArrayList<>();
+        this.tagValues = new ArrayList<>();
+        this.pointOfInterestNode = null;
     }
+
+
+
 }

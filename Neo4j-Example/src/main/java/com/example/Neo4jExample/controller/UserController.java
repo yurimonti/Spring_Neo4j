@@ -1,20 +1,16 @@
 package com.example.Neo4jExample.controller;
 
 import com.example.Neo4jExample.dto.CityDTO;
+import com.example.Neo4jExample.dto.PoiRequestDTO;
 import com.example.Neo4jExample.model.*;
-import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.ProvaService;
 import com.example.Neo4jExample.service.util.MySerializer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+
+import java.util.*;
 
 
 @RestController
@@ -24,80 +20,47 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final ProvaService provaService;
-    private final ContactRepository contactRepository;
-    private final PoiTypeRepository poiTypeRepository;
-    private final TimeSlotRepository timeSlotRepository;
-    private final TagRepository tagRepository;
-    private final CityRepository cityRepository;
-    private final ItineraryRepository itineraryRepository;
-    private final PoiRequestRepository poiRequestRepository;
     private final MySerializer<CityDTO> cityDTOMySerializer;
 
 
+    /**
+     * Create a Poi request with parameters provided
+     * @param body parameters of the POI request
+     * @return the new POI request
+     */
     @PostMapping("/addPoi")
-    public ResponseEntity<PoiRequestNode> addPoi(@RequestBody Map<String,Object> body){
-        //PointOfInterestNode poi = (PointOfInterestNode) body.get("originalPoi");
+    public ResponseEntity<PoiRequestDTO> addPoi(@RequestBody Map<String,Object> body){
+        String username = "An User"; //TODO cambiare quando lo sistemiamo nel frontend
         String name = (String)body.get("name");
-        String username = "An User";
         String description = (String)body.get("description");
-        CityDTO cityDto = cityDTOMySerializer.deserialize(
-                cityDTOMySerializer.serialize(body.get("city")),CityDTO.class);
-        CityNode city = cityRepository.findById(cityDto.getId()).orElseThrow();
-        Coordinate coordinate = provaService.createCoordsFromString(
-                (String)body.get("lat"),(String)body.get("lon"));
-        String street = (String) body.get("street");
-        Integer number = Integer.parseInt((String) body.get("number"));
-        Address address = provaService.createAddress(street,number);
-        Contact contact = new Contact((String)body.get("email"),(String)body.get("phone"),
-                (String)body.get("fax"));
-        contactRepository.save(contact);
+        Double lat = Double.parseDouble((String)body.get("lat"));
+        Double lon = Double.parseDouble((String)body.get("lon"));
+        CityDTO cityDto = (CityDTO) body.get("city");
+        /*CityDTO cityDto = cityDTOMySerializer.deserialize(
+                cityDTOMySerializer.serialize(body.get("city")),CityDTO.class);*/
         Integer timeToVisit = Integer.parseInt((String) body.get("timeToVisit"));
         Double ticketPrice = Double.parseDouble((String) body.get("price"));
-        TimeSlot timeSlot = new TimeSlot();
-        Collection<String> monday = (Collection<String>) body.get("monday");
-        Collection<String> tuesday = (Collection<String>) body.get("tuesday");
-        Collection<String> wednesday = (Collection<String>) body.get("wednesday");
-        Collection<String> thursday = (Collection<String>) body.get("thursday");
-        Collection<String> friday = (Collection<String>) body.get("friday");
-        Collection<String> saturday = (Collection<String>) body.get("saturday");
-        Collection<String> sunday = (Collection<String>) body.get("sunday");
-        if(!monday.isEmpty()) monday.forEach(s -> timeSlot.getMonday().add((LocalTime.parse(s))));
-        if(!tuesday.isEmpty()) tuesday.forEach(s -> timeSlot.getTuesday().add((LocalTime.parse(s))));
-        if(!wednesday.isEmpty()) wednesday.forEach(s -> timeSlot.getWednesday().add((LocalTime.parse(s))));
-        if(!thursday.isEmpty()) thursday.forEach(s -> timeSlot.getThursday().add((LocalTime.parse(s))));
-        if(!friday.isEmpty()) friday.forEach(s -> timeSlot.getFriday().add((LocalTime.parse(s))));
-        if(!saturday.isEmpty()) saturday.forEach(s -> timeSlot.getSaturday().add((LocalTime.parse(s))));
-        if(!sunday.isEmpty()) sunday.forEach(s -> timeSlot.getSunday().add((LocalTime.parse(s))));
-        timeSlotRepository.save(timeSlot);
-        /*Collection<String> types = (Collection<String>) body.get("types");*/
-        Collection<PoiType> poiTypes = ((Collection<String>) body.get("types")).stream()
-                .filter(a -> poiTypeRepository.findById(a).isPresent())
-                .map(a -> poiTypeRepository.findById(a).get())
-                .collect(Collectors.toList());
+        String street = (String) body.get("street");
+        Integer number = Integer.parseInt((String) body.get("number"));
+
+        PoiRequestNode newPoiRequest = provaService.createBasicPoiRequest(username,name,description,cityDto,lat,lon,timeToVisit,ticketPrice,street,number);
+
+        String email = (String)body.get("email");
+        String phone = (String)body.get("phone");
+        String fax = (String)body.get("fax");
+
+        Collection<String> daysOfWeek = new ArrayList<>(List.of("monday","tuesday","wednesday","thursday","friday","saturday","sunday"));
+        Map<String,Collection<String>> mapSchedule = new HashMap<>();
+        for(String day : daysOfWeek) mapSchedule.put(day,(Collection<String>) body.get("day"));
+
+        Collection<String> types = (Collection<String>) body.get("types");
         Collection<Map<String,Object>> poiTagRels = (Collection<Map<String,Object>>) body.get("tags");
-        Collection<PoiTagRel> values = new ArrayList<>();
-        for (Map<String,Object> map : poiTagRels){
-            String tag = (String)map.get("tag");
-            TagNode tagNode = tagRepository.findById(tag).orElse(null);
-            PoiTagRel poiTagRel = new PoiTagRel(tagNode);
-            if(!Objects.isNull(tagNode)){
-                if(tagNode.getIsBooleanType()){
-                    Boolean value = Boolean.parseBoolean((String)map.get("value"));
-                    poiTagRel.setBooleanValue(value);
-                }
-                else poiTagRel.setStringValue((String)map.get("value"));
-            }
-            values.add(poiTagRel);
-        }
-        PoiRequestNode poiRequestNode = new PoiRequestNode(name,description,city,coordinate,address,poiTypes);
-        poiRequestNode.setUsername(username);
-        poiRequestNode.setTagValues(values);
-        poiRequestNode.setContact(contact);
-        poiRequestNode.setTicketPrice(ticketPrice);
-        poiRequestNode.setTimeSlot(timeSlot);
-        poiRequestNode.setTimeToVisit(timeToVisit);
-        poiRequestRepository.save(poiRequestNode);
-        return ResponseEntity.ok(poiRequestNode);
+
+        newPoiRequest = provaService.addInfoToNewPoiRequest(newPoiRequest,email,phone,fax,types,poiTagRels,mapSchedule);
+        //return ResponseEntity.ok(newPoiRequest);
+        PoiRequestDTO poiRequestDTO = new PoiRequestDTO(newPoiRequest);
+        return ResponseEntity.ok(poiRequestDTO);
+        //qui ho cambiato in poirequestdto altrimenti provava a mandare indietro la city intera
     }
 
 

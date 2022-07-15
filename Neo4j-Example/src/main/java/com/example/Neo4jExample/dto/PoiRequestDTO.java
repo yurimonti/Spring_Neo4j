@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
+/**
+ * Represents a data transfer object for the class PoiRequestNode
+ */
 @Data
 @NoArgsConstructor
 public class PoiRequestDTO {
