@@ -236,10 +236,11 @@ public class ProvaService {
      * @param poiTagRels the tag-value of the POI
      * @param mapSchedule the time schedule of the week of the POI
      */
-    public void addInfoToNewPoi(PointOfInterestNode newPoi, String email, String phone, String fax, Collection<String> types, Collection<Map<String, Object>> poiTagRels, Map<String,Collection<String>> mapSchedule) {
+    public PointOfInterestNode addInfoToNewPoi(PointOfInterestNode newPoi, String email, String phone, String fax, Collection<String> types, Collection<Map<String, Object>> poiTagRels, Map<String,Collection<String>> mapSchedule) {
         newPoi.setTypes(this.convertStrintToPoiTypes(types));
         Contact contact = new Contact(email,phone,fax);
         contactRepository.save(contact);
+        newPoi.setContact(contact);
 
         newPoi.setTagValues(this.convertMapToPoiTagRels(poiTagRels));
 
@@ -248,16 +249,14 @@ public class ProvaService {
         newPoi.setHours(timeSlot);
 
         pointOfIntRepository.save(newPoi);
-
+        return newPoi;
     }
 
     private Collection<PoiTagRel> convertMapToPoiTagRels(Collection<Map<String, Object>> poiTagRels) {
         Collection<PoiTagRel> values = new ArrayList<>();
         for (Map<String,Object> map : poiTagRels){
             String tag = (String)map.get("tag");
-            System.out.println(tag);
             TagNode tagNode = tagRepository.findById(tag).orElse(null);
-            System.out.println(tagNode);
             PoiTagRel poiTagRel = new PoiTagRel(tagNode);
             if(!Objects.isNull(tagNode)){
                 if(tagNode.getIsBooleanType()){
@@ -342,6 +341,7 @@ public class ProvaService {
         newPoiRequest.setTagValues(this.convertMapToPoiTagRels(poiTagRels));
         Contact contact = new Contact(email,phone,fax);
         contactRepository.save(contact);
+        newPoiRequest.setContact(contact);
 
         TimeSlot timeSlot = this.createTimeSlot(mapSchedule);
         timeSlotRepository.save(timeSlot);

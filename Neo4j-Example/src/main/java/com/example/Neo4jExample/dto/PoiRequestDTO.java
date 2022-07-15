@@ -56,6 +56,7 @@ public class PoiRequestDTO {
         this.coordinate = new CoordinateDTO(poiRequestNode.getCoordinate());
         this.timeSlot = new TimeSlotDTO(poiRequestNode.getTimeSlot());
         this.username = poiRequestNode.getUsername();
+        this.address = new AddressDTO(poiRequestNode.getAddress());
         this.ticketPrice = poiRequestNode.getTicketPrice();
         this.contact = poiRequestNode.getContact();
         this.timeToVisit = poiRequestNode.getTimeToVisit();

@@ -45,9 +45,9 @@ public class EnteController {
 
         Collection<String> nameOfDays = new ArrayList<>(List.of("monday","tuesday","wednesday","thursday","friday","saturday","sunday"));
         Map<String,Collection<String>> mapSchedule = new HashMap<>();
-        for(String day : nameOfDays) mapSchedule.put(day,(Collection<String>) body.get("day"));
+        for(String day : nameOfDays) mapSchedule.put(day,(Collection<String>) body.get(day));
 
-        provaService.addInfoToNewPoi(newPoi,email,phone,fax,types,poiTagRels,mapSchedule);
+        newPoi = provaService.addInfoToNewPoi(newPoi,email,phone,fax,types,poiTagRels,mapSchedule);
         return ResponseEntity.ok(newPoi);
     }
 

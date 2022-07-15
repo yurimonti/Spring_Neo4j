@@ -35,9 +35,7 @@ public class UserController {
         String description = (String)body.get("description");
         Double lat = Double.parseDouble((String)body.get("lat"));
         Double lon = Double.parseDouble((String)body.get("lon"));
-        CityDTO cityDto = (CityDTO) body.get("city");
-        /*CityDTO cityDto = cityDTOMySerializer.deserialize(
-                cityDTOMySerializer.serialize(body.get("city")),CityDTO.class);*/
+        CityDTO cityDto = cityDTOMySerializer.deserialize(cityDTOMySerializer.serialize(body.get("city")),CityDTO.class);
         Integer timeToVisit = Integer.parseInt((String) body.get("timeToVisit"));
         Double ticketPrice = Double.parseDouble((String) body.get("price"));
         String street = (String) body.get("street");
@@ -51,7 +49,7 @@ public class UserController {
 
         Collection<String> daysOfWeek = new ArrayList<>(List.of("monday","tuesday","wednesday","thursday","friday","saturday","sunday"));
         Map<String,Collection<String>> mapSchedule = new HashMap<>();
-        for(String day : daysOfWeek) mapSchedule.put(day,(Collection<String>) body.get("day"));
+        for(String day : daysOfWeek) mapSchedule.put(day,(Collection<String>) body.get(day));
 
         Collection<String> types = (Collection<String>) body.get("types");
         Collection<Map<String,Object>> poiTagRels = (Collection<Map<String,Object>>) body.get("tags");
@@ -60,7 +58,6 @@ public class UserController {
         //return ResponseEntity.ok(newPoiRequest);
         PoiRequestDTO poiRequestDTO = new PoiRequestDTO(newPoiRequest);
         return ResponseEntity.ok(poiRequestDTO);
-        //qui ho cambiato in poirequestdto altrimenti provava a mandare indietro la city intera
     }
 
 
