@@ -24,6 +24,12 @@ public class Coordinate {
         this.lon = lon;
     }
 
+    public Coordinate(Coordinate coordinate){
+        this.lat = coordinate.getLat();
+        this.lon = coordinate.getLon();
+        this.alt = coordinate.getAlt();
+    }
+
     public Coordinate(Double lat, Double lon,Double alt){
         this(lat,lon);
         this.alt=alt;

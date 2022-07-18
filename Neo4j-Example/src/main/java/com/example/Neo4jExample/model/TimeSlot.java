@@ -55,4 +55,15 @@ public class TimeSlot {
         this.sunday = sunday;
         this.isOpen = false;
     }
+
+    public TimeSlot(TimeSlot timeSlot) {
+        this.monday = timeSlot.getMonday();
+        this.tuesday = timeSlot.getTuesday();
+        this.wednesday = timeSlot.getWednesday();
+        this.thursday = timeSlot.getThursday();
+        this.friday = timeSlot.getFriday();
+        this.saturday = timeSlot.getSaturday();
+        this.sunday = timeSlot.getSunday();
+        this.isOpen = false;
+    }
 }

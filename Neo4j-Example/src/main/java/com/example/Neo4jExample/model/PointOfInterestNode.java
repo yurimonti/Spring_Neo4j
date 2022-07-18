@@ -97,16 +97,11 @@ public class PointOfInterestNode {
         this();
         this.name = request.getName();
         this.description = request.getDescription();
-        this.coordinate = request.getCoordinate();
-        this.hours = request.getTimeSlot();
         this.timeToVisit = request.getTimeToVisit();
-        this.address = request.getAddress();
         this.ticketPrice = request.getTicketPrice();
         this.contributors.add(request.getUsername());
         this.link = request.getLink();
         this.types = request.getTypes();
-        this.contact = request.getContact();
-        this.tagValues = request.getTagValues();
     }
 
 

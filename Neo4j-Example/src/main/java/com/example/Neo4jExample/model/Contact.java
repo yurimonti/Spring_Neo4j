@@ -21,9 +21,14 @@ public class Contact {
     private String fax;
 
     public Contact(String email, String cellNumber, String fax) {
-        this();
         this.email = email;
         this.cellNumber = cellNumber;
         this.fax = fax;
+    }
+
+    public Contact(Contact contact) {
+        this.email = contact.getEmail();
+        this.cellNumber = contact.getCellNumber();
+        this.fax = contact.getFax();
     }
 }

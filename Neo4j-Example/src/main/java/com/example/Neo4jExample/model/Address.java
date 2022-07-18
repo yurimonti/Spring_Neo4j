@@ -18,8 +18,12 @@ public class Address {
     private Integer number;
 
     public Address(String street, Integer number) {
-        this();
         this.street = street;
         this.number = number;
+    }
+
+    public Address(Address address) {
+        this.street = address.getStreet();
+        this.number = address.getNumber();
     }
 }

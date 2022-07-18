@@ -26,4 +26,10 @@ public class PoiTagRel {
     public PoiTagRel(TagNode tag) {
         this.tag = tag;
     }
+
+    public PoiTagRel(PoiTagRel rel) {
+        this.tag = rel.getTag();
+        this.booleanValue = rel.getBooleanValue();
+        this.stringValue = rel.getStringValue();
+    }
 }
