@@ -126,7 +126,9 @@ public class EnteController {
         poiRequestRepository.save(poiRequestNode);
         if(toSet){
             if(Objects.isNull(poiRequestNode.getPointOfInterestNode())){
-                pointOfIntRepository.save(new PointOfInterestNode(poiRequestNode));
+                PointOfInterestNode pointOfInterestNode = new PointOfInterestNode(poiRequestNode);
+                timeSlotRepository.save(poiRequestNode.getTimeSlot());
+                pointOfIntRepository.save(pointOfInterestNode);
             } else {
                 provaService.changePoiFromRequest(poiRequestNode);
             }
