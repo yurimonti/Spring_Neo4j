@@ -56,6 +56,7 @@ public class PoiRequestDTO {
         this.ticketPrice = poiRequestNode.getTicketPrice();
         this.contact = poiRequestNode.getContact();
         this.timeToVisit = poiRequestNode.getTimeToVisit();
+        this.poiId = poiRequestNode.getPointOfInterestNode().getId();
         fillTagsValues(poiRequestNode);
 
     }

@@ -42,20 +42,19 @@ public class UserController {
 
     @PostMapping("/modifyPoi")
     public ResponseEntity<PoiRequestNode> modifyPoi(@RequestBody Map<String, Object> body){
-        Long poiId = Long.valueOf((Integer)body.get("poi"));
+        Long poiId = Long.parseLong((String)body.get("poi"));
         PointOfInterestNode pointOfInterestNode = pointOfIntRepository.findById(poiId).orElse(null);
         String name = (String) body.get("name");
         String username = "An User";
         String description = (String) body.get("description");
-        CityNode city = cityRepository.findAll().stream().filter(c -> c.getPointOfInterests()
-                .contains(pointOfInterestNode)).findFirst().orElse(null);
-        Coordinate coordinate = new Coordinate((Double)body.get("lat"),
-                (Double) body.get("lon"));
-        coordRepo.save(coordinate);
+        CityNode city = cityRepository.findByName("Camerino");
+        /*CityNode city = cityRepository.findAll().stream().filter(c -> c.getPointOfInterests()
+                .contains(pointOfInterestNode)).findFirst().orElse(null);*/
+        Coordinate coordinate = provaService.createCoordsFromString(
+                (String) body.get("lat"), (String) body.get("lon"));
         String street = (String) body.get("street");
-        Integer number = (Integer) body.get("number");
-        Address address = new Address(street,number);
-        addressRepo.save(address);
+        Integer number = Integer.parseInt((String) body.get("number"));
+        Address address = provaService.createAddress(street, number);
         Contact contact = new Contact((String) body.get("email"), (String) body.get("phone"),
                 (String) body.get("fax"));
         contactRepository.save(contact);
@@ -103,6 +102,7 @@ public class UserController {
         poiRequestNode.setTicketPrice(ticketPrice);
         poiRequestNode.setTimeSlot(timeSlot);
         poiRequestNode.setTimeToVisit(timeToVisit);
+        poiRequestNode.setPointOfInterestNode(pointOfInterestNode);
         poiRequestRepository.save(poiRequestNode);
         return ResponseEntity.ok(poiRequestNode);
     }
