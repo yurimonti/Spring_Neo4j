@@ -168,7 +168,7 @@ public class ProvaService {
 
     private void createPoiFromRequest(PoiRequestNode poiRequestNode) {
         PointOfInterestNode result = new PointOfInterestNode(poiRequestNode);
-        result.setHours(new TimeSlot(poiRequestNode.getTimeSlot()));
+        result.setHours(new TimeSlot(poiRequestNode.getHours()));
         timeSlotRepository.save(result.getHours());
         result.setCoordinate(new Coordinate(poiRequestNode.getCoordinate()));
         coordinateRepository.save(result.getCoordinate());
@@ -187,7 +187,7 @@ public class ProvaService {
     private void changePoiFromRequest(PoiRequestNode poiRequestNode) {
         PointOfInterestNode result = poiRequestNode.getPointOfInterestNode();
 
-        result.setHours(new TimeSlot(poiRequestNode.getTimeSlot()));
+        result.setHours(new TimeSlot(poiRequestNode.getHours()));
         timeSlotRepository.save(result.getHours());
 
         result.setCoordinate(new Coordinate(poiRequestNode.getCoordinate()));
@@ -390,7 +390,7 @@ public class ProvaService {
 
         TimeSlot timeSlot = this.createTimeSlot(mapSchedule);
         timeSlotRepository.save(timeSlot);
-        newPoiRequest.setTimeSlot(timeSlot);
+        newPoiRequest.setHours(timeSlot);
 
         poiRequestRepository.save(newPoiRequest);
         return newPoiRequest;

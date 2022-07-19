@@ -26,7 +26,7 @@ public class PoiRequestNode {
     private CityNode city;
     private Coordinate coordinate;
     private Boolean accepted;
-    private TimeSlot timeSlot;
+    private TimeSlot hours;
     private Integer timeToVisit;
     private Address address;
     private Double ticketPrice;
@@ -81,7 +81,7 @@ public class PoiRequestNode {
         this.timeToVisit = timeToVisit;
         this.ticketPrice = ticketPrice;
         this.accepted = null;
-        this.timeSlot = null;
+        this.hours = null;
         this.types = new ArrayList<>();
         this.tagValues = new ArrayList<>();
         this.pointOfInterestNode = null;

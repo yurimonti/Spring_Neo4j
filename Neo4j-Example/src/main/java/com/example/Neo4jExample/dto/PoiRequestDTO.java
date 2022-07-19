@@ -21,7 +21,7 @@ public class PoiRequestDTO {
     private String description;
     private CityDTO city;
     private CoordinateDTO coordinate;
-    private TimeSlotDTO timeSlot;
+    private TimeSlotDTO hours;
     private Integer timeToVisit;
     private AddressDTO address;
     private Double ticketPrice;
@@ -55,7 +55,7 @@ public class PoiRequestDTO {
         this.tagValues = new ArrayList<>();
         this.city = new CityDTO(poiRequestNode.getCity());
         this.coordinate = new CoordinateDTO(poiRequestNode.getCoordinate());
-        this.timeSlot = new TimeSlotDTO(poiRequestNode.getTimeSlot());
+        this.hours = new TimeSlotDTO(poiRequestNode.getHours());
         this.username = poiRequestNode.getUsername();
         this.address = new AddressDTO(poiRequestNode.getAddress());
         this.ticketPrice = poiRequestNode.getTicketPrice();
