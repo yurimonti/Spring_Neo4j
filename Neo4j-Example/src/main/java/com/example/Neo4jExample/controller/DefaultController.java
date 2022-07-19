@@ -57,6 +57,18 @@ public class DefaultController {
         return ResponseEntity.ok().body(result);
     }
 
+    @PostMapping("/provaInput")
+    public ResponseEntity<Double> provaInput(@RequestBody Map<String, Object> body){
+        Double result = Double.parseDouble((String)body.get("provaInput"));
+        return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/provaInput2")
+    public ResponseEntity<Double> provaInput2(@RequestBody Map<String, Object> body){
+        Double result = (Double) body.get("provaInput");
+        return ResponseEntity.ok().body(result);
+    }
+
 
 
     /**
