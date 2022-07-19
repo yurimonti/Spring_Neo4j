@@ -48,7 +48,7 @@ public class UserController {
 
     private ResponseEntity<PoiRequestDTO> createPoiRequest(Map<String, Object> body, boolean isNew){
         PoiRequestNode newPoiRequest;
-        String username = "An User"; //TODO cambiare quando lo sistemiamo nel frontend
+        String username = (String) body.get("username");
         String name = (String) body.get("name");
         String description = (String) body.get("description");
         Double lat = Double.parseDouble((String) body.get("lat"));

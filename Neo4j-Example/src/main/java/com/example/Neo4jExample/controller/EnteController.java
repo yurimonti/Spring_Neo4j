@@ -24,7 +24,7 @@ public class EnteController {
      */
     @PostMapping("/createPoi")
     public ResponseEntity<PointOfInterestNode> createPoi(@RequestBody Map<String, Object> body){
-        String enteUsername = "ente_camerino"; //TODO cambiare quando lo sistemiamo nel frontend
+        String enteUsername = (String) body.get("username");
         String name = (String) body.get("name");
         String description = (String) body.get("description");
         Double lat = Double.parseDouble((String)body.get("lat"));
@@ -73,5 +73,11 @@ public class EnteController {
         return provaService.setPoiRequestStatus(status,idPoiRequest);
     }
 
+    @PostMapping("/notifies/prova")
+    public ResponseEntity<Object> setPoiRequestWithModifications(@RequestParam boolean status,
+                                                                 @RequestParam Long idPoiRequest,
+                                                                 @RequestBody Map<String, Object> body){
+        return provaService.setPoiRequestStatus(status,idPoiRequest);
+    }
 
 }

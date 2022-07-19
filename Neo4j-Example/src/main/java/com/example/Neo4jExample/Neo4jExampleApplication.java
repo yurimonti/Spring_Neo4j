@@ -75,6 +75,9 @@ public class Neo4jExampleApplication {
 			UserNode userEnteCamerino = new UserNode("mario","rossi","email","password",
 					"ente_camerino",enteRole);
 			userNodeRepository.save(userEnteCamerino);
+			UserNode user = new UserNode("marco","bianchi","email","password",
+					"an_user",userRole);
+			userNodeRepository.save(user);
 			Ente enteProva = new Ente(userEnteCamerino);
 			CityNode camerino = new CityNode("Camerino");
 			Coordinate coordCitta = new Coordinate(43.139850, 13.069172);

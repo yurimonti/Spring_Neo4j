@@ -39,7 +39,7 @@ public class PoiRequestDTO {
      * @param poiRequestNode poiRequest to map values into the same DTO Class
      */
     private void fillTagsValues(PoiRequestNode poiRequestNode) {
-        this.tagValues.addAll(poiRequestNode.getTagValues().stream().map(PoiTagRelDTO::new).toList());
+        this.tagValues.addAll(poiRequestNode.getTagValues().stream().map(PoiTagRelDTO::new).toList()); //TODO cambiare per i nuovi DTO
         if (Objects.isNull(poiRequestNode.getAccepted())) this.status = StatusEnum.PENDING;
         else if (poiRequestNode.getAccepted()) this.status = StatusEnum.ACCEPTED;
         else this.status = StatusEnum.REJECTED;
