@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.*;
-import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
@@ -167,7 +166,7 @@ public class ProvaService {
         return ResponseEntity.ok().build();
     }
 
-    private void createPoiFromRequest(PoiRequestNode poiRequestNode){
+    private void createPoiFromRequest(PoiRequestNode poiRequestNode) {
         PointOfInterestNode result = new PointOfInterestNode(poiRequestNode);
         result.setHours(new TimeSlot(poiRequestNode.getTimeSlot()));
         timeSlotRepository.save(result.getHours());
@@ -344,7 +343,7 @@ public class ProvaService {
     }
 
     /**
-     * Create basic POI request
+     * Create POI request for creation
      *
      * @param username    username of the user that created the POI request
      * @param name        name of the POI to request
@@ -353,12 +352,12 @@ public class ProvaService {
      * @param lat         latitude of the POI to request
      * @param lon         longitude of the POI to request
      * @param timeToVisit time needed to visit the POI to request
-     * @param ticketPrice price of the ticket needed to visit the POI, 0 if gratis
+     * @param ticketPrice price of the ticket needed to visit the POI, 0 if free
      * @param street      the street name of the POI to request
      * @param number      the number of the building of the POI to request
      * @return the POI request created
      */
-    public PoiRequestNode createBasicPoiRequest(String username, String name, String description, CityDTO cityDto, Double lat, Double lon, Integer timeToVisit, Double ticketPrice, String street, Integer number) {
+    public PoiRequestNode createPoiRequestForCreation(String username, String name, String description, CityDTO cityDto, Double lat, Double lon, Integer timeToVisit, Double ticketPrice, String street, Integer number) {
         Coordinate coord = new Coordinate(lat, lon);
         coordinateRepository.save(coord);
         Address address = new Address(street, number);
@@ -398,7 +397,22 @@ public class ProvaService {
     }
 
 
-    public PoiRequestNode modifyPoiRequest(Long poiId,String username, String name, String description, Double lat, Double lon, Integer timeToVisit, Double ticketPrice, String street, Integer number) {
+    /**
+     * Create POI request for modification
+     *
+     * @param poiId       the id of the POI to modify
+     * @param username    username of the user that created the POI request
+     * @param name        name of the POI to request
+     * @param description description of the POI to request
+     * @param lat         latitude of the POI to request
+     * @param lon         longitude of the POI to request
+     * @param timeToVisit time needed to visit the POI to request
+     * @param ticketPrice price of the ticket needed to visit the POI, 0 if free
+     * @param street      the street name of the POI to request
+     * @param number      the number of the building of the POI to request
+     * @return the POI request created
+     */
+    public PoiRequestNode modifyPoiRequest(Long poiId, String username, String name, String description, Double lat, Double lon, Integer timeToVisit, Double ticketPrice, String street, Integer number) {
         PointOfInterestNode pointOfInterestNode = pointOfIntRepository.findById(poiId).orElse(null);
 
         CityNode city = cityRepository.findByName("Camerino"); //TODO cambiare

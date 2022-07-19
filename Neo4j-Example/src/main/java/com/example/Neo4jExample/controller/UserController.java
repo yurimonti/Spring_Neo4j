@@ -60,7 +60,7 @@ public class UserController {
 
         if(isNew){
             CityDTO cityDto = cityDTOMySerializer.deserialize(cityDTOMySerializer.serialize(body.get("city")), CityDTO.class);
-            newPoiRequest = provaService.createBasicPoiRequest(username, name, description, cityDto, lat, lon, timeToVisit, ticketPrice, street, number);
+            newPoiRequest = provaService.createPoiRequestForCreation(username, name, description, cityDto, lat, lon, timeToVisit, ticketPrice, street, number);
         }
         else{
             Long poiId = Long.parseLong((String) body.get("poi"));
