@@ -39,7 +39,7 @@ public class EnteController {
     //TODO: refactoring
     @PostMapping("/createPoi")
     public ResponseEntity<PointOfInterestNode> createPoi(@RequestBody Map<String, Object> body){
-        Ente ente = provaService.getEnteFromUser(userNodeRepository.findByUsername("ente_camerino"));
+        Ente ente = provaService.getEnteFromUser(userNodeRepository.findByUsername((String)body.get("username")));
         String name = (String) body.get("name");
         String description = (String) body.get("description");
         Double lat = Double.parseDouble((String)body.get("lat"));
