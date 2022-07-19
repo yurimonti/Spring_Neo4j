@@ -146,19 +146,19 @@ public class ProvaService {
     /**
      * Sets PoiRequest to accepted or denied in uniformity to toSet
      *
-     * @param status       true if accepted, false otherwise
+     * @param isAccepted   true if accepted, false otherwise
      * @param idPoiRequest of the PoiRequest
      * @return status of operation
      */
-    public ResponseEntity<Object> setPoiRequestStatus(boolean status, Long idPoiRequest) {
+    public ResponseEntity<Object> setPoiRequestStatus(boolean isAccepted, Long idPoiRequest) {
         PoiRequestNode poiRequestNode;
         if (poiRequestRepository.findById(idPoiRequest).isPresent()) {
             poiRequestNode = poiRequestRepository.findById(idPoiRequest).get();
         } else return ResponseEntity.noContent().build();
 
-        poiRequestNode.setAccepted(status);
+        poiRequestNode.setAccepted(isAccepted);
         poiRequestRepository.save(poiRequestNode);
-        if (status) {
+        if (isAccepted) {
             if (Objects.isNull(poiRequestNode.getPointOfInterestNode())) {
                 this.createPoiFromRequest(poiRequestNode);
             } else this.changePoiFromRequest(poiRequestNode);
@@ -230,6 +230,22 @@ public class ProvaService {
         poiRequestRepository.findAll().stream().filter(poiRequestNode ->
                         poiRequestNode.getCity().getId().equals(idCityEnte))
                 .filter(poiRequestNode -> Objects.isNull(poiRequestNode.getAccepted())).toList()
+                .forEach(poiRequestNode -> poiRequestDTOS.add(new PoiRequestDTO(poiRequestNode)));
+
+        return poiRequestDTOS;
+    }
+
+    /**
+     * Gets all the Poi requests for a user as DTO
+     *
+     * @param username username of the user
+     * @return a collection of PoiRequestDTOs
+     */
+    public Collection<PoiRequestDTO> getAllPoiRequestOfUserAsDTOs(String username) {
+        Collection<PoiRequestDTO> poiRequestDTOS = new ArrayList<>();
+
+        poiRequestRepository.findAll().stream()
+                .filter(poiRequestNode -> poiRequestNode.getUsername().equals(username)).toList()
                 .forEach(poiRequestNode -> poiRequestDTOS.add(new PoiRequestDTO(poiRequestNode)));
 
         return poiRequestDTOS;

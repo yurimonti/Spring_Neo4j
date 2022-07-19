@@ -57,23 +57,23 @@ public class EnteController {
      * @param username the name of the user Ente
      * @return a collection with the poi requests that concern an Ente as DTOs
      */
-    @GetMapping("/notifies") //TODO controllare perchè probabilmente non funziona con la get
+    @GetMapping("/notifies")
     public ResponseEntity<Collection<PoiRequestDTO>> getRequestsFromUsers(@RequestParam String username){
         return ResponseEntity.ok(provaService.getAllPoiRequestOfEnteAsDTOs(username));
     }
 
     /**
      * Sets PoiRequest to accepted or denied in uniformity to toSet
-     * @param status true if accepted, false otherwise
+     * @param isAccepted true if accepted, false otherwise
      * @param idPoiRequest of the PoiRequest
      * @return status of operation
      */
     @PostMapping("/notifies")
-    public ResponseEntity<Object> setPoiRequestStatus(@RequestParam boolean status,@RequestParam Long idPoiRequest){
-        return provaService.setPoiRequestStatus(status,idPoiRequest);
+    public ResponseEntity<Object> setPoiRequestStatus(@RequestParam boolean isAccepted, @RequestParam Long idPoiRequest){
+        return provaService.setPoiRequestStatus(isAccepted,idPoiRequest);
     }
 
-    @PostMapping("/notifies/prova")
+    @PostMapping("/notifies/prova") //TODO finire
     public ResponseEntity<Object> setPoiRequestWithModifications(@RequestParam boolean status,
                                                                  @RequestParam Long idPoiRequest,
                                                                  @RequestBody Map<String, Object> body){

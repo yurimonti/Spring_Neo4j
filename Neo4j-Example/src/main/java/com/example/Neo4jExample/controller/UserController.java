@@ -83,5 +83,15 @@ public class UserController {
         return ResponseEntity.ok(poiRequestDTO);
     }
 
+    /**
+     * Gets all the Poi request that concern a user
+     * @param username the name of the user
+     * @return a collection with the poi requests that concern a user as DTOs
+     */
+    @GetMapping("/notifies")
+    public ResponseEntity<Collection<PoiRequestDTO>> getRequestsFromUsers(@RequestParam String username){
+        return ResponseEntity.ok(provaService.getAllPoiRequestOfUserAsDTOs(username));
+    }
+
 
 }
