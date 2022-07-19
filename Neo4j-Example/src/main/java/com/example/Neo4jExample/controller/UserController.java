@@ -1,6 +1,7 @@
 package com.example.Neo4jExample.controller;
 
 import com.example.Neo4jExample.dto.CityDTO;
+import com.example.Neo4jExample.dto.PoiRequestDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.ProvaService;
@@ -25,6 +26,8 @@ public class UserController {
 
     private final ProvaService provaService;
     private final ContactRepository contactRepository;
+
+    private final UserNodeRepository userNodeRepository;
     private final PoiTypeRepository poiTypeRepository;
     private final TimeSlotRepository timeSlotRepository;
     private final TagRepository tagRepository;
@@ -45,7 +48,7 @@ public class UserController {
         Long poiId = Long.parseLong((String)body.get("poi"));
         PointOfInterestNode pointOfInterestNode = pointOfIntRepository.findById(poiId).orElse(null);
         String name = (String) body.get("name");
-        String username = "An User";
+        String username = (String)body.get("username");
         String description = (String) body.get("description");
         CityNode city = cityRepository.findByName("Camerino");
         /*CityNode city = cityRepository.findAll().stream().filter(c -> c.getPointOfInterests()
@@ -100,7 +103,7 @@ public class UserController {
         poiRequestNode.setTagValues(values);
         poiRequestNode.setContact(contact);
         poiRequestNode.setTicketPrice(ticketPrice);
-        poiRequestNode.setTimeSlot(timeSlot);
+        poiRequestNode.setHours(timeSlot);
         poiRequestNode.setTimeToVisit(timeToVisit);
         poiRequestNode.setPointOfInterestNode(pointOfInterestNode);
         poiRequestRepository.save(poiRequestNode);
@@ -111,7 +114,7 @@ public class UserController {
     public ResponseEntity<PoiRequestNode> addPoi(@RequestBody Map<String, Object> body) {
         //TODO: fare una verifica se è un'aggiunta od una modifica.
         String name = (String) body.get("name");
-        String username = "An User";
+        String username = (String)body.get("username");
         String description = (String) body.get("description");
         CityDTO cityDto = cityDTOMySerializer.deserialize(
                 cityDTOMySerializer.serialize(body.get("city")), CityDTO.class);
@@ -166,10 +169,20 @@ public class UserController {
         poiRequestNode.setTagValues(values);
         poiRequestNode.setContact(contact);
         poiRequestNode.setTicketPrice(ticketPrice);
-        poiRequestNode.setTimeSlot(timeSlot);
+        poiRequestNode.setHours(timeSlot);
         poiRequestNode.setTimeToVisit(timeToVisit);
         poiRequestRepository.save(poiRequestNode);
         return ResponseEntity.ok(poiRequestNode);
+    }
+
+    @GetMapping("/notifies")
+    public ResponseEntity<Collection<PoiRequestDTO>> getUserRequests (@RequestParam String username){
+        UserNode user = userNodeRepository.findByUsername(username);
+        Collection<PoiRequestNode> result = poiRequestRepository.findAll().stream().filter(poiRequestNode ->
+                        poiRequestNode.getUsername().equals(user.getUsername())).toList();
+        Collection<PoiRequestDTO> poiRequestDTOS = new ArrayList<>();
+        result.forEach(poiRequestNode -> poiRequestDTOS.add(new PoiRequestDTO(poiRequestNode)));
+        return ResponseEntity.ok(poiRequestDTOS);
     }
 
 

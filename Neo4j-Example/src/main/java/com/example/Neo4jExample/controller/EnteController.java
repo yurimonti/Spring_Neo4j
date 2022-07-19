@@ -127,12 +127,22 @@ public class EnteController {
         if(toSet){
             if(Objects.isNull(poiRequestNode.getPointOfInterestNode())){
                 PointOfInterestNode pointOfInterestNode = new PointOfInterestNode(poiRequestNode);
-                timeSlotRepository.save(poiRequestNode.getTimeSlot());
+                timeSlotRepository.save(poiRequestNode.getHours());
                 pointOfIntRepository.save(pointOfInterestNode);
             } else {
                 provaService.changePoiFromRequest(poiRequestNode);
             }
         }
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/notifies/prova")
+    public ResponseEntity<Object> setRequestTo(@RequestParam Long id,
+                                               @RequestBody Map<String,Object> body){
+        PoiRequestNode poiRequestNode = null;
+        if(poiRequestRepository.findById(id).isPresent()) poiRequestNode = poiRequestRepository.findById(id).get();
+        if(Objects.isNull(poiRequestNode)) return ResponseEntity.noContent().build();
+        poiRequestNode.setAccepted(true);
         return ResponseEntity.ok().build();
     }
 

@@ -150,7 +150,7 @@ public class ProvaService {
 
     public void changePoiFromRequest(PoiRequestNode poiRequestNode){
         PointOfInterestNode result = poiRequestNode.getPointOfInterestNode();
-        result.setHours(poiRequestNode.getTimeSlot());
+        result.setHours(poiRequestNode.getHours());
         result.setCoordinate(poiRequestNode.getCoordinate());
         result.setTicketPrice(poiRequestNode.getTicketPrice());
         result.setContact(poiRequestNode.getContact());

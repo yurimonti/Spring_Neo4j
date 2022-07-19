@@ -22,7 +22,7 @@ public class PoiRequestNode {
     private CityNode city;
     private Coordinate coordinate;
     private Boolean accepted;
-    private TimeSlot timeSlot;
+    private TimeSlot hours;
     private Integer timeToVisit;
     private Address address;
     private Double ticketPrice;
@@ -58,7 +58,7 @@ public class PoiRequestNode {
                           Collection<PoiType> types, Collection<PoiTagRel> tagValues,TimeSlot timeSlot,
                           Integer timeToVisit, Double ticketPrice,String username,Contact contact) {
         this(name,description,city,coordinate,address,types,tagValues);
-        this.timeSlot = timeSlot;
+        this.hours = timeSlot;
         this.timeToVisit = timeToVisit;
         this.ticketPrice = ticketPrice;
         this.username = username;
