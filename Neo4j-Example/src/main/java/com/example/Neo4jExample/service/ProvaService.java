@@ -187,24 +187,33 @@ public class ProvaService {
 
     private void changePoiFromRequest(PoiRequestNode poiRequestNode) {
         PointOfInterestNode result = poiRequestNode.getPointOfInterestNode();
+
         result.setHours(new TimeSlot(poiRequestNode.getTimeSlot()));
         timeSlotRepository.save(result.getHours());
+
         result.setCoordinate(new Coordinate(poiRequestNode.getCoordinate()));
         coordinateRepository.save(result.getCoordinate());
+
         result.setTicketPrice(poiRequestNode.getTicketPrice());
+
         result.setContact(new Contact(poiRequestNode.getContact()));
         contactRepository.save(result.getContact());
+
         result.setName(poiRequestNode.getName());
         result.setDescription(poiRequestNode.getDescription());
         result.setTimeToVisit(poiRequestNode.getTimeToVisit());
+
         result.setAddress(new Address(poiRequestNode.getAddress()));
         addressRepository.save(result.getAddress());
+
         result.getContributors().add(poiRequestNode.getUsername());
         result.setLink(poiRequestNode.getLink());
         result.setTypes(poiRequestNode.getTypes());
 
         Collection<PoiTagRel> poiTagRels = poiRequestNode.getTagValues().stream().map(PoiTagRel::new).toList();
         result.setTagValues(poiTagRels);
+
+        poiRequestRepository.save(poiRequestNode);
         pointOfIntRepository.save(result);
     }
 
@@ -385,6 +394,26 @@ public class ProvaService {
         newPoiRequest.setTimeSlot(timeSlot);
 
         poiRequestRepository.save(newPoiRequest);
+        return newPoiRequest;
+    }
+
+
+    public PoiRequestNode modifyPoiRequest(Long poiId,String username, String name, String description, Double lat, Double lon, Integer timeToVisit, Double ticketPrice, String street, Integer number) {
+        PointOfInterestNode pointOfInterestNode = pointOfIntRepository.findById(poiId).orElse(null);
+
+        CityNode city = cityRepository.findByName("Camerino"); //TODO cambiare
+        /*CityNode city = cityRepository.findAll().stream().filter(c -> c.getPointOfInterests()
+                .contains(pointOfInterestNode)).findFirst().orElse(null);*/
+
+        Coordinate coord = new Coordinate(lat, lon);
+        coordinateRepository.save(coord);
+        Address address = new Address(street, number);
+        addressRepository.save(address);
+
+        PoiRequestNode newPoiRequest = new PoiRequestNode(username, name, description, city, coord, address, timeToVisit, ticketPrice);
+        newPoiRequest.setPointOfInterestNode(pointOfInterestNode);
+        poiRequestRepository.save(newPoiRequest);
+
         return newPoiRequest;
     }
 }

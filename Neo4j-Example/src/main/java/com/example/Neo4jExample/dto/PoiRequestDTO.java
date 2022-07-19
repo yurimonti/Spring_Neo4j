@@ -35,17 +35,18 @@ public class PoiRequestDTO {
 
     /**
      * Adds tags values and map status from a PoiRequestNode to the same DTO Class
+     *
      * @param poiRequestNode poiRequest to map values into the same DTO Class
      */
-    private void fillTagsValues(PoiRequestNode poiRequestNode){
+    private void fillTagsValues(PoiRequestNode poiRequestNode) {
         this.tagValues.addAll(poiRequestNode.getTagValues().stream().map(PoiTagRelDTO::new).toList());
-        if(Objects.isNull(poiRequestNode.getAccepted())) this.status = StatusEnum.PENDING;
-            else if(poiRequestNode.getAccepted()) this.status = StatusEnum.ACCEPTED;
-                else this.status = StatusEnum.REJECTED;
+        if (Objects.isNull(poiRequestNode.getAccepted())) this.status = StatusEnum.PENDING;
+        else if (poiRequestNode.getAccepted()) this.status = StatusEnum.ACCEPTED;
+        else this.status = StatusEnum.REJECTED;
     }
 
     //TODO:aggiungere su ogni Request gli attributi mancanti
-    public PoiRequestDTO(PoiRequestNode poiRequestNode){
+    public PoiRequestDTO(PoiRequestNode poiRequestNode) {
         this.id = poiRequestNode.getId();
         this.name = poiRequestNode.getName();
         this.description = poiRequestNode.getDescription();
@@ -60,6 +61,8 @@ public class PoiRequestDTO {
         this.ticketPrice = poiRequestNode.getTicketPrice();
         this.contact = poiRequestNode.getContact();
         this.timeToVisit = poiRequestNode.getTimeToVisit();
+        if (!Objects.isNull(poiRequestNode.getPointOfInterestNode()))
+            this.poiId = poiRequestNode.getPointOfInterestNode().getId();
         fillTagsValues(poiRequestNode);
 
     }

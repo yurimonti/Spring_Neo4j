@@ -33,6 +33,8 @@ public class PoiRequestNode {
     private URL link;
     private String username;
 
+    //TODO possibilita' di aggiungere data della richiesta
+
     private PointOfInterestNode pointOfInterestNode;
     @Relationship(type = "POI_HAS_TYPE")
     private Collection<PoiType> types;
