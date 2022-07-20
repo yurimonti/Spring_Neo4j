@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TagDTO {
     private String name;
-    private boolean isBooleanType;
+    private Boolean isBooleanType;
 
     public TagDTO(String name, boolean isBooleanType) {
         this.name = name;

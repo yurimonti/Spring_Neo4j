@@ -40,6 +40,10 @@ public class PointOfInterestNode {
     private Collection<PoiTagRel> tagValues;
 
     public PointOfInterestNode(){
+        this.coordinate = new Coordinate();
+        this.hours = new TimeSlot();
+        this.address = new Address();
+        this.contact = new Contact();
         this.types = new ArrayList<>();
         this.tagValues = new ArrayList<>();
         this.contributors = new ArrayList<>();

@@ -65,19 +65,26 @@ public class EnteController {
     /**
      * Sets PoiRequest to accepted or denied in uniformity to toSet
      * @param isAccepted true if accepted, false otherwise
-     * @param idPoiRequest of the PoiRequest
-     * @return status of operation
+     * @param idPoiRequest the id of the PoiRequest
+     * @return the poi created/modified
      */
     @PostMapping("/notifies")
-    public ResponseEntity<Object> setPoiRequestStatus(@RequestParam boolean isAccepted, @RequestParam Long idPoiRequest){
-        return provaService.setPoiRequestStatus(isAccepted,idPoiRequest);
+    public ResponseEntity<PointOfInterestNode> setPoiRequestStatus(@RequestParam boolean isAccepted, @RequestParam Long idPoiRequest){
+        return ResponseEntity.ok(provaService.setPoiRequestStatus(isAccepted,idPoiRequest));
     }
 
+    /**
+     * Sets PoiRequest to accepted and modify the poi with information provided from the ente
+     * @param idPoiRequest the id of the PoiRequest
+     * @param body information provided from the ente
+     * @return the poi modified
+     */
     @PostMapping("/notifies/prova") //TODO finire
-    public ResponseEntity<Object> setPoiRequestWithModifications(@RequestParam boolean status,
-                                                                 @RequestParam Long idPoiRequest,
+    public ResponseEntity<PointOfInterestNode> setPoiRequestWithModifications(@RequestParam Long idPoiRequest,
                                                                  @RequestBody Map<String, Object> body){
-        return provaService.setPoiRequestStatus(status,idPoiRequest);
+        PointOfInterestNode point = provaService.getPoiFromRequest(idPoiRequest);
+        if(point == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(provaService.modifyPoi(point,body));
     }
 
 }

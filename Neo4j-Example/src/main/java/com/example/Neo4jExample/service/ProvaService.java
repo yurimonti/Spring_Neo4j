@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -118,7 +120,7 @@ public class ProvaService {
         } else if (scheduleSize == 4) {
             if (this.scheduleControl(dailySchedule.get(0), dailySchedule.get(1), timeNow) ||
                     this.scheduleControl(dailySchedule.get(2), dailySchedule.get(3), timeNow)) isOpen = true;
-        } else throw new IllegalArgumentException("Non dovresti essere qui");
+        } else if(scheduleSize%2 == 1) throw new IllegalArgumentException("Non dovresti essere qui");
 
         poi.getHours().setIsOpen(isOpen);
         timeSlotRepository.save(poi.getHours());
@@ -150,23 +152,24 @@ public class ProvaService {
      * @param idPoiRequest of the PoiRequest
      * @return status of operation
      */
-    public ResponseEntity<Object> setPoiRequestStatus(boolean isAccepted, Long idPoiRequest) {
+    public PointOfInterestNode setPoiRequestStatus(boolean isAccepted, Long idPoiRequest) {
         PoiRequestNode poiRequestNode;
         if (poiRequestRepository.findById(idPoiRequest).isPresent()) {
             poiRequestNode = poiRequestRepository.findById(idPoiRequest).get();
-        } else return ResponseEntity.noContent().build();
+        } else return null;
 
         poiRequestNode.setAccepted(isAccepted);
         poiRequestRepository.save(poiRequestNode);
+        PointOfInterestNode result = null;
         if (isAccepted) {
             if (Objects.isNull(poiRequestNode.getPointOfInterestNode())) {
-                this.createPoiFromRequest(poiRequestNode);
-            } else this.changePoiFromRequest(poiRequestNode);
+                result = this.createPoiFromRequest(poiRequestNode);
+            } else result = this.changePoiFromRequest(poiRequestNode);
         }
-        return ResponseEntity.ok().build();
+        return result;
     }
 
-    private void createPoiFromRequest(PoiRequestNode poiRequestNode) {
+    private PointOfInterestNode createPoiFromRequest(PoiRequestNode poiRequestNode) {
         PointOfInterestNode result = new PointOfInterestNode(poiRequestNode);
         result.setHours(new TimeSlot(poiRequestNode.getHours()));
         timeSlotRepository.save(result.getHours());
@@ -180,11 +183,12 @@ public class ProvaService {
         result.setTagValues(poiTagRels);
 
         pointOfIntRepository.save(result);
+        return result;
 
     }
 
 
-    private void changePoiFromRequest(PoiRequestNode poiRequestNode) {
+    private PointOfInterestNode changePoiFromRequest(PoiRequestNode poiRequestNode) {
         PointOfInterestNode result = poiRequestNode.getPointOfInterestNode();
 
         result.setHours(new TimeSlot(poiRequestNode.getHours()));
@@ -214,6 +218,7 @@ public class ProvaService {
 
         poiRequestRepository.save(poiRequestNode);
         pointOfIntRepository.save(result);
+        return result;
     }
 
 
@@ -445,5 +450,57 @@ public class ProvaService {
         poiRequestRepository.save(newPoiRequest);
 
         return newPoiRequest;
+    }
+
+    public PointOfInterestNode modifyPoi(PointOfInterestNode point, Map<String, Object> body) {
+
+        point.setName((String) body.get("name"));
+        point.setDescription((String) body.get("description"));
+        point.getCoordinate().setLat(Double.parseDouble((String) body.get("lat")));
+        point.getCoordinate().setLon(Double.parseDouble((String) body.get("lon")));
+        coordinateRepository.save(point.getCoordinate());
+
+        point.getAddress().setNumber(Integer.parseInt((String) body.get("number")));
+        point.getAddress().setStreet((String) body.get("street"));
+        addressRepository.save(point.getAddress());
+
+        point.setTimeToVisit(Integer.parseInt((String) body.get("timeToVisit")));
+        point.setTicketPrice(Double.parseDouble((String) body.get("price")));
+
+        point.getContact().setEmail((String) body.get("email"));
+        point.getContact().setCellNumber((String) body.get("phone"));
+        point.getContact().setFax((String) body.get("fax"));
+        contactRepository.save(point.getContact());
+
+        Collection<String> daysOfWeek = new ArrayList<>(List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"));
+        for (String day : daysOfWeek){
+            try {
+                Method methodSet = TimeSlot.class.getMethod("set"+day,Collection.class);
+                Collection<String> a = (Collection<String>) body.get(day.toLowerCase());
+                Collection<LocalTime> b = new ArrayList<>();
+                a.forEach(s -> b.add((LocalTime.parse(s))));
+                methodSet.invoke(point.getHours(), b);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        timeSlotRepository.save(point.getHours());
+
+        point.setTypes(this.convertStrintToPoiTypes((Collection<String>) body.get("types")));
+
+        point.setTagValues(this.convertMapToPoiTagRels((Collection<Map<String, Object>>) body.get("tags")));
+
+        pointOfIntRepository.save(point);
+        return point;
+    }
+
+    public PointOfInterestNode getPoiFromRequest(Long idPoiRequest) {
+        if (poiRequestRepository.findById(idPoiRequest).isPresent()) {
+            PoiRequestNode poiRequestNode = poiRequestRepository.findById(idPoiRequest).get();
+            poiRequestNode.setAccepted(true);
+            poiRequestRepository.save(poiRequestNode);
+            if(poiRequestNode.getPointOfInterestNode() == null) return new PointOfInterestNode();
+            return poiRequestNode.getPointOfInterestNode();
+        } else return null;
     }
 }
