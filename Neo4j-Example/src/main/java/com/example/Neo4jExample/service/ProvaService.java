@@ -6,7 +6,6 @@ import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
@@ -35,7 +34,9 @@ public class ProvaService {
      *
      * @return a collection with all the pois
      */
-    public Collection<PointOfInterestNode> getAllPois() {
+    public Collection<PointOfInterestNode> getAllPois(String username) {
+        Ente ente = this.getEnteFromUser(userNodeRepository.findByUsername(username));
+        if(ente != null) return ente.getCity().getPointOfInterests();
         return pointOfIntRepository.findAll();
     }
 
@@ -65,7 +66,7 @@ public class ProvaService {
      * @return Ente if the user is linked to an Ente or else throw
      */
     public Ente getEnteFromUser(UserNode user) {
-        return enteRepository.findAll().stream().filter(ente -> ente.getUser().equals(user)).findFirst().orElseThrow();
+        return enteRepository.findAll().stream().filter(ente -> ente.getUser().equals(user)).findFirst().orElse(null);
     }
 
     /**
@@ -183,6 +184,8 @@ public class ProvaService {
         result.setTagValues(poiTagRels);
 
         pointOfIntRepository.save(result);
+        poiRequestNode.getCity().getPointOfInterests().add(result);
+        cityRepository.save(poiRequestNode.getCity());
         return result;
 
     }
@@ -499,8 +502,21 @@ public class ProvaService {
             PoiRequestNode poiRequestNode = poiRequestRepository.findById(idPoiRequest).get();
             poiRequestNode.setAccepted(true);
             poiRequestRepository.save(poiRequestNode);
-            if(poiRequestNode.getPointOfInterestNode() == null) return new PointOfInterestNode();
+            if(poiRequestNode.getPointOfInterestNode() == null){
+                return new PointOfInterestNode();
+            }
             return poiRequestNode.getPointOfInterestNode();
         } else return null;
+    }
+
+    public PointOfInterestNode getPoifromId(Long poiId) {
+        return pointOfIntRepository.findById(poiId).orElse(null);
+    }
+
+    public void setNewPoiInCityFromUsername(PointOfInterestNode point, String enteUsername) {
+        Ente ente = this.getEnteFromUser(userNodeRepository.findByUsername(enteUsername));
+        CityNode city = ente.getCity();
+        city.getPointOfInterests().add(point);
+        cityRepository.save(city);
     }
 }

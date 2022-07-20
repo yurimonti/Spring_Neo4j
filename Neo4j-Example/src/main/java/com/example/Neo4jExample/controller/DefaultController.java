@@ -20,8 +20,8 @@ public class DefaultController {
      * @return a collection with all the pois
      */
     @GetMapping("/poi/all")
-    public ResponseEntity<Collection<PointOfInterestNode>> getAllPois(){
-        return ResponseEntity.ok(provaService.getAllPois());
+    public ResponseEntity<Collection<PointOfInterestNode>> getAllPois(@RequestParam String username){
+        return ResponseEntity.ok(provaService.getAllPois(username));
     }
 
     /**

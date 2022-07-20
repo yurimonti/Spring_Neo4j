@@ -51,6 +51,18 @@ public class EnteController {
         return ResponseEntity.ok(newPoi);
     }
 
+    /**
+     *
+     * @param body
+     * @return
+     */
+    @PostMapping("/notifies/prova2")
+    public ResponseEntity<PointOfInterestNode> modifyPoi(@RequestParam Long poiId,@RequestBody Map<String, Object> body){
+        PointOfInterestNode point = this.provaService.getPoifromId(poiId);
+        if(point == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(provaService.modifyPoi(point,body));
+    }
+
 
     /**
      * Gets all the Poi request that concern an Ente from all users
@@ -79,12 +91,17 @@ public class EnteController {
      * @param body information provided from the ente
      * @return the poi modified
      */
-    @PostMapping("/notifies/prova") //TODO finire
+    @PostMapping("/notifies/prova")
     public ResponseEntity<PointOfInterestNode> setPoiRequestWithModifications(@RequestParam Long idPoiRequest,
-                                                                 @RequestBody Map<String, Object> body){
+                                                                              @RequestParam String username,
+                                                                              @RequestBody Map<String, Object> body){
         PointOfInterestNode point = provaService.getPoiFromRequest(idPoiRequest);
         if(point == null) return ResponseEntity.notFound().build();
+        this.provaService.setNewPoiInCityFromUsername(point,username);
         return ResponseEntity.ok(provaService.modifyPoi(point,body));
     }
+
+
+
 
 }
