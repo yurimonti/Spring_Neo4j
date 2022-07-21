@@ -153,9 +153,11 @@ public class EnteController {
         if (!Objects.isNull(poiRequestNode.getPointOfInterestNode()))
             result = this.poiService.modifyPoiFromBody(poiRequestNode.getPointOfInterestNode(), body);
         else result = this.poiService.createPoiFromBody(body);
+        System.out.println(!Objects.isNull(poiRequestNode.getPointOfInterestNode()));
         CityNode city = ente.getCity();
         city.getPointOfInterests().add(result);
         cityRepository.save(city);
+        poiRequestRepository.save(poiRequestNode);
         return ResponseEntity.ok().body(result);
     }
 

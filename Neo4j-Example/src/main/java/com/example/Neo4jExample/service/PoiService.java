@@ -101,6 +101,7 @@ public class PoiService {
     }
 
     public PointOfInterestNode modifyPoiFromBody(PointOfInterestNode poiToModify, Map<String,Object> bodyFrom){
+        //FIXME: rivedere metodo perché non funziona;
         String username = (String)bodyFrom.get("username");
         poiToModify.getContributors().add(username);
         String name = (String) bodyFrom.get("name");
@@ -165,6 +166,7 @@ public class PoiService {
             values.add(poiTagRel);
         }
         poiToModify.setTagValues(values);
+        //Errore su questa riga
         this.pointOfIntRepository.save(poiToModify);
         return poiToModify;
     }
