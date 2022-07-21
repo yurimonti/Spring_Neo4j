@@ -52,11 +52,11 @@ public class EnteController {
     }
 
     /**
-     *
-     * @param body
-     * @return
+     * Modify a POI with parameters provided
+     * @param body parameters of the POI
+     * @return the modified POI
      */
-    @PostMapping("/notifies/prova2")
+    @PostMapping("/notifies/prova2") //TODO mettere controllo ente citta'
     public ResponseEntity<PointOfInterestNode> modifyPoi(@RequestParam Long poiId,@RequestBody Map<String, Object> body){
         PointOfInterestNode point = this.provaService.getPoifromId(poiId);
         if(point == null) return ResponseEntity.notFound().build();

@@ -40,13 +40,18 @@ public class PointOfInterestNode {
     private Collection<PoiTagRel> tagValues;
 
     public PointOfInterestNode(){
-        this.coordinate = new Coordinate();
-        this.hours = new TimeSlot();
-        this.address = new Address();
-        this.contact = new Contact();
         this.types = new ArrayList<>();
         this.tagValues = new ArrayList<>();
         this.contributors = new ArrayList<>();
+    }
+
+
+    public PointOfInterestNode(Coordinate coordinate, TimeSlot hours, Address address,Contact contact){
+        this();
+        this.coordinate = coordinate;
+        this.hours = hours;
+        this.address = address;
+        this.contact = contact;
     }
 
     public PointOfInterestNode(String name, String description) {

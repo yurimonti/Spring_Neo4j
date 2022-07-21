@@ -501,7 +501,7 @@ public class ProvaService {
             poiRequestNode.setAccepted(true);
             poiRequestRepository.save(poiRequestNode);
             if(poiRequestNode.getPointOfInterestNode() == null){
-                return new PointOfInterestNode();
+                return new PointOfInterestNode(new Coordinate(),new TimeSlot(),new Address(),new Contact());
             }
             return poiRequestNode.getPointOfInterestNode();
         } else return null;

@@ -322,32 +322,23 @@ public class Neo4jExampleApplication {
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Santuario di S. Maria in Via",camerino,
 					santuario, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+
 			pointProvaCoords = new Coordinate(43.1377,13.0736);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Basilica di S. Venanzio Martire",camerino,
 					basilica, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1468,13.1303);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Santuario Maria Madre della Misericordia",
 					camerino, santuario, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.0911,13.1165);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Lago di Polverina",camerino, lago,
 					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.136,13.0692);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Biblioteca comunale Valentiniana",
 					camerino, biblioteca, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1658,13.0584);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Mulino Bottacchiari",camerino, mulino,
 					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
