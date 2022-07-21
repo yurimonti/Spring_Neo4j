@@ -34,9 +34,7 @@ public class ProvaService {
      *
      * @return a collection with all the pois
      */
-    public Collection<PointOfInterestNode> getAllPois(String username) {
-        Ente ente = this.getEnteFromUser(userNodeRepository.findByUsername(username));
-        if(ente != null) return ente.getCity().getPointOfInterests();
+    public Collection<PointOfInterestNode> getAllPois() {
         return pointOfIntRepository.findAll();
     }
 
