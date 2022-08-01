@@ -26,10 +26,6 @@ public class ProvaService {
 
     private final EnteRepository enteRepository;
 
-    public Ente getEnteFromUser(UserNode user){
-        return enteRepository.findAll().stream().filter(ente -> ente.getUser().equals(user)).findFirst().orElseThrow();
-    }
-
 
     public PointOfInterestNode createPoi(Ente ente, String name, String description, Coordinate coordinate,
                                          Address address,Contact contact,Double ticketPrice,Integer timeToVisit,

@@ -66,6 +66,15 @@ public class PointOfInterestNode {
         this.contact = contact;
     }
 
+    public PointOfInterestNode(String name, String description,Coordinate coordinate,TimeSlot hours,Integer timeToVisit,
+                               Address address,Double ticketPrice,URL link,Collection<PoiType> types,
+                               Contact contact,Collection<PoiTagRel> tagValues){
+        this(name, description, coordinate, address, hours, timeToVisit, ticketPrice, contact);
+        this.link = link;
+        this.types = types;
+        this.tagValues = tagValues;
+    }
+
     public PointOfInterestNode(String name, String description, Integer timeToVisit, URL link) {
         this(name,description);
         this.timeToVisit = timeToVisit;

@@ -21,8 +21,13 @@ public class ItineraryNode {
     private CityNode city;
     @Relationship(type = "ITINERARY_HAS_POI",direction = Relationship.Direction.OUTGOING)
     private Collection<PointOfInterestNode> points;
+
+    private Integer timeToVisit;
     @Relationship(type = "ITINERARY_HAS_CATEGORY",direction = Relationship.Direction.OUTGOING)
     private Collection<CategoryNode> categories;
+
+    private String geoJson;
+
 
     private void setRealCategory(Collection<CategoryNode> categories,
                                  Collection<PointOfInterestNode> pointOfInterestNodes){
@@ -32,15 +37,14 @@ public class ItineraryNode {
         Collection<PoiType> pois = poiTypes.stream().distinct().toList();
         pois.forEach(poiType -> categoriesNodes.addAll(poiType.getCategories()));
         categories.addAll(categoriesNodes.stream().distinct().toList());
-
     }
 
-
-    public ItineraryNode(CityNode city, Collection<PointOfInterestNode> points) {
+    public ItineraryNode(CityNode city, Collection<PointOfInterestNode> points, String geoJson) {
         this();
         this.city = city;
         this.points = points;
         this.categories = new ArrayList<>();
         setRealCategory(this.categories,points);
+        this.geoJson = geoJson;
     }
 }

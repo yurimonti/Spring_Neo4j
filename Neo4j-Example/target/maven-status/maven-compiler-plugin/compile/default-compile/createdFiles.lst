@@ -45,6 +45,7 @@ com/example/Neo4jExample/Neo4jExampleApplication.class
 com/example/Neo4jExample/Neo4jExampleApplication$1.class
 com/example/Neo4jExample/repository/PoiRequestRepository.class
 com/example/Neo4jExample/dto/TimeSlotDTO.class
+com/example/Neo4jExample/service/UserService.class
 com/example/Neo4jExample/dto/CityDTO.class
 com/example/Neo4jExample/dto/CoordinateDTO.class
 com/example/Neo4jExample/model/PoiRequestNode.class

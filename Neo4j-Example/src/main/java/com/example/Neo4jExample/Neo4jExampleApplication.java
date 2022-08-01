@@ -378,6 +378,11 @@ public class Neo4jExampleApplication {
 
 			//------------------- Fine Creazione Poi --------------------
 
+			//------------------- Inizio Creazione Itinerario -----------
+
+
+			//------------------- Fine Creazione Itinerario -------------
+
 			//creare una request aggiunta poi di prova
 			/*Collection<PoiType> poiTypesRequest =  new ArrayList<>();
 			poiTypesRequest.add(chiesa);
