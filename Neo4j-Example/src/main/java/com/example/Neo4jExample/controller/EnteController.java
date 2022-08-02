@@ -1,6 +1,7 @@
 package com.example.Neo4jExample.controller;
 
 import com.example.Neo4jExample.dto.CityDTO;
+import com.example.Neo4jExample.dto.ItineraryDTO;
 import com.example.Neo4jExample.dto.PoiRequestDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
@@ -27,9 +28,6 @@ public class EnteController {
     private final PoiRequestService poiRequestService;
     private final ItineraryService itineraryService;
     private final UserService userService;
-    private final UtilityService utilityService;
-
-    private final ItineraryRepository itineraryRepository;
 
     private Ente getEnteFromUsername(String username){
         return this.userService.getEnteFromUser(username);
@@ -116,26 +114,28 @@ public class EnteController {
         return ResponseEntity.ok(toModify);
     }
 
+    //TODO:mettere controllo se richiesta con piu' citta'
     @PostMapping("/itinerary")
-    public ResponseEntity<ItineraryNode> createItinerary(@RequestParam String username,
+    public ResponseEntity<ItineraryDTO> createItinerary(@RequestParam String username,
                                                          @RequestBody Map<String, Object> body){
         Ente ente = this.getEnteFromUsername(username);
         if(Objects.isNull(ente)) return ResponseEntity.notFound().build();
         String geojson = (String) body.get("geojson");
         Integer travelTime = Integer.parseInt((String) body.get("travelTime"));
-        Collection<Long> poiIds = (Collection<Long>) body.get("poiIds");
-        Collection<PointOfInterestNode> pois = poiIds.stream().map(this.poiService::findPoiById).toList();
-        ItineraryNode result = this.itineraryService.createItinerary(ente.getCity(),pois,geojson,travelTime);
-        this.itineraryRepository.save(result);
-        return ResponseEntity.ok(result);
+        Collection<String> poiIds = (Collection<String>) body.get("poiIds");
+        Collection<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
+        Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
+        return ResponseEntity.ok(new ItineraryDTO(this.itineraryService.createItinerary(pois,geojson,travelTime,
+                ente.getUser().getUsername(),ente.getCity())));
     }
 
     @GetMapping("/itinerary")
-    public ResponseEntity<Collection<ItineraryNode>> getItineraries(@RequestParam String username){
+    public ResponseEntity<Collection<ItineraryDTO>> getItineraries(@RequestParam String username){
         Ente ente = this.getEnteFromUsername(username);
         if(Objects.isNull(ente)) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(this.itineraryRepository.findAll().stream()
-                .filter(i -> Objects.equals(i.getCity().getId(),ente.getCity().getId())).toList());
+        return ResponseEntity.ok(this.itineraryService.getItinerariesFiltered(i -> i.getCities().stream()
+                .map(CityNode::getId)
+                .anyMatch(c -> c.equals(ente.getCity().getId()))).stream().map(ItineraryDTO::new).toList());
     }
 
 }

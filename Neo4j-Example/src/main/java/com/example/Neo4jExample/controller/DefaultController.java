@@ -33,6 +33,13 @@ public class DefaultController {
         return ResponseEntity.ok(calendar.getTime());
     }
 
+    //TODO:cancellare, poiche di prova
+    @PostMapping("/provaGeojson")
+    public ResponseEntity<String> sendGeojsonString(@RequestBody Map<String,Object> body){
+        String geojson = (String)body.get("geojson");
+        return ResponseEntity.ok(geojson);
+    }
+
     @GetMapping("/poi/all")
     public ResponseEntity<Collection<PointOfInterestNode>> getAllPois(){
         return ResponseEntity.ok(pointOfIntRepository.findAll());
@@ -57,19 +64,19 @@ public class DefaultController {
         return ResponseEntity.ok().body(result);
     }
 
+    //TODO:cancellare, poiche di prova
     @PostMapping("/provaInput")
     public ResponseEntity<Double> provaInput(@RequestBody Map<String, Object> body){
         Double result = Double.parseDouble((String)body.get("provaInput"));
         return ResponseEntity.ok().body(result);
     }
 
+    //TODO:cancellare, poiche di prova
     @PostMapping("/provaInput2")
     public ResponseEntity<Double> provaInput2(@RequestBody Map<String, Object> body){
         Double result = (Double) body.get("provaInput");
         return ResponseEntity.ok().body(result);
     }
-
-
 
     /**
      * prova per aggiungere un itinerario nel sistema

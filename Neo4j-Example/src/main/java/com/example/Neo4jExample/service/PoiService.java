@@ -140,16 +140,16 @@ public class PoiService {
         result.setName(name);
         String description = (String) bodyFrom.get("description");
         result.setDescription(description);
-        Coordinate coordinate = utilityService.createCoordsFromString(
+        Coordinate coordinate = this.utilityService.createCoordsFromString(
                 (String) bodyFrom.get("lat"), (String) bodyFrom.get("lon"));
         result.setCoordinate(coordinate);
         String street = (String) bodyFrom.get("street");
         Integer number = Integer.parseInt((String) bodyFrom.get("number"));
-        Address address = utilityService.createAddress(street, number);
+        Address address = this.utilityService.createAddress(street, number);
         result.setAddress(address);
         Contact contact = new Contact((String) bodyFrom.get("email"), (String) bodyFrom.get("phone"),
                 (String) bodyFrom.get("fax"));
-        contactRepository.save(contact);
+        this.contactRepository.save(contact);
         result.setContact(contact);
         Integer timeToVisit = Integer.parseInt((String) bodyFrom.get("timeToVisit"));
         result.setTimeToVisit(timeToVisit);

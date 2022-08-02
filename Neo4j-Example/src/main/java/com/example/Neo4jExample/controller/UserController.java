@@ -1,13 +1,11 @@
 package com.example.Neo4jExample.controller;
 
 import com.example.Neo4jExample.dto.CityDTO;
+import com.example.Neo4jExample.dto.ItineraryDTO;
 import com.example.Neo4jExample.dto.PoiRequestDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
-import com.example.Neo4jExample.service.PoiRequestService;
-import com.example.Neo4jExample.service.PoiService;
-import com.example.Neo4jExample.service.ProvaService;
-import com.example.Neo4jExample.service.UserService;
+import com.example.Neo4jExample.service.*;
 import com.example.Neo4jExample.service.util.MySerializer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +27,7 @@ public class UserController {
     private final UserService userService;
     private final PoiRequestService poiRequestService;
     private final CityRepository cityRepository;
-    private final ItineraryRepository itineraryRepository;
+    private final ItineraryService itineraryService;
 
     @PostMapping("/modifyPoi")
     public ResponseEntity<PoiRequestNode> modifyPoi(@RequestBody Map<String, Object> body){
@@ -55,11 +53,12 @@ public class UserController {
     }
 
     @GetMapping("/itinerary")
-    public ResponseEntity<Collection<ItineraryNode>> getItineries(@RequestParam String username,@RequestParam Long cityId){
+    public ResponseEntity<Collection<ItineraryDTO>> getItineries(@RequestParam String username,@RequestParam Long cityId){
         UserNode user = this.userService.getUserByUsername(username);
         if(this.cityRepository.findAll().stream().map(CityNode::getId).noneMatch(i -> Objects.equals(i, cityId)) ||
                 Objects.isNull(user)) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(this.itineraryRepository.findAll().stream()
-                .filter(i -> Objects.equals(i.getCity().getId(),cityId)).toList());
+        return ResponseEntity.ok(this.itineraryService.getItinerariesFiltered(i -> i.getCities().stream()
+                .map(CityNode::getId)
+                .anyMatch(c -> c.equals(cityId))).stream().map(ItineraryDTO::new).toList());
     }
 }
