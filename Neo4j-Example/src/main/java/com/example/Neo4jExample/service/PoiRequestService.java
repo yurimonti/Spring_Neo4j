@@ -25,7 +25,7 @@ public class PoiRequestService {
     private final PointOfIntRepository pointOfIntRepository;
     private final MySerializer<CityDTO> cityDTOMySerializer;
 
-
+    //create a basic request without some data, like city and poi
     private PoiRequestNode getBasicRequestFromBody(Map<String, Object> bodyFrom) {
         PoiRequestNode poiRequestNode = new PoiRequestNode();
         String username = this.utilityService.getValueFromBody("username", bodyFrom);
@@ -62,16 +62,31 @@ public class PoiRequestService {
         return poiRequestNode;
     }
 
-    public void setPoiToRequest(PoiRequestNode where, PointOfInterestNode toSet){
-        where.setPointOfInterestNode(toSet);
-        this.poiRequestRepository.save(where);
+    /**
+     * set poi to target request
+     * @param target to set poi
+     * @param toSet poi to set
+     */
+    public void setPoiToRequest(PoiRequestNode target, PointOfInterestNode toSet){
+        target.setPointOfInterestNode(toSet);
+        this.poiRequestRepository.save(target);
     }
 
-    public void changeStatusToRequest(PoiRequestNode where,boolean toSet){
-        where.setAccepted(toSet);
-        this.poiRequestRepository.save(where);
+    /**
+     * set request to accepted or rejected
+     * @param target to set
+     * @param toSet value to set
+     */
+    public void changeStatusToRequest(PoiRequestNode target,boolean toSet){
+        target.setAccepted(toSet);
+        this.poiRequestRepository.save(target);
     }
 
+    /**
+     * create an Add Request of Poi from http body request
+     * @param bodyFrom http body where get values
+     * @return Request created
+     */
     public PoiRequestNode createAddRequestFromBody(Map<String, Object> bodyFrom) {
         CityDTO cityDto = this.cityDTOMySerializer.deserialize(
                 this.cityDTOMySerializer.serialize(bodyFrom.get("city")), CityDTO.class);
@@ -82,6 +97,11 @@ public class PoiRequestService {
         return result;
     }
 
+    /**
+     * create a Modify Request of Poi from http body request
+     * @param bodyFrom http body where get values
+     * @return Request created
+     */
     public PoiRequestNode createModifyRequestFromBody(Map<String, Object> bodyFrom){
         String poi = this.utilityService.getValueFromBody("poi",bodyFrom);
         if(poi == null) return null;
@@ -96,10 +116,20 @@ public class PoiRequestService {
         return result;
     }
 
+    /**
+     * filter requests with a certain filter
+     * @param filter applicated to
+     * @return Requests filtered
+     */
     public Collection<PoiRequestNode> getFilteredRequests(Predicate<PoiRequestNode> filter){
         return this.poiRequestRepository.findAll().stream().filter(filter).toList();
     }
 
+    /**
+     * find and return a request by id if is present
+     * @param id of request
+     * @return request by id
+     */
     public PoiRequestNode findRequestById(Long id) {
         if (this.poiRequestRepository.findById(id).isPresent()) return this.poiRequestRepository.findById(id).get();
         else return null;

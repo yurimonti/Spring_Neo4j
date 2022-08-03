@@ -20,6 +20,12 @@ public class UtilityService {
     private final TimeSlotRepository timeSlotRepository;
     private final CityRepository cityRepository;
 
+    /**
+     * create Coords from string values
+     * @param lat latitude in string value
+     * @param lng longitude in string value
+     * @return Coordinate
+     */
     public Coordinate createCoordsFromString(String lat, String lng){
         Coordinate result = new Coordinate(Double.parseDouble(lat),
                 Double.parseDouble(lng));
@@ -27,6 +33,12 @@ public class UtilityService {
         return result;
     }
 
+    /**
+     * create Address from values
+     * @param street name of street
+     * @param number of street
+     * @return Address
+     */
     public Address createAddress(String street, Integer number){
         Address result = new Address(street,number);
         this.addressRepository.save(result);
@@ -58,6 +70,12 @@ public class UtilityService {
         return toFill;
     }
 
+    /**
+     * get a value from a http body request
+     * @param key of value
+     * @param bodyFrom http body request
+     * @return value from key
+     */
     public String getValueFromBody(String key, Map<String, Object> bodyFrom) {
         return (String) bodyFrom.get(key);
     }

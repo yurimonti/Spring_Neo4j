@@ -4,7 +4,7 @@ import java.lang.reflect.Type;
 
 /**
  * Interface for serialize Objects
- * @param <T>
+ * @param <T> Object Type to serialize / deserialize
  */
 public interface MySerializer<T extends Object> {
     String serialize(Object obj);

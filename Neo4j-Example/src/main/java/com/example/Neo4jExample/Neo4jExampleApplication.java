@@ -38,7 +38,7 @@ public class Neo4jExampleApplication {
 								   TagRepository tagRepository, TimeSlotRepository timeSlotRepository,
 								   ItineraryRepository itineraryRepo,PoiRequestRepository poiRequestRepository,
 								   ProvaService provaService,UserNodeRepository userNodeRepository,
-								   UserRoleRepository userRoleRepository){
+								   UserRoleRepository userRoleRepository,ItineraryRequestRepository itineraryRequestRepository){
 		return args -> {
 			//prova user
 			userNodeRepository.deleteAll();
@@ -50,8 +50,6 @@ public class Neo4jExampleApplication {
 			UserRole adminRole = new UserRole("admin");
 			Collections.addAll(roles,userRole,adminRole,commercianteRole,enteRole);
 			userRoleRepository.saveAll(roles);
-			userNodeRepository.save(new UserNode("nome","cognome","email","password",
-					"username",userRole,adminRole,enteRole,commercianteRole));
 			//cancella tutto prima di avviare il db
 			addressRepository.deleteAll();
 			categoryRepository.deleteAll();
@@ -69,22 +67,34 @@ public class Neo4jExampleApplication {
 			timeSlotRepository.deleteAll();
 			itineraryRepo.deleteAll();
 			poiRequestRepository.deleteAll();
-
+			itineraryRequestRepository.deleteAll();
 			//creazione ente e citta'
 			UserNode userEnteCamerino = new UserNode("mario","rossi","email","password",
 					"ente_camerino",enteRole);
 			userNodeRepository.save(userEnteCamerino);
+			UserNode userEnteCastelRaimondo = new UserNode("carlo","verdi","email","password",
+					"ente_castel_raimondo",enteRole);
+			userNodeRepository.save(userEnteCastelRaimondo);
 			UserNode user = new UserNode("marco","bianchi","email","password",
 					"an_user",userRole);
 			userNodeRepository.save(user);
-			Ente enteProva = new Ente(userEnteCamerino);
+			Ente enteCamerino = new Ente(userEnteCamerino);
 			CityNode camerino = new CityNode("Camerino");
-			Coordinate coordCitta = new Coordinate(43.139850, 13.069172);
-			coordinateRepository.save(coordCitta);
-			camerino.setCoordinate(coordCitta);
+			Coordinate coordCamerino = new Coordinate(43.139850, 13.069172);
+			coordinateRepository.save(coordCamerino);
+			camerino.setCoordinate(coordCamerino);
 			cityRepository.save(camerino);
-			enteProva.setCity(camerino);
-			enteRepository.save(enteProva);
+			enteCamerino.setCity(camerino);
+			enteRepository.save(enteCamerino);
+
+			Ente enteCastelRaimondo = new Ente(userEnteCastelRaimondo);
+			CityNode castelRaimondo = new CityNode("Castel Raimondo");
+			Coordinate coordCastelRaimondo = new Coordinate(43.209100, 13.054600);
+			coordinateRepository.save(coordCastelRaimondo);
+			castelRaimondo.setCoordinate(coordCastelRaimondo);
+			cityRepository.save(castelRaimondo);
+			enteCastelRaimondo.setCity(castelRaimondo);
+			enteRepository.save(enteCastelRaimondo);
 
 			//Creazione TagNode
 			TagNode tag1 = new TagNode("ingresso animali",true);
@@ -375,6 +385,11 @@ public class Neo4jExampleApplication {
 
 
 			cityRepository.save(camerino);
+
+			pointProvaCoords = new Coordinate(43.2104315,13.0526301);
+			createPoiProva2(coordinateRepository, pointOfIntRepository, "PalaSport Castel Raimondo",castelRaimondo,
+					palazzo,pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			cityRepository.save(castelRaimondo);
 
 			//------------------- Fine Creazione Poi --------------------
 

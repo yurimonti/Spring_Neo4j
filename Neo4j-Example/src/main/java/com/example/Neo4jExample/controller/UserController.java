@@ -29,12 +29,23 @@ public class UserController {
     private final CityRepository cityRepository;
     private final ItineraryService itineraryService;
 
+    /**
+     * create a Modify Request for a poi
+     * @param body http request
+     * @return Modify Request
+     */
     @PostMapping("/modifyPoi")
     public ResponseEntity<PoiRequestNode> modifyPoi(@RequestBody Map<String, Object> body){
         PoiRequestNode result = this.poiRequestService.createModifyRequestFromBody(body);
         if(Objects.isNull(result))return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(result);
     }
+
+    /**
+     * create an Add Request of a poi
+     * @param body http request
+     * @return Add Request
+     */
     @PostMapping("/addPoi")
     public ResponseEntity<PoiRequestNode> addPoi(@RequestBody Map<String, Object> body) {
         PoiRequestNode result = this.poiRequestService.createAddRequestFromBody(body);
@@ -42,6 +53,11 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * get all user's requests
+     * @param username of user
+     * @return all requests
+     */
     @GetMapping("/notifies")
     public ResponseEntity<Collection<PoiRequestDTO>> getUserRequests(@RequestParam String username){
         UserNode user = this.userService.getUserByUsername(username);
@@ -52,6 +68,12 @@ public class UserController {
         return ResponseEntity.ok(poiRequestDTOS);
     }
 
+    /**
+     * get all city's itinerary
+     * @param username who calls this api
+     * @param cityId id of city
+     * @return all itineraries of this city
+     */
     @GetMapping("/itinerary")
     public ResponseEntity<Collection<ItineraryDTO>> getItineries(@RequestParam String username,@RequestParam Long cityId){
         UserNode user = this.userService.getUserByUsername(username);

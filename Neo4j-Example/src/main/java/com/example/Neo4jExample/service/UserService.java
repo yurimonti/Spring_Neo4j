@@ -13,10 +13,20 @@ public class UserService {
     private final UserNodeRepository userNodeRepository;
     private final EnteRepository enteRepository;
 
+    /**
+     * get user by username
+     * @param username of User
+     * @return User by his username
+     */
     public UserNode getUserByUsername(String username) {
         return this.userNodeRepository.findByUsername(username);
     }
 
+    /**
+     * get ente by username
+     * @param username of Ente
+     * @return Ente by his username
+     */
     public Ente getEnteFromUser(String username){
         return enteRepository.findAll().stream().filter(ente -> ente.getUser()
                         .equals(this.getUserByUsername(username))).findFirst().orElseThrow();

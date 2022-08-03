@@ -35,6 +35,11 @@ public class PoiService {
         return this.pointOfIntRepository.findById(id).orElse(null);
     }
 
+    /**
+     * save a PointOfInterest in a City
+     * @param where city to insert poi
+     * @param toSave poi to save
+     */
     public void savePoiInACity(CityNode where,PointOfInterestNode toSave){
         where.getPointOfInterests().add(toSave);
         this.cityRepository.save(where);

@@ -8,15 +8,15 @@ import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.*;
 import com.example.Neo4jExample.service.util.MySerializer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @RestController
 @RequestMapping("/ente")
@@ -29,11 +29,20 @@ public class EnteController {
     private final ItineraryService itineraryService;
     private final UserService userService;
 
+    private final UtilityService utilityService;
+
     private Ente getEnteFromUsername(String username){
         return this.userService.getEnteFromUser(username);
     }
 
     //TODO:chiamare api "/poi/create"
+
+    /**
+     * create poi
+     * @param username of ente who creates poi
+     * @param body http request that contains values
+     * @return new Poi
+     */
     @PostMapping("/createPoi")
     public ResponseEntity<PointOfInterestNode> createPoi(@RequestParam String username,@RequestBody Map<String, Object> body) {
         Ente ente = this.getEnteFromUsername(username);
@@ -43,7 +52,11 @@ public class EnteController {
         return Objects.isNull(poi) ? ResponseEntity.internalServerError().build() : ResponseEntity.ok(poi);
     }
 
-
+    /**
+     * get all request for an Ente
+     * @param username of Ente
+     * @return requests linked to a City's Poi
+     */
     @GetMapping("/notifies")
     public ResponseEntity<Collection<PoiRequestDTO>> getRequestFromUsers(@RequestParam String username) {
         Ente ente = this.getEnteFromUsername(username);
@@ -83,6 +96,13 @@ public class EnteController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * accept a Modify Request for a poi
+     * @param id of a Request to accept
+     * @param username of Ente
+     * @param body http request that contains values of modify
+     * @return Poi modified
+     */
     @PostMapping("/notifies/modify")
     public ResponseEntity<PointOfInterestNode> setRequestTo(@RequestParam Long id, @RequestParam String username,
                                                             @RequestBody Map<String, Object> body) {
@@ -104,6 +124,13 @@ public class EnteController {
         return ResponseEntity.ok().body(poiRequestNode.getPointOfInterestNode());
     }
 
+    /**
+     * modify a poi
+     * @param poiId id of poi to modify
+     * @param username of ente who calls this api
+     * @param body http request that contains values
+     * @return Poi modified
+     */
     @PatchMapping("/poi")
     public ResponseEntity<PointOfInterestNode> modifyPoi(@RequestParam Long poiId, @RequestParam String username,
                                                          @RequestBody Map<String, Object> body){
@@ -114,21 +141,57 @@ public class EnteController {
         return ResponseEntity.ok(toModify);
     }
 
-    //TODO:mettere controllo se richiesta con piu' citta'
+    /**
+     * create a new ItineraryNode if request contains only ente's city;
+     * create a new ItineraryNodeRequest otherwise.
+     * @param username of ente who wants to create itinerary
+     * @param body http request that contains values
+     * @return HttpStatus of response call.
+     */
     @PostMapping("/itinerary")
-    public ResponseEntity<ItineraryDTO> createItinerary(@RequestParam String username,
-                                                         @RequestBody Map<String, Object> body){
+    public HttpStatus createItinerary(@RequestParam String username,
+                                                      @RequestBody Map<String, Object> body){
         Ente ente = this.getEnteFromUsername(username);
-        if(Objects.isNull(ente)) return ResponseEntity.notFound().build();
+        if(Objects.isNull(ente)) return FORBIDDEN;
         String geojson = (String) body.get("geojson");
         Integer travelTime = Integer.parseInt((String) body.get("travelTime"));
         Collection<String> poiIds = (Collection<String>) body.get("poiIds");
         Collection<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
-        return ResponseEntity.ok(new ItineraryDTO(this.itineraryService.createItinerary(pois,geojson,travelTime,
-                ente.getUser().getUsername(),ente.getCity())));
+        //aggiunta controllo delle citta'
+        Collection<CityNode> poiCities = pois.stream().map(this.utilityService::getCityOfPoi).distinct().toList();
+        if(!poiCities.contains(ente.getCity())) return HttpStatus.NOT_ACCEPTABLE;
+        if(poiCities.size() > 1){
+            ItineraryRequestNode result = this.itineraryService.createItineraryRequest(pois,geojson,travelTime,
+                    ente.getUser().getUsername(),poiCities.toArray(CityNode[]::new));
+            return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR :HttpStatus.CREATED;
+        }
+        //fine controllo
+        ItineraryNode result = this.itineraryService.createItinerary(pois,geojson,travelTime,
+                ente.getUser().getUsername(),ente.getCity());
+
+        return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR :HttpStatus.CREATED;
     }
 
+    //TODO: controllare cosa ritorna nei vari casi
+    @PatchMapping("/itinerary/consensus")
+    public ResponseEntity<String> setConsensus(@RequestParam String username, @RequestParam boolean consensus,
+                                                     @RequestParam Long idRequest){
+        Ente ente = this.getEnteFromUsername(username);
+        if(Objects.isNull(ente)) return ResponseEntity.status(FORBIDDEN).build();
+        ItineraryRequestNode from = this.itineraryService.findRequestById(idRequest);
+        if(Objects.isNull(from)) return ResponseEntity.notFound().build();
+        this.itineraryService.updateConsensus(ente, from,consensus);
+        if(Objects.isNull(from.getAccepted())) return ResponseEntity.ok("PENDING");
+        if(!from.getAccepted()) return ResponseEntity.ok("REJECTED");
+        return ResponseEntity.ok("ACCEPTED");
+    }
+
+    /**
+     * get all itineraries of an Ente's City
+     * @param username of ente
+     * @return all itineraries
+     */
     @GetMapping("/itinerary")
     public ResponseEntity<Collection<ItineraryDTO>> getItineraries(@RequestParam String username){
         Ente ente = this.getEnteFromUsername(username);
