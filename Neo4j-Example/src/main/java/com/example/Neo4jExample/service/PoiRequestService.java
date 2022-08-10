@@ -40,7 +40,7 @@ public class PoiRequestService {
                 this.utilityService.getValueFromBody("phone", bodyFrom),
                 this.utilityService.getValueFromBody("fax", bodyFrom));
         this.contactRepository.save(contact);
-        Integer timeToVisit = Integer.parseInt(this.utilityService.getValueFromBody("timeToVisit", bodyFrom));
+        Double timeToVisit = Double.parseDouble(this.utilityService.getValueFromBody("timeToVisit", bodyFrom));
         Double ticketPrice = Double.parseDouble(this.utilityService.getValueFromBody("price", bodyFrom));
         TimeSlot timeSlot = this.utilityService.getTimeSlotFromBody(new TimeSlot(), bodyFrom);
         Collection<PoiType> poiTypes = ((Collection<String>) bodyFrom.get("types")).stream()

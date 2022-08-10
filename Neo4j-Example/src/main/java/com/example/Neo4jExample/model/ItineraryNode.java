@@ -20,14 +20,18 @@ import java.util.stream.Stream;
 public class ItineraryNode {
     @Id @GeneratedValue
     private Long id;
+
+    private String name;
+
+    private String description;
     @Relationship(type = "ITINERARY_OF_CITY",direction = Relationship.Direction.OUTGOING)
     private Collection<CityNode> cities;
 
     private String createdBy;
     @Relationship(type = "ITINERARY_HAS_POI",direction = Relationship.Direction.OUTGOING)
-    private Collection<PointOfInterestNode> points;
+    private Collection<ItineraryRelPoi> points;
 
-    private Integer timeToVisit;
+    private Double timeToVisit;
     @Relationship(type = "ITINERARY_HAS_CATEGORY",direction = Relationship.Direction.OUTGOING)
     private Collection<CategoryNode> categories;
     private String geoJson;
@@ -42,13 +46,15 @@ public class ItineraryNode {
         pois.forEach(poiType -> categoriesNodes.addAll(poiType.getCategories()));
         categories.addAll(categoriesNodes.stream().distinct().toList());
     }
-
-    public ItineraryNode(Collection<PointOfInterestNode> points, String geoJson,String createdBy,CityNode ...cities) {
+    public ItineraryNode(String name,String description,Collection<ItineraryRelPoi> points, String geoJson,String createdBy,CityNode ...cities) {
         this();
+        this.name = name;
+        this.description = description;
         this.cities = Arrays.stream(cities).toList();
+        //this.points = points;
         this.points = points;
         this.categories = new ArrayList<>();
-        setRealCategory(this.categories,points);
+        setRealCategory(this.categories,points.stream().map(ItineraryRelPoi::getPoi).toList());
         this.geoJson = geoJson;
         this.createdBy = createdBy;
     }

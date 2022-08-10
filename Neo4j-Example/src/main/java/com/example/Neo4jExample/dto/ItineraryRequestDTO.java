@@ -6,16 +6,21 @@ import com.example.Neo4jExample.model.PointOfInterestNode;
 import lombok.Data;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Data
 public class ItineraryRequestDTO {
     private Long id;
-    private Collection<PoiDTO> points;
+    private String name;
+
+    private String description;
+    private Collection<ItineraryRelPoiDTO> points;
     private Collection<CityDTO> cities;
     private String createdBy;
     private StatusEnum status;
-    private Integer timeToVisit;
+    private Double timeToVisit;
     private String geojson;
 
     public ItineraryRequestDTO(ItineraryRequestNode itineraryRequestNode){
@@ -23,7 +28,9 @@ public class ItineraryRequestDTO {
         else if (itineraryRequestNode.getAccepted()) this.status = StatusEnum.ACCEPTED;
         else this.status = StatusEnum.REJECTED;
         this.id = itineraryRequestNode.getId();
-        this.points = itineraryRequestNode.getPoints().stream().map(PoiDTO::new).toList();
+        this.name = itineraryRequestNode.getName();
+        this.description = itineraryRequestNode.getDescription();
+        this.points = itineraryRequestNode.getPoints().stream().map(ItineraryRelPoiDTO::new).sorted(Comparator.comparingInt(ItineraryRelPoiDTO::getIndex)).collect(Collectors.toList());
         this.cities = itineraryRequestNode.getCities().stream().map(CityDTO::new).toList();
         this.createdBy = itineraryRequestNode.getCreatedBy();
         this.timeToVisit = itineraryRequestNode.getTimeToVisit();

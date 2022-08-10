@@ -19,7 +19,7 @@ public class PoiRequestDTO {
     private CityDTO city;
     private CoordinateDTO coordinate;
     private TimeSlotDTO hours;
-    private Integer timeToVisit;
+    private Double timeToVisit;
     private AddressDTO address;
     private Double ticketPrice;
     private URL link;

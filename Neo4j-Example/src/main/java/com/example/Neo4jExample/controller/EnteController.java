@@ -31,7 +31,7 @@ public class EnteController {
 
     private final UtilityService utilityService;
 
-    private Ente getEnteFromUsername(String username){
+    private Ente getEnteFromUsername(String username) {
         return this.userService.getEnteFromUser(username);
     }
 
@@ -39,21 +39,23 @@ public class EnteController {
 
     /**
      * create poi
+     *
      * @param username of ente who creates poi
-     * @param body http request that contains values
+     * @param body     http request that contains values
      * @return new Poi
      */
     @PostMapping("/createPoi")
-    public ResponseEntity<PointOfInterestNode> createPoi(@RequestParam String username,@RequestBody Map<String, Object> body) {
+    public ResponseEntity<PointOfInterestNode> createPoi(@RequestParam String username, @RequestBody Map<String, Object> body) {
         Ente ente = this.getEnteFromUsername(username);
         PointOfInterestNode poi = this.poiService.createPoiFromBody(body);
         CityNode city = ente.getCity();
-        this.poiService.savePoiInACity(city,poi);
+        this.poiService.savePoiInACity(city, poi);
         return Objects.isNull(poi) ? ResponseEntity.internalServerError().build() : ResponseEntity.ok(poi);
     }
 
     /**
      * get all request for an Ente
+     *
      * @param username of Ente
      * @return requests linked to a City's Poi
      */
@@ -82,12 +84,12 @@ public class EnteController {
     public ResponseEntity<PointOfInterestNode> setRequestTo(@RequestParam boolean toSet, @RequestParam Long id) {
         PoiRequestNode poiRequestNode = this.poiRequestService.findRequestById(id);
         if (Objects.isNull(poiRequestNode)) return ResponseEntity.noContent().build();
-        this.poiRequestService.changeStatusToRequest(poiRequestNode,toSet);
+        this.poiRequestService.changeStatusToRequest(poiRequestNode, toSet);
         //TODO: refactor
         if (toSet) {
             if (Objects.isNull(poiRequestNode.getPointOfInterestNode())) {
                 PointOfInterestNode poiToSet = this.poiService.createPoiFromRequest(poiRequestNode);
-                this.poiRequestService.setPoiToRequest(poiRequestNode,poiToSet);
+                this.poiRequestService.setPoiToRequest(poiRequestNode, poiToSet);
             } else {
                 this.poiService.modifyPoiFromRequest(poiRequestNode);
                 /*this.provaService.changePoiFromRequest(poiRequestNode);*/
@@ -98,9 +100,10 @@ public class EnteController {
 
     /**
      * accept a Modify Request for a poi
-     * @param id of a Request to accept
+     *
+     * @param id       of a Request to accept
      * @param username of Ente
-     * @param body http request that contains values of modify
+     * @param body     http request that contains values of modify
      * @return Poi modified
      */
     @PostMapping("/notifies/modify")
@@ -114,91 +117,113 @@ public class EnteController {
         if (!Objects.isNull(poiRequestNode.getPointOfInterestNode())) {
             poiResult = poiRequestNode.getPointOfInterestNode();
             this.poiService.modifyPoiFromBody(poiResult, body);
-        }
-        else {
+        } else {
             poiResult = this.poiService.createPoiFromBody(body);
             CityNode city = ente.getCity();
-            this.poiService.savePoiInACity(city,poiResult);
+            this.poiService.savePoiInACity(city, poiResult);
         }
-        this.poiRequestService.setPoiToRequest(poiRequestNode,poiResult);
+        this.poiRequestService.setPoiToRequest(poiRequestNode, poiResult);
         return ResponseEntity.ok().body(poiRequestNode.getPointOfInterestNode());
     }
 
     /**
      * modify a poi
-     * @param poiId id of poi to modify
+     *
+     * @param poiId    id of poi to modify
      * @param username of ente who calls this api
-     * @param body http request that contains values
+     * @param body     http request that contains values
      * @return Poi modified
      */
     @PatchMapping("/poi")
     public ResponseEntity<PointOfInterestNode> modifyPoi(@RequestParam Long poiId, @RequestParam String username,
-                                                         @RequestBody Map<String, Object> body){
+                                                         @RequestBody Map<String, Object> body) {
         Ente ente = this.getEnteFromUsername(username);
         PointOfInterestNode toModify = this.poiService.findPoiById(poiId);
-        if(Objects.isNull(ente) || Objects.isNull(toModify)) return ResponseEntity.notFound().build();
-        this.poiService.modifyPoiFromBody(toModify,body);
+        if (Objects.isNull(ente) || Objects.isNull(toModify)) return ResponseEntity.notFound().build();
+        this.poiService.modifyPoiFromBody(toModify, body);
         return ResponseEntity.ok(toModify);
     }
 
     /**
      * create a new ItineraryNode if request contains only ente's city;
      * create a new ItineraryNodeRequest otherwise.
+     *
      * @param username of ente who wants to create itinerary
-     * @param body http request that contains values
+     * @param body     http request that contains values
      * @return HttpStatus of response call.
      */
     @PostMapping("/itinerary")
     public HttpStatus createItinerary(@RequestParam String username,
-                                                      @RequestBody Map<String, Object> body){
+                                      @RequestBody Map<String, Object> body) {
         Ente ente = this.getEnteFromUsername(username);
-        if(Objects.isNull(ente)) return FORBIDDEN;
+        if (Objects.isNull(ente)) return FORBIDDEN;
+        String name = (String) body.get("name");
+        String description = (String) body.get("description");
         String geojson = (String) body.get("geojson");
-        Integer travelTime = Integer.parseInt((String) body.get("travelTime"));
+        Double travelTime = Double.parseDouble((String) body.get("travelTime"));
         Collection<String> poiIds = (Collection<String>) body.get("poiIds");
         Collection<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
         //aggiunta controllo delle citta'
         Collection<CityNode> poiCities = pois.stream().map(this.utilityService::getCityOfPoi).distinct().toList();
-        if(!poiCities.contains(ente.getCity())) return HttpStatus.NOT_ACCEPTABLE;
-        if(poiCities.size() > 1){
-            ItineraryRequestNode result = this.itineraryService.createItineraryRequest(pois,geojson,travelTime,
-                    ente.getUser().getUsername(),poiCities.toArray(CityNode[]::new));
-            return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR :HttpStatus.CREATED;
+        if (!poiCities.contains(ente.getCity())) return HttpStatus.NOT_ACCEPTABLE;
+        if (poiCities.size() > 1) {
+            ItineraryRequestNode result = this.itineraryService.createItineraryRequest(name,description,pois, geojson, travelTime,
+                    ente.getUser().getUsername(), poiCities.toArray(CityNode[]::new));
+            return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.CREATED;
         }
         //fine controllo
-        ItineraryNode result = this.itineraryService.createItinerary(pois,geojson,travelTime,
-                ente.getUser().getUsername(),ente.getCity());
+        ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geojson, travelTime,
+                ente.getUser().getUsername(), ente.getCity());
 
-        return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR :HttpStatus.CREATED;
+        return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.CREATED;
     }
 
     //TODO: controllare cosa ritorna nei vari casi
     @PatchMapping("/itinerary/consensus")
     public ResponseEntity<String> setConsensus(@RequestParam String username, @RequestParam boolean consensus,
-                                                     @RequestParam Long idRequest){
+                                               @RequestParam Long idRequest) {
         Ente ente = this.getEnteFromUsername(username);
-        if(Objects.isNull(ente)) return ResponseEntity.status(FORBIDDEN).build();
+        if (Objects.isNull(ente)) return ResponseEntity.status(FORBIDDEN).build();
         ItineraryRequestNode from = this.itineraryService.findRequestById(idRequest);
-        if(Objects.isNull(from)) return ResponseEntity.notFound().build();
-        this.itineraryService.updateConsensus(ente, from,consensus);
-        if(Objects.isNull(from.getAccepted())) return ResponseEntity.ok("PENDING");
-        if(!from.getAccepted()) return ResponseEntity.ok("REJECTED");
+        if (Objects.isNull(from)) return ResponseEntity.notFound().build();
+        this.itineraryService.updateConsensus(ente, from, consensus);
+        if (Objects.isNull(from.getAccepted())) return ResponseEntity.ok("PENDING");
+        if (!from.getAccepted()) return ResponseEntity.ok("REJECTED");
         return ResponseEntity.ok("ACCEPTED");
     }
 
     /**
      * get all itineraries of an Ente's City
+     *
      * @param username of ente
      * @return all itineraries
      */
     @GetMapping("/itinerary")
-    public ResponseEntity<Collection<ItineraryDTO>> getItineraries(@RequestParam String username){
+    public ResponseEntity<Collection<ItineraryDTO>> getItineraries(@RequestParam String username) {
         Ente ente = this.getEnteFromUsername(username);
-        if(Objects.isNull(ente)) return ResponseEntity.notFound().build();
+        if (Objects.isNull(ente)) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(this.itineraryService.getItinerariesFiltered(i -> i.getCities().stream()
                 .map(CityNode::getId)
                 .anyMatch(c -> c.equals(ente.getCity().getId()))).stream().map(ItineraryDTO::new).toList());
     }
 
+    /**
+     * Delete an Itinerary from the database
+     *
+     * @param itineraryId id of ItineraryNode to delete
+     * @param username of ente who calls api
+     * @return status of the operation
+     */
+    @DeleteMapping("/itinerary")
+    public ResponseEntity<HttpStatus> deleteItinerary(@RequestParam Long itineraryId, @RequestParam String username) {
+        Ente ente = this.getEnteFromUsername(username);
+        ItineraryNode toDelete = this.itineraryService.findItineraryById(itineraryId);
+        if (Objects.isNull(toDelete) || Objects.isNull(ente)) return ResponseEntity.notFound().build();
+        if (!Objects.equals(ente.getUser().getUsername(), toDelete.getCreatedBy())) {
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+        this.itineraryService.deleteItinerary(toDelete);
+        return ResponseEntity.ok().build();
+    }
 }

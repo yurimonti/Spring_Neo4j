@@ -14,7 +14,7 @@ public class PoiDTO {
     private String description;
     private CoordinateDTO coordinate;
     private TimeSlotDTO hours;
-    private Integer timeToVisit;
+    private Double timeToVisit;
     private AddressDTO address;
     private Double ticketPrice;
     private Collection<String> contributors;

@@ -41,7 +41,7 @@ public class Neo4jExampleApplication {
 								   UserRoleRepository userRoleRepository,ItineraryRequestRepository itineraryRequestRepository){
 		return args -> {
 			//prova user
-			userNodeRepository.deleteAll();
+			/*userNodeRepository.deleteAll();
 			userRoleRepository.deleteAll();
 			Collection<UserRole> roles = new ArrayList<>();
 			UserRole userRole = new UserRole("user");
@@ -389,7 +389,7 @@ public class Neo4jExampleApplication {
 			pointProvaCoords = new Coordinate(43.2104315,13.0526301);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "PalaSport Castel Raimondo",castelRaimondo,
 					palazzo,pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
-			cityRepository.save(castelRaimondo);
+			cityRepository.save(castelRaimondo);*/
 
 			//------------------- Fine Creazione Poi --------------------
 
@@ -420,22 +420,6 @@ public class Neo4jExampleApplication {
 		};
 	}
 
-
-/*	public void createPoiProva(CoordinateRepository coordinateRepository, PointOfIntRepository pointOfIntRepository
-			,String nome, CityNode camerino, PoiType type, Coordinate coordinate) {
-		PointOfInterestNode pointProva = new PointOfInterestNode(nome, "prova prova, 1,2,3, prova");
-		coordinateRepository.save(coordinate);
-		pointProva.setCoordinate(coordinate);
-		pointProva.getTypes().add(type);
-		for(TagNode tag : type.getTags()){
-			PoiTagRel poiTagRel = new PoiTagRel(tag);
-			poiTagRel.setBooleanValue(tag.getIsBooleanType());
-			pointProva.getTagValues().add(poiTagRel);
-		}
-		pointOfIntRepository.save(pointProva);
-		camerino.getPointOfInterests().add(pointProva);
-	}*/
-
 	public void createPoiProva2(CoordinateRepository coordinateRepository, PointOfIntRepository pointOfIntRepository,
 								String nome, CityNode camerino, PoiType type, Coordinate coordinate,
 								Map<String, Collection<LocalTime>> orari, TimeSlotRepository timeSlotRepository,
@@ -454,7 +438,7 @@ public class Neo4jExampleApplication {
 		pointProva.setAddress(address);
 
 		pointProva.setTicketPrice(0.0);
-		pointProva.setTimeToVisit(20);
+		pointProva.setTimeToVisit(20.0);
 
 
 		pointProva.getTypes().add(type);

@@ -28,7 +28,7 @@ public class ProvaService {
 
 
     public PointOfInterestNode createPoi(Ente ente, String name, String description, Coordinate coordinate,
-                                         Address address,Contact contact,Double ticketPrice,Integer timeToVisit,
+                                         Address address,Contact contact,Double ticketPrice,Double timeToVisit,
                                          PoiType ...type){
         PointOfInterestNode pointOfInterestNode = new PointOfInterestNode(name,description);
         pointOfInterestNode.setCoordinate(coordinate);
@@ -67,7 +67,7 @@ public class ProvaService {
     public PointOfInterestNode createPoi(Ente ente,String name,String description,
                                          Address address,Coordinate coordinate,Collection<PoiType> poiTypes,
                                          Collection<PoiTagRel> tagsAndValues,TimeSlot timeSlot,Double ticketPrice,
-                                         Contact contact,Integer timeToVisit){
+                                         Contact contact,Double timeToVisit){
         PointOfInterestNode poi = new PointOfInterestNode(name,description,coordinate,address,timeSlot,timeToVisit,
                 ticketPrice,contact);
         poi.getTypes().addAll(poiTypes);

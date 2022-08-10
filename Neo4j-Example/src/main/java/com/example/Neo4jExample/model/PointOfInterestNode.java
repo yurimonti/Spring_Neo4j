@@ -19,7 +19,7 @@ public class PointOfInterestNode {
     private String description;
     private Coordinate coordinate;
     private TimeSlot hours;
-    private Integer timeToVisit;//tempo medio durata di visita
+    private Double timeToVisit;//tempo medio durata di visita
     private Address address;
     private Double ticketPrice;
     private Collection<String> contributors;
@@ -59,14 +59,14 @@ public class PointOfInterestNode {
     }
 
     public PointOfInterestNode(String name, String description, Coordinate coordinate, Address address,
-                               TimeSlot hours,Integer timeToVisit,Double ticketPrice,Contact contact) {
+                               TimeSlot hours,Double timeToVisit,Double ticketPrice,Contact contact) {
         this(name,description,coordinate,address,hours);
         this.timeToVisit = timeToVisit;
         this.ticketPrice = ticketPrice;
         this.contact = contact;
     }
 
-    public PointOfInterestNode(String name, String description,Coordinate coordinate,TimeSlot hours,Integer timeToVisit,
+    public PointOfInterestNode(String name, String description,Coordinate coordinate,TimeSlot hours,Double timeToVisit,
                                Address address,Double ticketPrice,URL link,Collection<PoiType> types,
                                Contact contact,Collection<PoiTagRel> tagValues){
         this(name, description, coordinate, address, hours, timeToVisit, ticketPrice, contact);
@@ -75,7 +75,7 @@ public class PointOfInterestNode {
         this.tagValues = tagValues;
     }
 
-    public PointOfInterestNode(String name, String description, Integer timeToVisit, URL link) {
+    public PointOfInterestNode(String name, String description, Double timeToVisit, URL link) {
         this(name,description);
         this.timeToVisit = timeToVisit;
         this.link = link;
@@ -92,9 +92,8 @@ public class PointOfInterestNode {
     }
 
     private void fillHours(TimeSlot toSet){
-        TimeSlot timeSlot = new TimeSlot(toSet.getMonday(),toSet.getTuesday(),toSet.getWednesday(),toSet.getThursday(),
+        this.hours = new TimeSlot(toSet.getMonday(),toSet.getTuesday(),toSet.getWednesday(),toSet.getThursday(),
                 toSet.getFriday(),toSet.getSaturday(),toSet.getSunday());
-        this.hours = timeSlot;
     }
 
     public PointOfInterestNode(PoiRequestNode request){

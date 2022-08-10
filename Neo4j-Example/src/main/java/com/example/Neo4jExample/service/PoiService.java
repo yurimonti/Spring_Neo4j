@@ -156,7 +156,7 @@ public class PoiService {
                 (String) bodyFrom.get("fax"));
         this.contactRepository.save(contact);
         result.setContact(contact);
-        Integer timeToVisit = Integer.parseInt((String) bodyFrom.get("timeToVisit"));
+        Double timeToVisit = Double.parseDouble((String) bodyFrom.get("timeToVisit"));
         result.setTimeToVisit(timeToVisit);
         Double ticketPrice = Double.parseDouble((String) bodyFrom.get("price"));
         result.setTicketPrice(ticketPrice);
@@ -200,7 +200,7 @@ public class PoiService {
         contact.setFax(this.utilityService.getValueFromBody("fax",bodyFrom));
         this.contactRepository.save(contact);
         poiToModify.setContact(contact);
-        poiToModify.setTimeToVisit(Integer.parseInt(this.utilityService.getValueFromBody("timeToVisit",bodyFrom)));
+        poiToModify.setTimeToVisit(Double.parseDouble(this.utilityService.getValueFromBody("timeToVisit",bodyFrom)));
         poiToModify.setTicketPrice(Double.parseDouble(this.utilityService.getValueFromBody("price",bodyFrom)));
         TimeSlot timeSlot = new TimeSlot();
         timeSlot = this.utilityService.getTimeSlotFromBody(timeSlot, bodyFrom);

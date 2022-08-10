@@ -6,26 +6,35 @@ import com.example.Neo4jExample.repository.ItineraryRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Predicate;
 
 @Service
 @RequiredArgsConstructor
-/**
- * A Service that permits to manage itineraries.
- */
+//FIXME: rivedere i tempi di visita
 public class ItineraryService {
     private final ItineraryRepository itineraryRepository;
     private final ItineraryRequestRepository itineraryRequestRepository;
 
-    private void setTimeToVisit(ItineraryNode result, Integer travelTime, Collection<PointOfInterestNode> pois) {
-        result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0, Integer::sum) +
+    private void setTimeToVisit(ItineraryNode result, Double travelTime, Collection<PointOfInterestNode> pois) {
+        result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum)*60 +
                 travelTime);
     }
 
-    private void setTimeToVisit(ItineraryRequestNode result, Integer travelTime, Collection<PointOfInterestNode> pois) {
-        result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0, Integer::sum) +
+    private void setTimeToVisit(ItineraryRequestNode result, Double travelTime, Collection<PointOfInterestNode> pois) {
+        result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum)*60 +
                 travelTime);
+    }
+
+    private Collection<ItineraryRelPoi> indexedPoints(Collection<PointOfInterestNode> points) {
+        Collection<ItineraryRelPoi> pointsNodes = new ArrayList<>();
+        PointOfInterestNode[] nodes = points.toArray(PointOfInterestNode[]::new);
+        for (int i = 0; i < points.size(); i++) {
+            PointOfInterestNode node = nodes[i];
+            pointsNodes.add(new ItineraryRelPoi(node,i));
+        }
+        return pointsNodes;
     }
 
     /**
@@ -50,9 +59,9 @@ public class ItineraryService {
      * @param cities     that contain this itinerary
      * @return a created Itinerary
      */
-    public ItineraryNode createItinerary(Collection<PointOfInterestNode> pois, String geojson,
-                                         Integer travelTime, String createdBy, CityNode... cities) {
-        ItineraryNode result = new ItineraryNode(pois, geojson, createdBy, cities);
+    public ItineraryNode createItinerary(String name,String description,Collection<PointOfInterestNode> pois, String geojson,
+                                         Double travelTime, String createdBy, CityNode... cities) {
+        ItineraryNode result = new ItineraryNode(name,description,indexedPoints(pois), geojson, createdBy, cities);
         setTimeToVisit(result, travelTime, pois);
         this.itineraryRepository.save(result);
         return result;
@@ -68,9 +77,9 @@ public class ItineraryService {
      * @param cities     that contain this itinerary
      * @return a created ItineraryRequest
      */
-    public ItineraryRequestNode createItineraryRequest(Collection<PointOfInterestNode> pois, String geojson,
-                                                       Integer travelTime, String createdBy, CityNode... cities) {
-        ItineraryRequestNode result = new ItineraryRequestNode(pois, geojson, createdBy, cities);
+    public ItineraryRequestNode createItineraryRequest(String name,String description,Collection<PointOfInterestNode> pois, String geojson,
+                                                       Double travelTime, String createdBy, CityNode... cities) {
+        ItineraryRequestNode result = new ItineraryRequestNode(name,description,this.indexedPoints(pois), geojson, createdBy, cities);
         setTimeToVisit(result, travelTime, pois);
         result.getConsensus().add(createdBy);
         this.itineraryRequestRepository.save(result);
@@ -84,7 +93,7 @@ public class ItineraryService {
      * @return created Itinerary
      */
     public ItineraryNode createItineraryFromRequest(ItineraryRequestNode from) {
-        ItineraryNode result = new ItineraryNode(from.getPoints(), from.getGeojson(), from.getCreatedBy(),
+        ItineraryNode result = new ItineraryNode(from.getName(), from.getDescription(),from.getPoints(), from.getGeojson(), from.getCreatedBy(),
                 from.getCities().toArray(CityNode[]::new));
         result.setTimeToVisit(from.getTimeToVisit());
         this.itineraryRepository.save(result);
@@ -109,6 +118,14 @@ public class ItineraryService {
     }
 
     /**
+     * Delete an Itinerary from App
+     * @param toDelete Itinerary to delete
+     */
+    public void deleteItinerary(ItineraryNode toDelete) {
+        this.itineraryRepository.delete(toDelete);
+    }
+
+    /**
      * filter itineraries with a certain filter
      *
      * @param filter applicated to
@@ -117,5 +134,11 @@ public class ItineraryService {
     public Collection<ItineraryNode> getItinerariesFiltered(Predicate<ItineraryNode> filter) {
         return this.itineraryRepository.findAll().stream()
                 .filter(filter).toList();
+    }
+
+    public ItineraryNode findItineraryById(Long id) {
+        if (this.itineraryRepository.findById(id).isPresent())
+            return this.itineraryRepository.findById(id).get();
+        else return null;
     }
 }

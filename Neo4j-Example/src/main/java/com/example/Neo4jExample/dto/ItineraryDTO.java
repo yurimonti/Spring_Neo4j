@@ -2,25 +2,44 @@ package com.example.Neo4jExample.dto;
 
 import com.example.Neo4jExample.model.ItineraryNode;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Data
 public class ItineraryDTO {
     private Long id;
+    private String name;
+    private String description;
     private Collection<CityDTO> cities;
     private String createdBy;
-    private Collection<PoiDTO> points;
-    private Integer timeToVisit;
+    private Collection<ItineraryRelPoiDTO> points;
+    private Double timeToVisit;
     private Collection<CategoryDTO> categories;
     private String geoJson;
 
+    public ItineraryDTO() {
+        this.id = 0L;
+        this.name = "";
+        this.description = "";
+        this.categories = new ArrayList<>();
+        this.timeToVisit = 0.0;
+        this.points = new ArrayList<>();
+        this.createdBy = "";
+        this.cities = new ArrayList<>();
+        this.geoJson = "";
+    }
+
     public ItineraryDTO(ItineraryNode itineraryNode) {
         this.id = itineraryNode.getId();
+        this.name = itineraryNode.getName();
+        this.description = itineraryNode.getDescription();
         this.categories = itineraryNode.getCategories().stream().map(CategoryDTO::new).toList();
         this.createdBy = itineraryNode.getCreatedBy();
-        this.points = itineraryNode.getPoints().stream().map(PoiDTO::new).toList();
+        this.points = itineraryNode.getPoints().stream().map(ItineraryRelPoiDTO::new).sorted(Comparator.comparingInt(ItineraryRelPoiDTO::getIndex)).collect(Collectors.toList());
         this.timeToVisit = itineraryNode.getTimeToVisit();
         this.geoJson = itineraryNode.getGeoJson();
         this.cities = itineraryNode.getCities().stream().map(CityDTO::new).toList();

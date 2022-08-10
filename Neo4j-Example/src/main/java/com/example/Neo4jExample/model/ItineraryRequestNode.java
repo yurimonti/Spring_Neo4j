@@ -15,15 +15,20 @@ import java.util.Collection;
 public class ItineraryRequestNode {
     @Id @GeneratedValue
     private Long id;
-    private Collection<PointOfInterestNode> points;
+    private String name;
+
+    private String description;
+    private Collection<ItineraryRelPoi> points;
     private Collection<CityNode> cities;
     private Boolean accepted;
     private Collection<String> consensus;
     private String createdBy;
-    private Integer timeToVisit;
+    private Double timeToVisit;
     private String geojson;
 
-    public ItineraryRequestNode(Collection<PointOfInterestNode> points, String geoJson, String createdBy, CityNode ...cities){
+    public ItineraryRequestNode(String name, String description,Collection<ItineraryRelPoi> points, String geoJson, String createdBy, CityNode ...cities){
+        this.name = name;
+        this.description = description;
         this.consensus = new ArrayList<>();
         this.points = points;
         this.geojson = geoJson;
