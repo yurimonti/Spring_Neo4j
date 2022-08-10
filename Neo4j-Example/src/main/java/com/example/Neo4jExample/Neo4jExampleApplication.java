@@ -38,10 +38,10 @@ public class Neo4jExampleApplication {
 								   TagRepository tagRepository, TimeSlotRepository timeSlotRepository,
 								   ItineraryRepository itineraryRepo,PoiRequestRepository poiRequestRepository,
 								   ProvaService provaService,UserNodeRepository userNodeRepository,
-								   UserRoleRepository userRoleRepository){
+								   UserRoleRepository userRoleRepository,ItineraryRequestRepository itineraryRequestRepository){
 		return args -> {
 			//prova user
-			userNodeRepository.deleteAll();
+			/*userNodeRepository.deleteAll();
 			userRoleRepository.deleteAll();
 			Collection<UserRole> roles = new ArrayList<>();
 			UserRole userRole = new UserRole("user");
@@ -50,8 +50,6 @@ public class Neo4jExampleApplication {
 			UserRole adminRole = new UserRole("admin");
 			Collections.addAll(roles,userRole,adminRole,commercianteRole,enteRole);
 			userRoleRepository.saveAll(roles);
-			userNodeRepository.save(new UserNode("nome","cognome","email","password",
-					"username",userRole,adminRole,enteRole,commercianteRole));
 			//cancella tutto prima di avviare il db
 			addressRepository.deleteAll();
 			categoryRepository.deleteAll();
@@ -69,19 +67,34 @@ public class Neo4jExampleApplication {
 			timeSlotRepository.deleteAll();
 			itineraryRepo.deleteAll();
 			poiRequestRepository.deleteAll();
-
+			itineraryRequestRepository.deleteAll();
 			//creazione ente e citta'
 			UserNode userEnteCamerino = new UserNode("mario","rossi","email","password",
 					"ente_camerino",enteRole);
 			userNodeRepository.save(userEnteCamerino);
-			Ente enteProva = new Ente(userEnteCamerino);
+			UserNode userEnteCastelRaimondo = new UserNode("carlo","verdi","email","password",
+					"ente_castel_raimondo",enteRole);
+			userNodeRepository.save(userEnteCastelRaimondo);
+			UserNode user = new UserNode("marco","bianchi","email","password",
+					"an_user",userRole);
+			userNodeRepository.save(user);
+			Ente enteCamerino = new Ente(userEnteCamerino);
 			CityNode camerino = new CityNode("Camerino");
-			Coordinate coordCitta = new Coordinate(43.139850, 13.069172);
-			coordinateRepository.save(coordCitta);
-			camerino.setCoordinate(coordCitta);
+			Coordinate coordCamerino = new Coordinate(43.139850, 13.069172);
+			coordinateRepository.save(coordCamerino);
+			camerino.setCoordinate(coordCamerino);
 			cityRepository.save(camerino);
-			enteProva.setCity(camerino);
-			enteRepository.save(enteProva);
+			enteCamerino.setCity(camerino);
+			enteRepository.save(enteCamerino);
+
+			Ente enteCastelRaimondo = new Ente(userEnteCastelRaimondo);
+			CityNode castelRaimondo = new CityNode("Castel Raimondo");
+			Coordinate coordCastelRaimondo = new Coordinate(43.209100, 13.054600);
+			coordinateRepository.save(coordCastelRaimondo);
+			castelRaimondo.setCoordinate(coordCastelRaimondo);
+			cityRepository.save(castelRaimondo);
+			enteCastelRaimondo.setCity(castelRaimondo);
+			enteRepository.save(enteCastelRaimondo);
 
 			//Creazione TagNode
 			TagNode tag1 = new TagNode("ingresso animali",true);
@@ -249,155 +262,152 @@ public class Neo4jExampleApplication {
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1392,13.0732);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Monastero di S. Chiara",
-					camerino, monastero, pointProvaCoords,timeSlot,timeSlotRepository);
+					camerino, monastero, pointProvaCoords,orari,timeSlotRepository,contactRepository,addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1483,13.102);
 			createPoiProva2(coordinateRepository, pointOfIntRepository,
 					"Chiesa e Convento dei Cappuccini di Renacavata",camerino, monastero, pointProvaCoords,
-					timeSlot,timeSlotRepository);
+					orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.131,13.063);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Rocca Borgesca",camerino, rocca,
-					pointProvaCoords,timeSlot,timeSlotRepository);
+					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1885,13.0638);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Rocca d'Ajello",camerino, rocca,
-					pointProvaCoords,timeSlot,timeSlotRepository);
+					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1103,13.1258);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Rocca Varano",camerino, rocca,
-					pointProvaCoords,timeSlot,timeSlotRepository);
+					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1357,13.0687);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Palazzo Ducale dei Da Varano",camerino,
-					palazzo, pointProvaCoords,timeSlot,timeSlotRepository);
+					palazzo, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1373,13.0724);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Tempio dell'Annunziata",camerino, tempio,
-					pointProvaCoords,timeSlot,timeSlotRepository);
+					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1369,13.0671);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Area di sosta di Via Macario Muzio",
-					camerino, sostaMacchine, pointProvaCoords,timeSlot,timeSlotRepository);
+					camerino, sostaMacchine, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1393,13.0727);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Chiesa di S. Chiara",camerino, chiesa,
-					pointProvaCoords,timeSlot,timeSlotRepository);
+					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1358,13.0684);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Cattedrale di Santa Maria Annunziata",
-					camerino, cattedrale, pointProvaCoords,timeSlot,timeSlotRepository);
+					camerino, cattedrale, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1347,13.0647);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Chiesa di S. Filippo Neri",camerino,
-					chiesa, pointProvaCoords,timeSlot,timeSlotRepository);
+					chiesa, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1319,13.0638);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Santuario di S. Maria in Via",camerino,
-					santuario, pointProvaCoords,timeSlot,timeSlotRepository);
+					santuario, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1377,13.0736);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Basilica di S. Venanzio Martire",camerino,
-					basilica, pointProvaCoords,timeSlot,timeSlotRepository);
+					basilica, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1468,13.1303);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Santuario Maria Madre della Misericordia",
-					camerino, santuario, pointProvaCoords,timeSlot,timeSlotRepository);
+					camerino, santuario, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.0911,13.1165);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Lago di Polverina",camerino, lago,
-					pointProvaCoords,timeSlot,timeSlotRepository);
+					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.136,13.0692);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Biblioteca comunale Valentiniana",
-					camerino, biblioteca, pointProvaCoords,timeSlot,timeSlotRepository);
+					camerino, biblioteca, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1658,13.0584);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Mulino Bottacchiari",camerino, mulino,
-					pointProvaCoords,timeSlot,timeSlotRepository);
+					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1362,13.07);
 			createPoiProva2(coordinateRepository, pointOfIntRepository,
 					"Orto Botanico Carmela Cortini Università di Camerino",camerino, museo, pointProvaCoords,
-					timeSlot,timeSlotRepository);
+					orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1377,13.0713);
 			createPoiProva2(coordinateRepository, pointOfIntRepository,
 					"Polo museale di S. Domenico - Museo civico e archeologico – Pinacoteca civica Girolamo di Giovanni",
-					camerino, museo, pointProvaCoords,timeSlot,timeSlotRepository);
+					camerino, museo, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1353,13.067);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Teatro Filippo Marchetti",camerino,
-					teatro, pointProvaCoords,timeSlot,timeSlotRepository);
+					teatro, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1885,13.0638);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Giardini della Rocca d'Ajello",camerino,
-					giardino, pointProvaCoords,timeSlot,timeSlotRepository);
+					giardino, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 			pointProvaCoords = new Coordinate(43.1358,13.0698);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "Orto botanico di Camerino",camerino,
-					giardino, pointProvaCoords,timeSlot,timeSlotRepository);
+					giardino, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
 
 
 			cityRepository.save(camerino);
 
+			pointProvaCoords = new Coordinate(43.2104315,13.0526301);
+			createPoiProva2(coordinateRepository, pointOfIntRepository, "PalaSport Castel Raimondo",castelRaimondo,
+					palazzo,pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			cityRepository.save(castelRaimondo);*/
+
 			//------------------- Fine Creazione Poi --------------------
+
+			//------------------- Inizio Creazione Itinerario -----------
+
+
+			//------------------- Fine Creazione Itinerario -------------
 
 			//creare una request aggiunta poi di prova
 			/*Collection<PoiType> poiTypesRequest =  new ArrayList<>();
 			poiTypesRequest.add(chiesa);
-
 			pointProvaCoords = new Coordinate(43.13747,13.07314);
 			coordinateRepository.save(pointProvaCoords);
 			Address addressRequest = new Address("via",3);
 			addressRepository.save(addressRequest);
-
 			PoiRequestNode poiRequestNode = new PoiRequestNode("Fontanella Chiesa San Venanzio","asdf"
 					,camerino,pointProvaCoords,addressRequest, poiTypesRequest);
 			poiRequestNode.setUsername("Genoveffo");
-
 			PoiTagRel poiTagRel1 = new PoiTagRel(tag1);
 			poiTagRel1.setBooleanValue(true);
 			PoiTagRel poiTagRel2 = new PoiTagRel(tag2);
@@ -410,34 +420,36 @@ public class Neo4jExampleApplication {
 		};
 	}
 
+	public void createPoiProva2(CoordinateRepository coordinateRepository, PointOfIntRepository pointOfIntRepository,
+								String nome, CityNode camerino, PoiType type, Coordinate coordinate,
+								Map<String, Collection<LocalTime>> orari, TimeSlotRepository timeSlotRepository,
+								ContactRepository contactRepository, AddressRepository addressRepository){
 
-/*	public void createPoiProva(CoordinateRepository coordinateRepository, PointOfIntRepository pointOfIntRepository
-			,String nome, CityNode camerino, PoiType type, Coordinate coordinate) {
 		PointOfInterestNode pointProva = new PointOfInterestNode(nome, "prova prova, 1,2,3, prova");
 		coordinateRepository.save(coordinate);
 		pointProva.setCoordinate(coordinate);
+
+		Contact contact = new Contact("asdf@asdf.com","1234567890","nonSoComeSiScriveUnFax");
+		contactRepository.save(contact);
+		pointProva.setContact(contact);
+
+		Address address = new Address("via Qualcosa",6);
+		addressRepository.save(address);
+		pointProva.setAddress(address);
+
+		pointProva.setTicketPrice(0.0);
+		pointProva.setTimeToVisit(20.0);
+
+
 		pointProva.getTypes().add(type);
 		for(TagNode tag : type.getTags()){
 			PoiTagRel poiTagRel = new PoiTagRel(tag);
 			poiTagRel.setBooleanValue(tag.getIsBooleanType());
 			pointProva.getTagValues().add(poiTagRel);
 		}
-		pointOfIntRepository.save(pointProva);
-		camerino.getPointOfInterests().add(pointProva);
-	}*/
 
-	public void createPoiProva2(CoordinateRepository coordinateRepository, PointOfIntRepository pointOfIntRepository
-			,String nome, CityNode camerino, PoiType type, Coordinate coordinate,TimeSlot hours,
-								TimeSlotRepository timeSlotRepository){
-		PointOfInterestNode pointProva = new PointOfInterestNode(nome, "prova prova, 1,2,3, prova");
-		coordinateRepository.save(coordinate);
-		pointProva.setCoordinate(coordinate);
-		pointProva.getTypes().add(type);
-		for(TagNode tag : type.getTags()){
-			PoiTagRel poiTagRel = new PoiTagRel(tag);
-			poiTagRel.setBooleanValue(tag.getIsBooleanType());
-			pointProva.getTagValues().add(poiTagRel);
-		}
+		TimeSlot hours = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+				orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 		timeSlotRepository.save(hours);
 		pointProva.setHours(hours);
 		pointOfIntRepository.save(pointProva);

@@ -9,5 +9,4 @@ import java.util.Collection;
 
 @Repository
 public interface ItineraryRepository extends Neo4jRepository<ItineraryNode,Long> {
-    Collection<ItineraryNode> getAllByCity(CityNode city);
 }

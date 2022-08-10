@@ -8,7 +8,10 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Node
@@ -17,12 +20,22 @@ import java.util.stream.Stream;
 public class ItineraryNode {
     @Id @GeneratedValue
     private Long id;
+
+    private String name;
+
+    private String description;
     @Relationship(type = "ITINERARY_OF_CITY",direction = Relationship.Direction.OUTGOING)
-    private CityNode city;
+    private Collection<CityNode> cities;
+
+    private String createdBy;
     @Relationship(type = "ITINERARY_HAS_POI",direction = Relationship.Direction.OUTGOING)
-    private Collection<PointOfInterestNode> points;
+    private Collection<ItineraryRelPoi> points;
+
+    private Double timeToVisit;
     @Relationship(type = "ITINERARY_HAS_CATEGORY",direction = Relationship.Direction.OUTGOING)
     private Collection<CategoryNode> categories;
+    private String geoJson;
+
 
     private void setRealCategory(Collection<CategoryNode> categories,
                                  Collection<PointOfInterestNode> pointOfInterestNodes){
@@ -32,15 +45,17 @@ public class ItineraryNode {
         Collection<PoiType> pois = poiTypes.stream().distinct().toList();
         pois.forEach(poiType -> categoriesNodes.addAll(poiType.getCategories()));
         categories.addAll(categoriesNodes.stream().distinct().toList());
-
     }
-
-
-    public ItineraryNode(CityNode city, Collection<PointOfInterestNode> points) {
+    public ItineraryNode(String name,String description,Collection<ItineraryRelPoi> points, String geoJson,String createdBy,CityNode ...cities) {
         this();
-        this.city = city;
+        this.name = name;
+        this.description = description;
+        this.cities = Arrays.stream(cities).toList();
+        //this.points = points;
         this.points = points;
         this.categories = new ArrayList<>();
-        setRealCategory(this.categories,points);
+        setRealCategory(this.categories,points.stream().map(ItineraryRelPoi::getPoi).toList());
+        this.geoJson = geoJson;
+        this.createdBy = createdBy;
     }
 }

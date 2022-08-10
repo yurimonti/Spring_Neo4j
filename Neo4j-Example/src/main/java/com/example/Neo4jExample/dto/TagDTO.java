@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TagDTO {
     private String name;
-    private boolean isBooleanType;
+    private Boolean isBooleanType;
 
     public TagDTO(String name, boolean isBooleanType) {
         this.name = name;
@@ -19,4 +19,8 @@ public class TagDTO {
         this.name = tagNode.getName();
         this.isBooleanType = tagNode.getIsBooleanType();
     }
+/*
+    public boolean getIsBooleanType(){
+        return this.isBooleanType;
+    }*/
 }

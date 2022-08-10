@@ -1,111 +1,73 @@
 package com.example.Neo4jExample.controller;
 
 import com.example.Neo4jExample.dto.CityDTO;
+import com.example.Neo4jExample.dto.ItineraryDTO;
 import com.example.Neo4jExample.dto.PoiRequestDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
-import com.example.Neo4jExample.service.ProvaService;
+import com.example.Neo4jExample.service.*;
 import com.example.Neo4jExample.service.util.MySerializer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @RestController
 @RequestMapping("/ente")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class EnteController {
-    private final ContactRepository contactRepository;
-    private final ProvaService provaService;
-    private final CoordinateRepository coordinateRepository;
-    private final PointOfIntRepository pointOfIntRepository;
-    private final PoiTypeRepository poiTypeRepository;
-    private final UserNodeRepository userNodeRepository;
-    private final AddressRepository addressRepository;
-    private final TagRepository tagRepository;
-    private final PoiRequestRepository poiRequestRepository;
 
-    private final TimeSlotRepository timeSlotRepository;
+    private final PoiService poiService;
+    private final PoiRequestService poiRequestService;
+    private final ItineraryService itineraryService;
+    private final UserService userService;
 
+    private final UtilityService utilityService;
 
-    //TODO: finire di completare il metodo
-    //TODO: refactoring
-    @PostMapping("/createPoi")
-    public ResponseEntity<PointOfInterestNode> createPoi(@RequestBody Map<String, Object> body){
-        Ente ente = provaService.getEnteFromUser(userNodeRepository.findByUsername("ente_camerino"));
-        String name = (String) body.get("name");
-        String description = (String) body.get("description");
-        Double lat = Double.parseDouble((String)body.get("lat"));
-        Double lon = Double.parseDouble((String)body.get("lon"));
-        Coordinate coordinate = new Coordinate(lat,lon);
-        //TODO: da fare
-        Contact contact = new Contact((String)body.get("email"),(String)body.get("phone"),
-                (String)body.get("fax"));
-        contactRepository.save(contact);
-        Integer timeToVisit = Integer.parseInt((String) body.get("timeToVisit"));
-        Double ticketPrice = Double.parseDouble((String) body.get("price"));
-        TimeSlot timeSlot = new TimeSlot();
-        Collection<String> monday = (Collection<String>) body.get("monday");
-        Collection<String> tuesday = (Collection<String>) body.get("tuesday");
-        Collection<String> wednesday = (Collection<String>) body.get("wednesday");
-        Collection<String> thursday = (Collection<String>) body.get("thursday");
-        Collection<String> friday = (Collection<String>) body.get("friday");
-        Collection<String> saturday = (Collection<String>) body.get("saturday");
-        Collection<String> sunday = (Collection<String>) body.get("sunday");
-        if(!monday.isEmpty()) monday.forEach(s -> timeSlot.getMonday().add((LocalTime.parse(s))));
-        if(!tuesday.isEmpty()) tuesday.forEach(s -> timeSlot.getTuesday().add((LocalTime.parse(s))));
-        if(!wednesday.isEmpty()) wednesday.forEach(s -> timeSlot.getWednesday().add((LocalTime.parse(s))));
-        if(!thursday.isEmpty()) thursday.forEach(s -> timeSlot.getThursday().add((LocalTime.parse(s))));
-        if(!friday.isEmpty()) friday.forEach(s -> timeSlot.getFriday().add((LocalTime.parse(s))));
-        if(!saturday.isEmpty()) saturday.forEach(s -> timeSlot.getSaturday().add((LocalTime.parse(s))));
-        if(!sunday.isEmpty()) sunday.forEach(s -> timeSlot.getSunday().add((LocalTime.parse(s))));
-        timeSlotRepository.save(timeSlot);
-        coordinateRepository.save(coordinate);
-        String street = (String) body.get("street");
-        Integer number = Integer.parseInt((String) body.get("number"));
-        Address address = new Address(street,number);
-        addressRepository.save(address);
-        Collection<String> types = (Collection<String>) body.get("types");
-        Collection<PoiType> poiTypes = new ArrayList<>();
-        for (String type: types) {
-            if(poiTypeRepository.findById(type).isPresent()) {
-                poiTypes.add(poiTypeRepository.findById(type).get());
-            }
-        }
-        Collection<Map<String,Object>> poiTagRels = (Collection<Map<String,Object>>) body.get("tags");
-        Collection<PoiTagRel> values = new ArrayList<>();
-        for (Map<String,Object> map:poiTagRels){
-            String tag = (String)map.get("tag");
-            TagNode tagNode = tagRepository.findById(tag).orElse(null);
-            PoiTagRel poiTagRel = new PoiTagRel(tagNode);
-            if(!Objects.isNull(tagNode)){
-                if(tagNode.getIsBooleanType()){
-                    Boolean value = (boolean)map.get("value");
-                    poiTagRel.setBooleanValue(value);
-                }
-                else poiTagRel.setStringValue((String)map.get("value"));
-            }
-            values.add(poiTagRel);
-        }
-        PointOfInterestNode poi = provaService.createPoi(ente,name,description,address,coordinate,
-                poiTypes,values,timeSlot,ticketPrice,contact,timeToVisit*60);
-        return Objects.isNull(poi) ? ResponseEntity.internalServerError().body(null) : ResponseEntity.ok(poi);
+    private Ente getEnteFromUsername(String username) {
+        return this.userService.getEnteFromUser(username);
     }
 
+    //TODO:chiamare api "/poi/create"
 
+    /**
+     * create poi
+     *
+     * @param username of ente who creates poi
+     * @param body     http request that contains values
+     * @return new Poi
+     */
+    @PostMapping("/createPoi")
+    public ResponseEntity<PointOfInterestNode> createPoi(@RequestParam String username, @RequestBody Map<String, Object> body) {
+        Ente ente = this.getEnteFromUsername(username);
+        PointOfInterestNode poi = this.poiService.createPoiFromBody(body);
+        CityNode city = ente.getCity();
+        this.poiService.savePoiInACity(city, poi);
+        return Objects.isNull(poi) ? ResponseEntity.internalServerError().build() : ResponseEntity.ok(poi);
+    }
+
+    /**
+     * get all request for an Ente
+     *
+     * @param username of Ente
+     * @return requests linked to a City's Poi
+     */
     @GetMapping("/notifies")
-    public ResponseEntity<Collection<PoiRequestDTO>> getRequestFromUsers(@RequestParam String username){
-        Ente ente = provaService.getEnteFromUser(userNodeRepository.findByUsername(username));
-        Collection<PoiRequestNode> result = poiRequestRepository.findAll().stream().filter(poiRequestNode ->
-                poiRequestNode.getCity().getId().equals(ente.getCity().getId()))
-                .filter(poiRequestNode -> Objects.isNull(poiRequestNode.getAccepted())).toList();
+    public ResponseEntity<Collection<PoiRequestDTO>> getRequestFromUsers(@RequestParam String username) {
+        Ente ente = this.getEnteFromUsername(username);
+        Collection<PoiRequestNode> result = this.poiRequestService.getFilteredRequests(poiRequestNode ->
+                poiRequestNode.getCity().getId().equals(ente.getCity().getId()) &&
+                        Objects.isNull(poiRequestNode.getAccepted()));
+/*        Collection<PoiRequestNode> result = this.poiRequestRepository.findAll().stream().filter(poiRequestNode ->
+                        poiRequestNode.getCity().getId().equals(ente.getCity().getId()))
+                .filter(poiRequestNode -> Objects.isNull(poiRequestNode.getAccepted())).toList();*/
         Collection<PoiRequestDTO> poiRequestDTOS = new ArrayList<>();
         result.forEach(poiRequestNode -> poiRequestDTOS.add(new PoiRequestDTO(poiRequestNode)));
         return ResponseEntity.ok(poiRequestDTOS);
@@ -113,26 +75,155 @@ public class EnteController {
 
     /**
      * set Request to accepted or denied in uniformity to toSet
+     *
      * @param toSet value of accepted to set
-     * @param id of Request
+     * @param id    of Request
      * @return status of operation
      */
     @PostMapping("/notifies")
-    public ResponseEntity<Object> setRequestTo(@RequestParam boolean toSet,@RequestParam Long id){
-        PoiRequestNode poiRequestNode = null;
-        if(poiRequestRepository.findById(id).isPresent()) poiRequestNode = poiRequestRepository.findById(id).get();
-        if(Objects.isNull(poiRequestNode)) return ResponseEntity.noContent().build();
-        poiRequestNode.setAccepted(toSet);
-        poiRequestRepository.save(poiRequestNode);
-        if(toSet){
-            if(Objects.isNull(poiRequestNode.getPointOfInterestNode())){
-                pointOfIntRepository.save(new PointOfInterestNode(poiRequestNode));
+    public ResponseEntity<PointOfInterestNode> setRequestTo(@RequestParam boolean toSet, @RequestParam Long id) {
+        PoiRequestNode poiRequestNode = this.poiRequestService.findRequestById(id);
+        if (Objects.isNull(poiRequestNode)) return ResponseEntity.noContent().build();
+        this.poiRequestService.changeStatusToRequest(poiRequestNode, toSet);
+        //TODO: refactor
+        if (toSet) {
+            if (Objects.isNull(poiRequestNode.getPointOfInterestNode())) {
+                PointOfInterestNode poiToSet = this.poiService.createPoiFromRequest(poiRequestNode);
+                this.poiRequestService.setPoiToRequest(poiRequestNode, poiToSet);
             } else {
-                provaService.changePoiFromRequest(poiRequestNode);
+                this.poiService.modifyPoiFromRequest(poiRequestNode);
+                /*this.provaService.changePoiFromRequest(poiRequestNode);*/
             }
         }
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * accept a Modify Request for a poi
+     *
+     * @param id       of a Request to accept
+     * @param username of Ente
+     * @param body     http request that contains values of modify
+     * @return Poi modified
+     */
+    @PostMapping("/notifies/modify")
+    public ResponseEntity<PointOfInterestNode> setRequestTo(@RequestParam Long id, @RequestParam String username,
+                                                            @RequestBody Map<String, Object> body) {
+        Ente ente = this.getEnteFromUsername(username);
+        PoiRequestNode poiRequestNode = this.poiRequestService.findRequestById(id);
+        if (Objects.isNull(poiRequestNode)) return ResponseEntity.noContent().build();
+        poiRequestNode.setAccepted(true);
+        PointOfInterestNode poiResult;
+        if (!Objects.isNull(poiRequestNode.getPointOfInterestNode())) {
+            poiResult = poiRequestNode.getPointOfInterestNode();
+            this.poiService.modifyPoiFromBody(poiResult, body);
+        } else {
+            poiResult = this.poiService.createPoiFromBody(body);
+            CityNode city = ente.getCity();
+            this.poiService.savePoiInACity(city, poiResult);
+        }
+        this.poiRequestService.setPoiToRequest(poiRequestNode, poiResult);
+        return ResponseEntity.ok().body(poiRequestNode.getPointOfInterestNode());
+    }
 
+    /**
+     * modify a poi
+     *
+     * @param poiId    id of poi to modify
+     * @param username of ente who calls this api
+     * @param body     http request that contains values
+     * @return Poi modified
+     */
+    @PatchMapping("/poi")
+    public ResponseEntity<PointOfInterestNode> modifyPoi(@RequestParam Long poiId, @RequestParam String username,
+                                                         @RequestBody Map<String, Object> body) {
+        Ente ente = this.getEnteFromUsername(username);
+        PointOfInterestNode toModify = this.poiService.findPoiById(poiId);
+        if (Objects.isNull(ente) || Objects.isNull(toModify)) return ResponseEntity.notFound().build();
+        this.poiService.modifyPoiFromBody(toModify, body);
+        return ResponseEntity.ok(toModify);
+    }
+
+    /**
+     * create a new ItineraryNode if request contains only ente's city;
+     * create a new ItineraryNodeRequest otherwise.
+     *
+     * @param username of ente who wants to create itinerary
+     * @param body     http request that contains values
+     * @return HttpStatus of response call.
+     */
+    @PostMapping("/itinerary")
+    public HttpStatus createItinerary(@RequestParam String username,
+                                      @RequestBody Map<String, Object> body) {
+        Ente ente = this.getEnteFromUsername(username);
+        if (Objects.isNull(ente)) return FORBIDDEN;
+        String name = (String) body.get("name");
+        String description = (String) body.get("description");
+        String geojson = (String) body.get("geojson");
+        Double travelTime = Double.parseDouble((String) body.get("travelTime"));
+        Collection<String> poiIds = (Collection<String>) body.get("poiIds");
+        Collection<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
+        Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
+        //aggiunta controllo delle citta'
+        Collection<CityNode> poiCities = pois.stream().map(this.utilityService::getCityOfPoi).distinct().toList();
+        if (!poiCities.contains(ente.getCity())) return HttpStatus.NOT_ACCEPTABLE;
+        if (poiCities.size() > 1) {
+            ItineraryRequestNode result = this.itineraryService.createItineraryRequest(name,description,pois, geojson, travelTime,
+                    ente.getUser().getUsername(), poiCities.toArray(CityNode[]::new));
+            return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.CREATED;
+        }
+        //fine controllo
+        ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geojson, travelTime,
+                ente.getUser().getUsername(), ente.getCity());
+
+        return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.CREATED;
+    }
+
+    //TODO: controllare cosa ritorna nei vari casi
+    @PatchMapping("/itinerary/consensus")
+    public ResponseEntity<String> setConsensus(@RequestParam String username, @RequestParam boolean consensus,
+                                               @RequestParam Long idRequest) {
+        Ente ente = this.getEnteFromUsername(username);
+        if (Objects.isNull(ente)) return ResponseEntity.status(FORBIDDEN).build();
+        ItineraryRequestNode from = this.itineraryService.findRequestById(idRequest);
+        if (Objects.isNull(from)) return ResponseEntity.notFound().build();
+        this.itineraryService.updateConsensus(ente, from, consensus);
+        if (Objects.isNull(from.getAccepted())) return ResponseEntity.ok("PENDING");
+        if (!from.getAccepted()) return ResponseEntity.ok("REJECTED");
+        return ResponseEntity.ok("ACCEPTED");
+    }
+
+    /**
+     * get all itineraries of an Ente's City
+     *
+     * @param username of ente
+     * @return all itineraries
+     */
+    @GetMapping("/itinerary")
+    public ResponseEntity<Collection<ItineraryDTO>> getItineraries(@RequestParam String username) {
+        Ente ente = this.getEnteFromUsername(username);
+        if (Objects.isNull(ente)) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(this.itineraryService.getItinerariesFiltered(i -> i.getCities().stream()
+                .map(CityNode::getId)
+                .anyMatch(c -> c.equals(ente.getCity().getId()))).stream().map(ItineraryDTO::new).toList());
+    }
+
+    /**
+     * Delete an Itinerary from the database
+     *
+     * @param itineraryId id of ItineraryNode to delete
+     * @param username of ente who calls api
+     * @return status of the operation
+     */
+    @DeleteMapping("/itinerary")
+    public ResponseEntity<HttpStatus> deleteItinerary(@RequestParam Long itineraryId, @RequestParam String username) {
+        Ente ente = this.getEnteFromUsername(username);
+        ItineraryNode toDelete = this.itineraryService.findItineraryById(itineraryId);
+        if (Objects.isNull(toDelete) || Objects.isNull(ente)) return ResponseEntity.notFound().build();
+        if (!Objects.equals(ente.getUser().getUsername(), toDelete.getCreatedBy())) {
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+        this.itineraryService.deleteItinerary(toDelete);
+        return ResponseEntity.ok().build();
+    }
 }

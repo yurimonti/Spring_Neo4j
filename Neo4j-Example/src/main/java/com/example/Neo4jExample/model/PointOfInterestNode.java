@@ -19,7 +19,7 @@ public class PointOfInterestNode {
     private String description;
     private Coordinate coordinate;
     private TimeSlot hours;
-    private Integer timeToVisit;//tempo medio durata di visita
+    private Double timeToVisit;//tempo medio durata di visita
     private Address address;
     private Double ticketPrice;
     private Collection<String> contributors;
@@ -59,17 +59,41 @@ public class PointOfInterestNode {
     }
 
     public PointOfInterestNode(String name, String description, Coordinate coordinate, Address address,
-                               TimeSlot hours,Integer timeToVisit,Double ticketPrice,Contact contact) {
+                               TimeSlot hours,Double timeToVisit,Double ticketPrice,Contact contact) {
         this(name,description,coordinate,address,hours);
         this.timeToVisit = timeToVisit;
         this.ticketPrice = ticketPrice;
         this.contact = contact;
     }
 
-    public PointOfInterestNode(String name, String description, Integer timeToVisit, URL link) {
+    public PointOfInterestNode(String name, String description,Coordinate coordinate,TimeSlot hours,Double timeToVisit,
+                               Address address,Double ticketPrice,URL link,Collection<PoiType> types,
+                               Contact contact,Collection<PoiTagRel> tagValues){
+        this(name, description, coordinate, address, hours, timeToVisit, ticketPrice, contact);
+        this.link = link;
+        this.types = types;
+        this.tagValues = tagValues;
+    }
+
+    public PointOfInterestNode(String name, String description, Double timeToVisit, URL link) {
         this(name,description);
         this.timeToVisit = timeToVisit;
         this.link = link;
+    }
+
+    private void fillTagAndValues(Collection<PoiTagRel> toAdd){
+        toAdd.forEach(value->{
+            PoiTagRel poiTagRel = new PoiTagRel(value.getTag());
+            if(value.getTag().getIsBooleanType())
+                poiTagRel.setBooleanValue(value.getBooleanValue());
+            else poiTagRel.setStringValue(value.getStringValue());
+            this.tagValues.add(poiTagRel);
+        });
+    }
+
+    private void fillHours(TimeSlot toSet){
+        this.hours = new TimeSlot(toSet.getMonday(),toSet.getTuesday(),toSet.getWednesday(),toSet.getThursday(),
+                toSet.getFriday(),toSet.getSaturday(),toSet.getSunday());
     }
 
     public PointOfInterestNode(PoiRequestNode request){
@@ -77,7 +101,7 @@ public class PointOfInterestNode {
         this.name = request.getName();
         this.description = request.getDescription();
         this.coordinate = request.getCoordinate();
-        this.hours = request.getTimeSlot();
+        fillHours(request.getHours());
         this.timeToVisit = request.getTimeToVisit();
         this.address = request.getAddress();
         this.ticketPrice = request.getTicketPrice();
@@ -85,7 +109,8 @@ public class PointOfInterestNode {
         this.link = request.getLink();
         this.types = request.getTypes();
         this.contact = request.getContact();
-        this.tagValues = request.getTagValues();
+        fillTagAndValues(request.getTagValues());
+        /*this.tagValues = request.getTagValues();*/
     }
 
 }
