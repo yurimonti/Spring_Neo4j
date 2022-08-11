@@ -7,6 +7,8 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -22,7 +24,10 @@ public class Ente {
     @Relationship(type = "MANAGES_THIS",direction = Relationship.Direction.OUTGOING)
     private CityNode city;
 
+    private Collection<ItineraryNode> itineraries;
+
     public Ente( UserNode user) {
         this.user = user;
+        this.itineraries = new ArrayList<>();
     }
 }

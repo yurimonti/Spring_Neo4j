@@ -174,7 +174,7 @@ public class EnteController {
         }
         //fine controllo
         ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geojson, travelTime,
-                ente.getUser().getUsername(), ente.getCity());
+                ente.getUser().getUsername(),true, ente.getCity());
 
         return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.CREATED;
     }
@@ -205,7 +205,8 @@ public class EnteController {
         if (Objects.isNull(ente)) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(this.itineraryService.getItinerariesFiltered(i -> i.getCities().stream()
                 .map(CityNode::getId)
-                .anyMatch(c -> c.equals(ente.getCity().getId()))).stream().map(ItineraryDTO::new).toList());
+                .anyMatch(c -> c.equals(ente.getCity().getId()))).stream().filter(ItineraryNode::getIsDefault)
+                .map(ItineraryDTO::new).toList());
     }
 
     /**

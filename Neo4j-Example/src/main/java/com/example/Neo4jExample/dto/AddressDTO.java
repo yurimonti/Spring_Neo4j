@@ -9,6 +9,11 @@ public class AddressDTO {
     private String street;
     private Integer number;
 
+    public AddressDTO() {
+        this.id = 0L;
+        this.street = "";;
+        this.number = 0;
+    }
     public AddressDTO(Address address){
         this.id = address.getId();
         this.street = address.getStreet();;

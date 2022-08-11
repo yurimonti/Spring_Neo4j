@@ -60,8 +60,8 @@ public class ItineraryService {
      * @return a created Itinerary
      */
     public ItineraryNode createItinerary(String name,String description,Collection<PointOfInterestNode> pois, String geojson,
-                                         Double travelTime, String createdBy, CityNode... cities) {
-        ItineraryNode result = new ItineraryNode(name,description,indexedPoints(pois), geojson, createdBy, cities);
+                                         Double travelTime, String createdBy,Boolean isDefault,CityNode... cities) {
+        ItineraryNode result = new ItineraryNode(name,description,indexedPoints(pois), geojson, createdBy,isDefault, cities);
         setTimeToVisit(result, travelTime, pois);
         this.itineraryRepository.save(result);
         return result;
@@ -93,8 +93,8 @@ public class ItineraryService {
      * @return created Itinerary
      */
     public ItineraryNode createItineraryFromRequest(ItineraryRequestNode from) {
-        ItineraryNode result = new ItineraryNode(from.getName(), from.getDescription(),from.getPoints(), from.getGeojson(), from.getCreatedBy(),
-                from.getCities().toArray(CityNode[]::new));
+        ItineraryNode result = new ItineraryNode(from.getName(), from.getDescription(),from.getPoints(),
+                from.getGeojson(), from.getCreatedBy(),true,from.getCities().toArray(CityNode[]::new));
         result.setTimeToVisit(from.getTimeToVisit());
         this.itineraryRepository.save(result);
         return result;

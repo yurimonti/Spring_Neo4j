@@ -23,6 +23,21 @@ public class PoiDTO {
     private ContactDTO contact;
     private Collection<PoiTagRelDTO> tagValues;
 
+    public PoiDTO() {
+        this.id = 0L;
+        this.name = "";
+        this.description = "";
+        this.coordinate = new CoordinateDTO();
+        this.hours = new TimeSlotDTO();
+        this.timeToVisit = 0.0;
+        this.ticketPrice = 0.0;
+        this.address = new AddressDTO();
+        this.contributors = new ArrayList<>();
+        this.types = new ArrayList<>();
+        this.tagValues = new ArrayList<>();
+        this.contact = new ContactDTO();
+    }
+
     public PoiDTO(PointOfInterestNode poi){
         this.id = poi.getId();
         this.name = poi.getName();

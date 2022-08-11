@@ -38,7 +38,8 @@ public class Neo4jExampleApplication {
 								   TagRepository tagRepository, TimeSlotRepository timeSlotRepository,
 								   ItineraryRepository itineraryRepo,PoiRequestRepository poiRequestRepository,
 								   ProvaService provaService,UserNodeRepository userNodeRepository,
-								   UserRoleRepository userRoleRepository,ItineraryRequestRepository itineraryRequestRepository){
+								   UserRoleRepository userRoleRepository,ItineraryRequestRepository itineraryRequestRepository,
+								   ClassicUserRepository classicUserRepository){
 		return args -> {
 			//prova user
 			/*userNodeRepository.deleteAll();

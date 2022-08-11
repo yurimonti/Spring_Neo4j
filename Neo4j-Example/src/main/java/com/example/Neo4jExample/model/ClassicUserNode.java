@@ -6,6 +6,7 @@ import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Node
@@ -16,7 +17,14 @@ public class ClassicUserNode {
     @GeneratedValue
     private Long id;
     private UserNode user;
-    private Collection<PoiRequestNode> requests;
+    private Collection<PoiRequestNode> poiRequests;
     private Collection<ItineraryNode> itineraries;
+    private Collection<ItineraryRequestNode> itineraryRequests;
 
+    public ClassicUserNode(UserNode user) {
+        this.user = user;
+        this.poiRequests = new ArrayList<>();
+        this.itineraries = new ArrayList<>();
+        this.itineraryRequests = new ArrayList<>();
+    }
 }

@@ -36,6 +36,8 @@ public class ItineraryNode {
     private Collection<CategoryNode> categories;
     private String geoJson;
 
+    private Boolean isDefault;
+
 
     private void setRealCategory(Collection<CategoryNode> categories,
                                  Collection<PointOfInterestNode> pointOfInterestNodes){
@@ -46,7 +48,8 @@ public class ItineraryNode {
         pois.forEach(poiType -> categoriesNodes.addAll(poiType.getCategories()));
         categories.addAll(categoriesNodes.stream().distinct().toList());
     }
-    public ItineraryNode(String name,String description,Collection<ItineraryRelPoi> points, String geoJson,String createdBy,CityNode ...cities) {
+    public ItineraryNode(String name,String description,Collection<ItineraryRelPoi> points, String geoJson,
+                         String createdBy,Boolean isDefault,CityNode ...cities) {
         this();
         this.name = name;
         this.description = description;
@@ -55,6 +58,7 @@ public class ItineraryNode {
         this.points = points;
         this.categories = new ArrayList<>();
         setRealCategory(this.categories,points.stream().map(ItineraryRelPoi::getPoi).toList());
+        this.isDefault = isDefault;
         this.geoJson = geoJson;
         this.createdBy = createdBy;
     }
