@@ -21,6 +21,8 @@ public class ItineraryDTO {
     private Collection<CategoryDTO> categories;
     private String geoJson;
 
+    private Boolean isDefault;
+
     public ItineraryDTO() {
         this.id = 0L;
         this.name = "";
@@ -43,5 +45,6 @@ public class ItineraryDTO {
         this.timeToVisit = itineraryNode.getTimeToVisit();
         this.geoJson = itineraryNode.getGeoJson();
         this.cities = itineraryNode.getCities().stream().map(CityDTO::new).toList();
+        this.isDefault = itineraryNode.getIsDefault();
     }
 }
