@@ -184,7 +184,7 @@ public class PoiService {
                 .map(a -> poiTypeRepository.findById(a).get())
                 .collect(Collectors.toList());
         result.setTypes(poiTypes);
-        result.setTagValues(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
+        result.getTagValues().addAll(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
         this.pointOfIntRepository.save(result);
         return result;
     }
@@ -222,9 +222,9 @@ public class PoiService {
                 .map(a -> this.poiTypeRepository.findById(a).get())
                 .collect(Collectors.toList());
         poiToModify.setTypes(poiTypes);
-        /*poiToModify.getTagValues().clear();
-        poiToModify.getTagValues().addAll(createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));*/
-        this.setPoiTagRelTo(poiToModify,(Collection<Map<String, Object>>) bodyFrom.get("tags"));
+        poiToModify.getTagValues().clear();
+        poiToModify.getTagValues().addAll(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
+        //poiToModify.setTagValues(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
         //poiToModify.setTagValues(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
         this.pointOfIntRepository.save(poiToModify);
         System.out.println(poiToModify.getTagValues());

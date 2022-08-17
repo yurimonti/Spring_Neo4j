@@ -19,7 +19,7 @@ public class ItineraryDTO {
     private Collection<ItineraryRelPoiDTO> points;
     private Double timeToVisit;
     private Collection<CategoryDTO> categories;
-    private String geoJson;
+    private Collection<String> geoJsonList;
 
     private Boolean isDefault;
 
@@ -32,7 +32,7 @@ public class ItineraryDTO {
         this.points = new ArrayList<>();
         this.createdBy = "";
         this.cities = new ArrayList<>();
-        this.geoJson = "";
+        this.geoJsonList = new ArrayList<>();
     }
 
     public ItineraryDTO(ItineraryNode itineraryNode) {
@@ -43,7 +43,7 @@ public class ItineraryDTO {
         this.createdBy = itineraryNode.getCreatedBy();
         this.points = itineraryNode.getPoints().stream().map(ItineraryRelPoiDTO::new).sorted(Comparator.comparingInt(ItineraryRelPoiDTO::getIndex)).collect(Collectors.toList());
         this.timeToVisit = itineraryNode.getTimeToVisit();
-        this.geoJson = itineraryNode.getGeoJson();
+        this.geoJsonList = itineraryNode.getGeoJsonList();
         this.cities = itineraryNode.getCities().stream().map(CityDTO::new).toList();
         this.isDefault = itineraryNode.getIsDefault();
     }

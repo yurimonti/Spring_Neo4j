@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Collection;
 @Node
 @Data
-@NoArgsConstructor
 public class ItineraryRequestNode {
     @Id @GeneratedValue
     private Long id;
@@ -24,17 +23,24 @@ public class ItineraryRequestNode {
     private Collection<String> consensus;
     private String createdBy;
     private Double timeToVisit;
-    private String geojson;
+    private Collection<String> geoJsonList;
 
-    public ItineraryRequestNode(String name, String description,Collection<ItineraryRelPoi> points, String geoJson, String createdBy, CityNode ...cities){
+    public ItineraryRequestNode(){
+        this.cities = new ArrayList<>();
+        this.points = new ArrayList<>();
+        this.consensus = new ArrayList<>();
+        this.geoJsonList = new ArrayList<>();
+        this.accepted = null;
+    }
+
+    public ItineraryRequestNode(String name, String description,Collection<ItineraryRelPoi> points,Collection<String> geoJsonList, String createdBy, CityNode ...cities){
+        this();
         this.name = name;
         this.description = description;
-        this.consensus = new ArrayList<>();
         this.points = points;
-        this.geojson = geoJson;
+        this.geoJsonList = geoJsonList;
         this.createdBy = createdBy;
         this.cities = Arrays.stream(cities).toList();
-        this.accepted = null;
     }
 
 }

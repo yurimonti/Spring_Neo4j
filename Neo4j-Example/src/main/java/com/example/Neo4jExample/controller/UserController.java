@@ -109,13 +109,12 @@ public class UserController {
         if (Objects.isNull(user)) return FORBIDDEN;
         String name = (String) body.get("name");
         String description = (String) body.get("description");
-        String geojson = (String) body.get("geojson");
-        Double travelTime = Double.parseDouble((String) body.get("travelTime"));
+        Collection<String> geoJsonList = (Collection<String>) body.get("geoJsonList");
         Collection<String> poiIds = (Collection<String>) body.get("poiIds");
         Collection<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
         Collection<CityNode> poiCities = pois.stream().map(this.utilityService::getCityOfPoi).distinct().toList();
-        ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geojson, travelTime,
+        ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
                 user.getUser().getUsername(),false, poiCities.toArray(CityNode[]::new));
         if(Objects.isNull(result)) return HttpStatus.INTERNAL_SERVER_ERROR;
         this.userService.addItineraryToUser(user,result);

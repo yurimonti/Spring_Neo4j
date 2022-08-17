@@ -92,6 +92,7 @@ public class EnteController {
                 this.poiRequestService.setPoiToRequest(poiRequestNode, poiToSet);
             } else {
                 this.poiService.modifyPoiFromRequest(poiRequestNode);
+                this.itineraryService.updateItinerariesByPoiModify(poiRequestNode.getPointOfInterestNode());
                 /*this.provaService.changePoiFromRequest(poiRequestNode);*/
             }
         }
@@ -117,12 +118,13 @@ public class EnteController {
         if (!Objects.isNull(poiRequestNode.getPointOfInterestNode())) {
             poiResult = poiRequestNode.getPointOfInterestNode();
             this.poiService.modifyPoiFromBody(poiResult, body);
+            this.poiRequestService.setPoiToRequest(poiRequestNode, poiResult);
+            this.itineraryService.updateItinerariesByPoiModify(poiResult);
         } else {
             poiResult = this.poiService.createPoiFromBody(body);
-            CityNode city = ente.getCity();
-            this.poiService.savePoiInACity(city, poiResult);
+            this.poiRequestService.setPoiToRequest(poiRequestNode, poiResult);
+            this.poiService.savePoiInACity(ente.getCity(), poiResult);
         }
-        this.poiRequestService.setPoiToRequest(poiRequestNode, poiResult);
         return ResponseEntity.ok().body(poiRequestNode.getPointOfInterestNode());
     }
 
@@ -141,6 +143,7 @@ public class EnteController {
         PointOfInterestNode toModify = this.poiService.findPoiById(id);
         if (Objects.isNull(ente) || Objects.isNull(toModify)) return ResponseEntity.notFound().build();
         this.poiService.modifyPoiFromBody(toModify, body);
+        this.itineraryService.updateItinerariesByPoiModify(toModify);
         return ResponseEntity.ok(toModify);
     }
 
@@ -159,21 +162,23 @@ public class EnteController {
         if (Objects.isNull(ente)) return FORBIDDEN;
         String name = (String) body.get("name");
         String description = (String) body.get("description");
-        String geojson = (String) body.get("geojson");
-        Double travelTime = Double.parseDouble((String) body.get("travelTime"));
+        Collection<String> geoJsonList = (Collection<String>) body.get("geoJsonList");
         Collection<String> poiIds = (Collection<String>) body.get("poiIds");
         Collection<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
         //aggiunta controllo delle citta'
         Collection<CityNode> poiCities = pois.stream().map(this.utilityService::getCityOfPoi).distinct().toList();
+        System.out.println(poiCities.stream().map(CityDTO::new).toList());
+        System.out.println(poiCities.size());
+        /*System.out.println(new CityDTO(ente.getCity()));*/
         if (!poiCities.contains(ente.getCity())) return HttpStatus.NOT_ACCEPTABLE;
         if (poiCities.size() > 1) {
-            ItineraryRequestNode result = this.itineraryService.createItineraryRequest(name,description,pois, geojson, travelTime,
+            ItineraryRequestNode result = this.itineraryService.createItineraryRequest(name,description,pois, geoJsonList,
                     ente.getUser().getUsername(), poiCities.toArray(CityNode[]::new));
             return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.CREATED;
         }
         //fine controllo
-        ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geojson, travelTime,
+        ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
                 ente.getUser().getUsername(),true, ente.getCity());
 
         return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.CREATED;

@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 
 @Node
 @Data
-@NoArgsConstructor
 public class ItineraryNode {
     @Id @GeneratedValue
     private Long id;
@@ -34,8 +33,8 @@ public class ItineraryNode {
     private Double timeToVisit;
     @Relationship(type = "ITINERARY_HAS_CATEGORY",direction = Relationship.Direction.OUTGOING)
     private Collection<CategoryNode> categories;
-    private String geoJson;
-
+    //private String geoJson;
+    private Collection<String> geoJsonList;
     private Boolean isDefault;
 
 
@@ -48,7 +47,14 @@ public class ItineraryNode {
         pois.forEach(poiType -> categoriesNodes.addAll(poiType.getCategories()));
         categories.addAll(categoriesNodes.stream().distinct().toList());
     }
-    public ItineraryNode(String name,String description,Collection<ItineraryRelPoi> points, String geoJson,
+
+    public ItineraryNode(){
+        this.categories = new ArrayList<>();
+        this.geoJsonList = new ArrayList<>();
+        this.points = new ArrayList<>();
+        this.cities = new ArrayList<>();
+    }
+    public ItineraryNode(String name,String description,Collection<ItineraryRelPoi> points, Collection<String> geoJsonList,
                          String createdBy,Boolean isDefault,CityNode ...cities) {
         this();
         this.name = name;
@@ -56,10 +62,10 @@ public class ItineraryNode {
         this.cities = Arrays.stream(cities).toList();
         //this.points = points;
         this.points = points;
-        this.categories = new ArrayList<>();
         setRealCategory(this.categories,points.stream().map(ItineraryRelPoi::getPoi).toList());
         this.isDefault = isDefault;
-        this.geoJson = geoJson;
+        //this.geoJson = geoJson;
+        this.geoJsonList = geoJsonList;
         this.createdBy = createdBy;
     }
 }

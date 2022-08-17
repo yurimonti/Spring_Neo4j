@@ -8,10 +8,10 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Data
-@NoArgsConstructor
 @Node
 public class PoiRequestNode {
     @Id
@@ -36,6 +36,11 @@ public class PoiRequestNode {
     private Contact contact;
     @Relationship(type = "TAG_VALUE",direction = Relationship.Direction.OUTGOING)
     private Collection<PoiTagRel> tagValues;
+
+    public PoiRequestNode(){
+        this.types = new ArrayList<>();
+        this.tagValues = new ArrayList<>();
+    }
 
     public PoiRequestNode(String name, String description, CityNode city, Coordinate coordinate, Address address,
                           Collection<PoiType> types){

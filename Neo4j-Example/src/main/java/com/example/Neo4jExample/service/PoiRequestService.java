@@ -59,7 +59,7 @@ public class PoiRequestService {
         poiRequestNode.setTicketPrice(ticketPrice);
         poiRequestNode.setHours(timeSlot);
         poiRequestNode.setTypes(poiTypes);
-        poiRequestNode.setTagValues(tagRels);
+        poiRequestNode.getTagValues().addAll(tagRels);
         return poiRequestNode;
     }
 
