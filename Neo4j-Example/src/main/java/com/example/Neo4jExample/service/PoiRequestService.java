@@ -26,6 +26,7 @@ public class PoiRequestService {
     private final MySerializer<CityDTO> cityDTOMySerializer;
 
     //create a basic request without some data, like city and poi
+    //TODO: rivedere perché non funziona tag values ecc
     private PoiRequestNode getBasicRequestFromBody(Map<String, Object> bodyFrom) {
         PoiRequestNode poiRequestNode = new PoiRequestNode();
         String username = this.utilityService.getValueFromBody("username", bodyFrom);
@@ -42,7 +43,7 @@ public class PoiRequestService {
         this.contactRepository.save(contact);
         Double timeToVisit = Double.parseDouble(this.utilityService.getValueFromBody("timeToVisit", bodyFrom));
         Double ticketPrice = Double.parseDouble(this.utilityService.getValueFromBody("price", bodyFrom));
-        TimeSlot timeSlot = this.utilityService.getTimeSlotFromBody(new TimeSlot(), bodyFrom);
+        TimeSlot timeSlot = this.utilityService.getTimeSlotFromBody(new TimeSlot(),bodyFrom);
         Collection<PoiType> poiTypes = ((Collection<String>) bodyFrom.get("types")).stream()
                 .filter(a -> this.poiTypeRepository.findById(a).isPresent())
                 .map(a -> this.poiTypeRepository.findById(a).get())

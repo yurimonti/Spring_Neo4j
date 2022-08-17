@@ -3,9 +3,11 @@ package com.example.Neo4jExample.controller;
 import com.example.Neo4jExample.dto.CityDTO;
 import com.example.Neo4jExample.dto.ItineraryDTO;
 import com.example.Neo4jExample.dto.PoiDTO;
+import com.example.Neo4jExample.dto.PoiRequestDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.ItineraryService;
+import com.example.Neo4jExample.service.PoiRequestService;
 import com.example.Neo4jExample.service.PoiService;
 import com.example.Neo4jExample.service.ProvaService;
 import com.example.Neo4jExample.service.util.MySerializer;
@@ -28,6 +30,8 @@ public class DefaultController {
     //TODO: cancellare le repository
     private final PointOfIntRepository pointOfIntRepository;
     private final CityRepository cityRepository;
+
+    private final PoiRequestService poiRequestService;
 
 
 
@@ -109,6 +113,14 @@ public class DefaultController {
         mapResult.put("city", cityDto);
         mapResult.put("poi", result);
         return ResponseEntity.ok(mapResult);
+    }
+
+    @GetMapping("/request")
+    public ResponseEntity<PoiRequestDTO> getRequestById(@RequestParam Long id){
+        PoiRequestNode request = this.poiRequestService.findRequestById(id);
+        PoiRequestDTO result = new PoiRequestDTO();
+        if(!Objects.isNull(request)) result = new PoiRequestDTO(request);
+        return ResponseEntity.ok(result);
     }
 
 }

@@ -135,13 +135,14 @@ public class ProvaService {
 
     /**
      * check and update if all pois are open in a certain date
-     * @param pois to check
+     * **@param pois to check
      * @param date to validating the check
      */
-    public void updateOpenPois(Collection<PointOfInterestNode> pois,Date date){
+    public void updateOpenPois(Date date){
+        Collection<PointOfInterestNode> pois = this.pointOfIntRepository.findAll();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        pois.forEach(pointOfInterestNode -> updateOpenPoi(pointOfInterestNode,calendar));
+        pois.forEach(pointOfInterestNode -> this.updateOpenPoi(pointOfInterestNode,calendar));
     }
 
     public void changePoiFromRequest(PoiRequestNode poiRequestNode){

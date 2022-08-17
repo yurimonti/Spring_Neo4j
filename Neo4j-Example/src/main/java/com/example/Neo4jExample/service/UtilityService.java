@@ -93,8 +93,7 @@ public class UtilityService {
             PoiTagRel poiTagRel = new PoiTagRel(tagNode);
             if (!Objects.isNull(tagNode)) {
                 if (tagNode.getIsBooleanType()) {
-                    Boolean value = (Boolean) map.get("value");
-                    poiTagRel.setBooleanValue(value);
+                    poiTagRel.setBooleanValue((Boolean) map.get("value"));
                 } else poiTagRel.setStringValue((String) map.get("value"));
             }
             result.add(poiTagRel);

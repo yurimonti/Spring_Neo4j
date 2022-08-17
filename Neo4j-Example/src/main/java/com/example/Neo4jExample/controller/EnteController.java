@@ -129,16 +129,16 @@ public class EnteController {
     /**
      * modify a poi
      *
-     * @param poiId    id of poi to modify
+     * @param id id of poi to modify
      * @param username of ente who calls this api
      * @param body     http request that contains values
      * @return Poi modified
      */
     @PatchMapping("/poi")
-    public ResponseEntity<PointOfInterestNode> modifyPoi(@RequestParam Long poiId, @RequestParam String username,
+    public ResponseEntity<PointOfInterestNode> modifyPoi(@RequestParam Long id, @RequestParam String username,
                                                          @RequestBody Map<String, Object> body) {
         Ente ente = this.getEnteFromUsername(username);
-        PointOfInterestNode toModify = this.poiService.findPoiById(poiId);
+        PointOfInterestNode toModify = this.poiService.findPoiById(id);
         if (Objects.isNull(ente) || Objects.isNull(toModify)) return ResponseEntity.notFound().build();
         this.poiService.modifyPoiFromBody(toModify, body);
         return ResponseEntity.ok(toModify);
