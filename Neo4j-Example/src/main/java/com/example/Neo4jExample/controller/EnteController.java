@@ -16,7 +16,7 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/ente")
@@ -163,6 +163,7 @@ public class EnteController {
         String name = (String) body.get("name");
         String description = (String) body.get("description");
         Collection<String> geoJsonList = (Collection<String>) body.get("geoJsonList");
+        if(geoJsonList.size() == 0) return NOT_FOUND;
         Collection<String> poiIds = (Collection<String>) body.get("poiIds");
         Collection<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
@@ -171,17 +172,17 @@ public class EnteController {
         System.out.println(poiCities.stream().map(CityDTO::new).toList());
         System.out.println(poiCities.size());
         /*System.out.println(new CityDTO(ente.getCity()));*/
-        if (!poiCities.contains(ente.getCity())) return HttpStatus.NOT_ACCEPTABLE;
+        if (!poiCities.contains(ente.getCity())) return NOT_ACCEPTABLE;
         if (poiCities.size() > 1) {
             ItineraryRequestNode result = this.itineraryService.createItineraryRequest(name,description,pois, geoJsonList,
                     ente.getUser().getUsername(), poiCities.toArray(CityNode[]::new));
-            return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.CREATED;
+            return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
         }
         //fine controllo
         ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
                 ente.getUser().getUsername(),true, ente.getCity());
 
-        return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.CREATED;
+        return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
     }
 
     //TODO: controllare cosa ritorna nei vari casi
