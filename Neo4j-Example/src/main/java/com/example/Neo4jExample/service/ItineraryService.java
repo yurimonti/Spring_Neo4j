@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +26,6 @@ public class ItineraryService {
     private void setTimeToVisit(ItineraryRequestNode result, Collection<PointOfInterestNode> pois) {
         result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum)*60);
     }
-
-    public void updateItinerariesByPoiModify(PointOfInterestNode poi){
-        Collection<ItineraryNode> toModify = this.itineraryRepository.findAll().stream().filter(it -> it.getPoints()
-                .stream().map(ItineraryRelPoi::getPoi).toList()
-                .contains(poi)).toList();
-        toModify.forEach(it -> setTimeToVisit(it,it.getPoints().stream().map(ItineraryRelPoi::getPoi).toList()));
-        this.itineraryRepository.saveAll(toModify);
-    }
     private Collection<ItineraryRelPoi> indexedPoints(Collection<PointOfInterestNode> points) {
         Collection<ItineraryRelPoi> pointsNodes = new ArrayList<>();
         PointOfInterestNode[] nodes = points.toArray(PointOfInterestNode[]::new);
@@ -41,6 +35,29 @@ public class ItineraryService {
         }
         return pointsNodes;
     }
+
+    /**
+     *
+     * @param predicate filter to apply
+     * @return all itineraryRequests if is not presente a predicate, otherwise returns filtered by predicate
+     */
+    public Collection<ItineraryRequestNode> getItineraryRequests(Predicate<ItineraryRequestNode> predicate) {
+        Collection<ItineraryRequestNode> requests = this.itineraryRequestRepository.findAll();
+        if(Objects.isNull(predicate)) return requests;
+        return requests.stream().filter(predicate).toList();
+    }
+    /**
+     * uodate all itineraries that contain the given poi modified
+     * @param poi modified
+     */
+    public void updateItinerariesByPoiModify(PointOfInterestNode poi){
+        Collection<ItineraryNode> toModify = this.itineraryRepository.findAll().stream().filter(it -> it.getPoints()
+                .stream().map(ItineraryRelPoi::getPoi).toList()
+                .contains(poi)).toList();
+        toModify.forEach(it -> setTimeToVisit(it,it.getPoints().stream().map(ItineraryRelPoi::getPoi).toList()));
+        this.itineraryRepository.saveAll(toModify);
+    }
+
 
     /**
      * find and return a request by id if is present

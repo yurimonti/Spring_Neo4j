@@ -2,6 +2,7 @@ package com.example.Neo4jExample.controller;
 
 import com.example.Neo4jExample.dto.CityDTO;
 import com.example.Neo4jExample.dto.ItineraryDTO;
+import com.example.Neo4jExample.dto.ItineraryRequestDTO;
 import com.example.Neo4jExample.dto.PoiRequestDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
@@ -232,5 +233,14 @@ public class EnteController {
         }
         this.itineraryService.deleteItinerary(toDelete);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/itinerary/requests")
+    public ResponseEntity<Collection<ItineraryRequestDTO>> getItineraryRequests(@RequestParam String username){
+        Ente ente = this.getEnteFromUsername(username);
+        if (Objects.isNull(ente)) return ResponseEntity.notFound().build();
+        Collection<ItineraryRequestNode> requests = this.itineraryService.getItineraryRequests(r ->
+                r.getCities().contains(ente.getCity()));
+        return ResponseEntity.ok(requests.stream().map(ItineraryRequestDTO::new).toList());
     }
 }

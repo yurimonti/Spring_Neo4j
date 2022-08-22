@@ -19,6 +19,8 @@ public class ItineraryRequestDTO {
     private Collection<CityDTO> cities;
     private String createdBy;
     private StatusEnum status;
+
+    private Collection<String> consensus;
     private Double timeToVisit;
     private Collection<String> geoJsonList;
 
@@ -34,5 +36,6 @@ public class ItineraryRequestDTO {
         this.createdBy = itineraryRequestNode.getCreatedBy();
         this.timeToVisit = itineraryRequestNode.getTimeToVisit();
         this.geoJsonList = itineraryRequestNode.getGeoJsonList();
+        this.consensus = itineraryRequestNode.getConsensus();
     }
 }

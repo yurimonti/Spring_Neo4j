@@ -43,7 +43,7 @@ public class Neo4jExampleApplication {
 		return args -> {
 
 			//prova user
-			userNodeRepository.deleteAll();
+			/*userNodeRepository.deleteAll();
 			userRoleRepository.deleteAll();
 			classicUserRepository.deleteAll();
 			Collection<UserRole> roles = new ArrayList<>();
@@ -393,7 +393,7 @@ public class Neo4jExampleApplication {
 			pointProvaCoords = new Coordinate(43.2104315,13.0526301);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "PalaSport Castel Raimondo",castelRaimondo,
 					palazzo,pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
-			cityRepository.save(castelRaimondo);
+			cityRepository.save(castelRaimondo);*/
 
 			//------------------- Fine Creazione Poi --------------------
 
