@@ -20,11 +20,11 @@ public class Neo4jExampleApplication {
 	/**
 	 * set Timer to update pois time open
 	 */
-	private void timerToUpdateTimeSlots(ProvaService provaService,Collection<PointOfInterestNode> pois) {
+	private void timerToUpdateTimeSlots(ProvaService provaService) {
 		new Timer().scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				provaService.updateOpenPois(pois,new Date());
+				provaService.updateOpenPois(new Date());
 			}
 		},0,1000*60);
 	}
@@ -38,11 +38,14 @@ public class Neo4jExampleApplication {
 								   TagRepository tagRepository, TimeSlotRepository timeSlotRepository,
 								   ItineraryRepository itineraryRepo,PoiRequestRepository poiRequestRepository,
 								   ProvaService provaService,UserNodeRepository userNodeRepository,
-								   UserRoleRepository userRoleRepository,ItineraryRequestRepository itineraryRequestRepository){
+								   UserRoleRepository userRoleRepository,ItineraryRequestRepository itineraryRequestRepository,
+								   ClassicUserRepository classicUserRepository){
 		return args -> {
+
 			//prova user
 			/*userNodeRepository.deleteAll();
 			userRoleRepository.deleteAll();
+			classicUserRepository.deleteAll();
 			Collection<UserRole> roles = new ArrayList<>();
 			UserRole userRole = new UserRole("user");
 			UserRole enteRole = new UserRole("ente");
@@ -58,7 +61,6 @@ public class Neo4jExampleApplication {
 			coordinateRepository.deleteAll();
 			dishNodeRepository.deleteAll();
 			enteRepository.deleteAll();
-			foodSectionNodeRepository.deleteAll();
 			menuNodeRepository.deleteAll();
 			pointOfIntRepository.deleteAll();
 			poiTypeRepository.deleteAll();
@@ -68,6 +70,7 @@ public class Neo4jExampleApplication {
 			itineraryRepo.deleteAll();
 			poiRequestRepository.deleteAll();
 			itineraryRequestRepository.deleteAll();
+			foodSectionNodeRepository.deleteAll();
 			//creazione ente e citta'
 			UserNode userEnteCamerino = new UserNode("mario","rossi","email","password",
 					"ente_camerino",enteRole);
@@ -78,6 +81,7 @@ public class Neo4jExampleApplication {
 			UserNode user = new UserNode("marco","bianchi","email","password",
 					"an_user",userRole);
 			userNodeRepository.save(user);
+			classicUserRepository.save(new ClassicUserNode(user));
 			Ente enteCamerino = new Ente(userEnteCamerino);
 			CityNode camerino = new CityNode("Camerino");
 			Coordinate coordCamerino = new Coordinate(43.139850, 13.069172);
@@ -416,7 +420,7 @@ public class Neo4jExampleApplication {
 			poiRequestRepository.save(poiRequestNode);*/
 
 			//Timer che verifica e setta se un poi e' aperto o meno secondo l'istante corrente
-			timerToUpdateTimeSlots(provaService,pointOfIntRepository.findAll());
+			this.timerToUpdateTimeSlots(provaService);
 		};
 	}
 

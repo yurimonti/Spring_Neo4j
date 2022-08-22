@@ -30,6 +30,23 @@ public class PoiService {
     private final TimeSlotRepository timeSlotRepository;
     private final AddressRepository addressRepository;
     private final ContactRepository contactRepository;
+    private final TagRepository tagRepository;
+
+    private void setPoiTagRelTo(PointOfInterestNode target,Collection<Map<String, Object>> from) {
+        target.getTagValues().clear();
+        for (Map<String, Object> map : from) {
+            String tag = (String) map.get("tag");
+            TagNode tagNode = this.tagRepository.findById(tag).orElse(null);
+            PoiTagRel poiTagRel = new PoiTagRel(tagNode);
+            if (!Objects.isNull(tagNode)) {
+                if (tagNode.getIsBooleanType()) {
+                    poiTagRel.setBooleanValue((Boolean) map.get("value"));
+                } else poiTagRel.setStringValue((String) map.get("value"));
+            }
+            target.getTagValues().add(poiTagRel);
+        }
+        this.pointOfIntRepository.save(target);
+    }
 
     public PointOfInterestNode findPoiById(Long id){
         return this.pointOfIntRepository.findById(id).orElse(null);
@@ -160,14 +177,14 @@ public class PoiService {
         result.setTimeToVisit(timeToVisit);
         Double ticketPrice = Double.parseDouble((String) bodyFrom.get("price"));
         result.setTicketPrice(ticketPrice);
-        TimeSlot timeSlot = this.utilityService.getTimeSlotFromBody(new TimeSlot(), bodyFrom);
+        TimeSlot timeSlot = this.utilityService.getTimeSlotFromBody(new TimeSlot(),bodyFrom);
         result.setHours(timeSlot);
         Collection<PoiType> poiTypes = ((Collection<String>) bodyFrom.get("types")).stream()
                 .filter(a -> poiTypeRepository.findById(a).isPresent())
                 .map(a -> poiTypeRepository.findById(a).get())
                 .collect(Collectors.toList());
         result.setTypes(poiTypes);
-        result.setTagValues(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
+        result.getTagValues().addAll(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
         this.pointOfIntRepository.save(result);
         return result;
     }
@@ -178,42 +195,40 @@ public class PoiService {
      * @param poiToModify PointOfInterestNode to modify
      * @param bodyFrom    body request contained values to set
      */
+    //TODO: modificare tutto
     public void modifyPoiFromBody(PointOfInterestNode poiToModify, Map<String, Object> bodyFrom) {
         //FIXME: non salva i tagValues se modifico un poi
-        String username = this.utilityService.getValueFromBody("username",bodyFrom);
+        String username = (String) bodyFrom.get("username");
         if(!Objects.isNull(username)) poiToModify.getContributors().add(username);
         String name = this.utilityService.getValueFromBody("name",bodyFrom);
         poiToModify.setName(name);
         String description = this.utilityService.getValueFromBody("description",bodyFrom);
         poiToModify.setDescription(description);
-        Coordinate coordinate = new Coordinate(Double.parseDouble(this.utilityService.getValueFromBody("lat",bodyFrom)),
-                Double.parseDouble(this.utilityService.getValueFromBody("lon",bodyFrom)));
-        this.coordinateRepository.save(coordinate);
-        poiToModify.setCoordinate(coordinate);
-        Address address = new Address(this.utilityService.getValueFromBody("street",bodyFrom),
-                Integer.parseInt(this.utilityService.getValueFromBody("number",bodyFrom)));
-        this.addressRepository.save(address);
-        poiToModify.setAddress(address);
-        Contact contact = new Contact();
-        contact.setEmail(this.utilityService.getValueFromBody("email",bodyFrom));
-        contact.setCellNumber(this.utilityService.getValueFromBody("phone",bodyFrom));
-        contact.setFax(this.utilityService.getValueFromBody("fax",bodyFrom));
-        this.contactRepository.save(contact);
-        poiToModify.setContact(contact);
+        poiToModify.getCoordinate().setLat(Double.parseDouble(this.utilityService.getValueFromBody("lat",bodyFrom)));
+        poiToModify.getCoordinate().setLon(Double.parseDouble(this.utilityService.getValueFromBody("lon",bodyFrom)));
+        this.coordinateRepository.save(poiToModify.getCoordinate());
+        poiToModify.getAddress().setStreet(this.utilityService.getValueFromBody("street",bodyFrom));
+        poiToModify.getAddress().setNumber(Integer.parseInt(this.utilityService.getValueFromBody("number",bodyFrom)));
+        this.addressRepository.save(poiToModify.getAddress());
+        poiToModify.getContact().setEmail(this.utilityService.getValueFromBody("email",bodyFrom));
+        poiToModify.getContact().setCellNumber(this.utilityService.getValueFromBody("phone",bodyFrom));
+        poiToModify.getContact().setFax(this.utilityService.getValueFromBody("fax",bodyFrom));
+        this.contactRepository.save(poiToModify.getContact());
         poiToModify.setTimeToVisit(Double.parseDouble(this.utilityService.getValueFromBody("timeToVisit",bodyFrom)));
         poiToModify.setTicketPrice(Double.parseDouble(this.utilityService.getValueFromBody("price",bodyFrom)));
-        TimeSlot timeSlot = new TimeSlot();
-        timeSlot = this.utilityService.getTimeSlotFromBody(timeSlot, bodyFrom);
-        poiToModify.setHours(timeSlot);
+        poiToModify.setHours(this.utilityService.getTimeSlotFromBody(poiToModify.getHours(),bodyFrom));
         Collection<PoiType> poiTypes = ((Collection<String>) bodyFrom.get("types")).stream()
                 .filter(a -> this.poiTypeRepository.findById(a).isPresent())
                 .map(a -> this.poiTypeRepository.findById(a).get())
                 .collect(Collectors.toList());
         poiToModify.setTypes(poiTypes);
-        /*poiToModify.getTagValues().clear();
-        poiToModify.getTagValues().addAll(createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));*/
-        poiToModify.setTagValues(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
+        poiToModify.getTagValues().clear();
+        poiToModify.getTagValues().addAll(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
+        //poiToModify.setTagValues(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
+        //poiToModify.setTagValues(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
         this.pointOfIntRepository.save(poiToModify);
+        System.out.println(poiToModify.getTagValues());
+        System.out.println(Objects.requireNonNull(this.pointOfIntRepository.findById(poiToModify.getId()).stream().findFirst().orElse(null)).getTagValues());
     }
 
         /*{

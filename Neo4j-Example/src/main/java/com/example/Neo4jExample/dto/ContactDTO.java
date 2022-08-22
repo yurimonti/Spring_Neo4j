@@ -10,6 +10,13 @@ public class ContactDTO {
     private String cellNumber;
     private String fax;
 
+
+    public ContactDTO(){
+        this.id = 0L;
+        this.cellNumber = "";
+        this.email = "";
+        this.fax = "";
+    }
     public ContactDTO(Contact contact){
         this.id = contact.getId();
         this.cellNumber = contact.getCellNumber();

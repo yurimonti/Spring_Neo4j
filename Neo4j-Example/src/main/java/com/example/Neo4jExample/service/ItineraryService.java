@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -17,16 +19,13 @@ public class ItineraryService {
     private final ItineraryRepository itineraryRepository;
     private final ItineraryRequestRepository itineraryRequestRepository;
 
-    private void setTimeToVisit(ItineraryNode result, Double travelTime, Collection<PointOfInterestNode> pois) {
-        result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum)*60 +
-                travelTime);
+    private void setTimeToVisit(ItineraryNode result, Collection<PointOfInterestNode> pois) {
+        result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum)*60);
     }
 
-    private void setTimeToVisit(ItineraryRequestNode result, Double travelTime, Collection<PointOfInterestNode> pois) {
-        result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum)*60 +
-                travelTime);
+    private void setTimeToVisit(ItineraryRequestNode result, Collection<PointOfInterestNode> pois) {
+        result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum)*60);
     }
-
     private Collection<ItineraryRelPoi> indexedPoints(Collection<PointOfInterestNode> points) {
         Collection<ItineraryRelPoi> pointsNodes = new ArrayList<>();
         PointOfInterestNode[] nodes = points.toArray(PointOfInterestNode[]::new);
@@ -36,6 +35,29 @@ public class ItineraryService {
         }
         return pointsNodes;
     }
+
+    /**
+     *
+     * @param predicate filter to apply
+     * @return all itineraryRequests if is not presente a predicate, otherwise returns filtered by predicate
+     */
+    public Collection<ItineraryRequestNode> getItineraryRequests(Predicate<ItineraryRequestNode> predicate) {
+        Collection<ItineraryRequestNode> requests = this.itineraryRequestRepository.findAll();
+        if(Objects.isNull(predicate)) return requests;
+        return requests.stream().filter(predicate).toList();
+    }
+    /**
+     * uodate all itineraries that contain the given poi modified
+     * @param poi modified
+     */
+    public void updateItinerariesByPoiModify(PointOfInterestNode poi){
+        Collection<ItineraryNode> toModify = this.itineraryRepository.findAll().stream().filter(it -> it.getPoints()
+                .stream().map(ItineraryRelPoi::getPoi).toList()
+                .contains(poi)).toList();
+        toModify.forEach(it -> setTimeToVisit(it,it.getPoints().stream().map(ItineraryRelPoi::getPoi).toList()));
+        this.itineraryRepository.saveAll(toModify);
+    }
+
 
     /**
      * find and return a request by id if is present
@@ -53,16 +75,16 @@ public class ItineraryService {
      * create an Itinerary and save it
      *
      * @param pois       contained in Itinerary
-     * @param geojson    geojson that contains information about directions
-     * @param travelTime elapsing time between pois
+     * @param geoJsonList collection of geojson that contains information about directions for various Profiles
      * @param createdBy  user who creates itinerary
      * @param cities     that contain this itinerary
      * @return a created Itinerary
      */
-    public ItineraryNode createItinerary(String name,String description,Collection<PointOfInterestNode> pois, String geojson,
-                                         Double travelTime, String createdBy, CityNode... cities) {
-        ItineraryNode result = new ItineraryNode(name,description,indexedPoints(pois), geojson, createdBy, cities);
-        setTimeToVisit(result, travelTime, pois);
+    public ItineraryNode createItinerary(String name,String description,Collection<PointOfInterestNode> pois,
+                                         Collection<String> geoJsonList,String createdBy,Boolean isDefault,
+                                         CityNode... cities) {
+        ItineraryNode result = new ItineraryNode(name,description,indexedPoints(pois), geoJsonList, createdBy,isDefault, cities);
+        setTimeToVisit(result, pois);
         this.itineraryRepository.save(result);
         return result;
     }
@@ -71,16 +93,18 @@ public class ItineraryService {
      * create an ItineraryRequest and save it
      *
      * @param pois       contained in Itinerary
-     * @param geojson    geojson that contains information about directions
-     * @param travelTime elapsing time between pois
+     * @param geoJsonList collection of geojson that contains information about directions for various Profiles
      * @param createdBy  user who creates itinerary
      * @param cities     that contain this itinerary
      * @return a created ItineraryRequest
      */
-    public ItineraryRequestNode createItineraryRequest(String name,String description,Collection<PointOfInterestNode> pois, String geojson,
-                                                       Double travelTime, String createdBy, CityNode... cities) {
-        ItineraryRequestNode result = new ItineraryRequestNode(name,description,this.indexedPoints(pois), geojson, createdBy, cities);
-        setTimeToVisit(result, travelTime, pois);
+    public ItineraryRequestNode createItineraryRequest(String name,String description,
+                                                       Collection<PointOfInterestNode> pois,
+                                                       Collection<String> geoJsonList,String createdBy,
+                                                       CityNode... cities) {
+        ItineraryRequestNode result = new ItineraryRequestNode(name,description,this.indexedPoints(pois), geoJsonList,
+                createdBy, cities);
+        setTimeToVisit(result, pois);
         result.getConsensus().add(createdBy);
         this.itineraryRequestRepository.save(result);
         return result;
@@ -93,8 +117,8 @@ public class ItineraryService {
      * @return created Itinerary
      */
     public ItineraryNode createItineraryFromRequest(ItineraryRequestNode from) {
-        ItineraryNode result = new ItineraryNode(from.getName(), from.getDescription(),from.getPoints(), from.getGeojson(), from.getCreatedBy(),
-                from.getCities().toArray(CityNode[]::new));
+        ItineraryNode result = new ItineraryNode(from.getName(), from.getDescription(),from.getPoints(),
+                from.getGeoJsonList(), from.getCreatedBy(),true,from.getCities().toArray(CityNode[]::new));
         result.setTimeToVisit(from.getTimeToVisit());
         this.itineraryRepository.save(result);
         return result;

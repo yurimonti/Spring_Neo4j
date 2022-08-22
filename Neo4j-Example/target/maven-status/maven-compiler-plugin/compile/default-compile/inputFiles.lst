@@ -16,9 +16,11 @@
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/MenuNode.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/dto/PoiRequestDTO.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/service/ProvaService.java
+/home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/repository/ClassicUserRepository.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/dto/PoiTypeDTO.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/controller/DefaultController.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/repository/CommercianteRepository.java
+/home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/dto/ItineraryRelPoiDTO.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/CategoryNode.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/TagNode.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/DishNode.java
@@ -62,6 +64,7 @@
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/UserRole.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/ItineraryNode.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/repository/FoodSectionNodeRepository.java
+/home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/ItineraryRelPoi.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/repository/RestaurantPoiRepository.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/PointOfInterestNode.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/ClassicUserNode.java

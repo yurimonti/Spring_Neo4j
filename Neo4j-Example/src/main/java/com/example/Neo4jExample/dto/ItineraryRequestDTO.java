@@ -14,14 +14,15 @@ import java.util.stream.Collectors;
 public class ItineraryRequestDTO {
     private Long id;
     private String name;
-
     private String description;
     private Collection<ItineraryRelPoiDTO> points;
     private Collection<CityDTO> cities;
     private String createdBy;
     private StatusEnum status;
+
+    private Collection<String> consensus;
     private Double timeToVisit;
-    private String geojson;
+    private Collection<String> geoJsonList;
 
     public ItineraryRequestDTO(ItineraryRequestNode itineraryRequestNode){
         if (Objects.isNull(itineraryRequestNode.getAccepted())) this.status = StatusEnum.PENDING;
@@ -34,6 +35,7 @@ public class ItineraryRequestDTO {
         this.cities = itineraryRequestNode.getCities().stream().map(CityDTO::new).toList();
         this.createdBy = itineraryRequestNode.getCreatedBy();
         this.timeToVisit = itineraryRequestNode.getTimeToVisit();
-        this.geojson = itineraryRequestNode.getGeojson();
+        this.geoJsonList = itineraryRequestNode.getGeoJsonList();
+        this.consensus = itineraryRequestNode.getConsensus();
     }
 }

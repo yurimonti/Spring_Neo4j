@@ -2,9 +2,13 @@ package com.example.Neo4jExample.controller;
 
 import com.example.Neo4jExample.dto.CityDTO;
 import com.example.Neo4jExample.dto.ItineraryDTO;
+import com.example.Neo4jExample.dto.PoiDTO;
+import com.example.Neo4jExample.dto.PoiRequestDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.ItineraryService;
+import com.example.Neo4jExample.service.PoiRequestService;
+import com.example.Neo4jExample.service.PoiService;
 import com.example.Neo4jExample.service.ProvaService;
 import com.example.Neo4jExample.service.util.MySerializer;
 import com.google.gson.Gson;
@@ -19,11 +23,17 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class DefaultController {
+
+    private final ItineraryService itineraryService;
+    private final PoiService poiService;
     private final ProvaService provaService;
+    //TODO: cancellare le repository
     private final PointOfIntRepository pointOfIntRepository;
     private final CityRepository cityRepository;
 
-    private final ItineraryService itineraryService;
+    private final PoiRequestService poiRequestService;
+
+
 
 
     @GetMapping("/")
@@ -87,6 +97,29 @@ public class DefaultController {
         ItineraryNode it = this.itineraryService.findItineraryById(id);
         ItineraryDTO result = new ItineraryDTO();
         if(!Objects.isNull(it)) result = new ItineraryDTO(it);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/poi")
+    public ResponseEntity<Map<String,Object>> getPoiById(@RequestParam Long id){
+        PointOfInterestNode poi = this.poiService.findPoiById(id);
+        PoiDTO result = new PoiDTO();
+        if(!Objects.isNull(poi)) result = new PoiDTO(poi);
+        CityNode city = this.cityRepository.findAll().stream().filter(cityNode -> cityNode.getPointOfInterests()
+                .contains(poi)).findFirst().orElse(null);
+        CityDTO cityDto = new CityDTO();
+        if(!Objects.isNull(city)) cityDto = new CityDTO(city);
+        Map<String,Object> mapResult = new HashMap<>();
+        mapResult.put("city", cityDto);
+        mapResult.put("poi", result);
+        return ResponseEntity.ok(mapResult);
+    }
+
+    @GetMapping("/request")
+    public ResponseEntity<PoiRequestDTO> getRequestById(@RequestParam Long id){
+        PoiRequestNode request = this.poiRequestService.findRequestById(id);
+        PoiRequestDTO result = new PoiRequestDTO();
+        if(!Objects.isNull(request)) result = new PoiRequestDTO(request);
         return ResponseEntity.ok(result);
     }
 

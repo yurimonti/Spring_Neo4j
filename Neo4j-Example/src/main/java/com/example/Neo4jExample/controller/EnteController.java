@@ -2,6 +2,7 @@ package com.example.Neo4jExample.controller;
 
 import com.example.Neo4jExample.dto.CityDTO;
 import com.example.Neo4jExample.dto.ItineraryDTO;
+import com.example.Neo4jExample.dto.ItineraryRequestDTO;
 import com.example.Neo4jExample.dto.PoiRequestDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
@@ -16,7 +17,7 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/ente")
@@ -92,6 +93,7 @@ public class EnteController {
                 this.poiRequestService.setPoiToRequest(poiRequestNode, poiToSet);
             } else {
                 this.poiService.modifyPoiFromRequest(poiRequestNode);
+                this.itineraryService.updateItinerariesByPoiModify(poiRequestNode.getPointOfInterestNode());
                 /*this.provaService.changePoiFromRequest(poiRequestNode);*/
             }
         }
@@ -117,30 +119,32 @@ public class EnteController {
         if (!Objects.isNull(poiRequestNode.getPointOfInterestNode())) {
             poiResult = poiRequestNode.getPointOfInterestNode();
             this.poiService.modifyPoiFromBody(poiResult, body);
+            this.poiRequestService.setPoiToRequest(poiRequestNode, poiResult);
+            this.itineraryService.updateItinerariesByPoiModify(poiResult);
         } else {
             poiResult = this.poiService.createPoiFromBody(body);
-            CityNode city = ente.getCity();
-            this.poiService.savePoiInACity(city, poiResult);
+            this.poiRequestService.setPoiToRequest(poiRequestNode, poiResult);
+            this.poiService.savePoiInACity(ente.getCity(), poiResult);
         }
-        this.poiRequestService.setPoiToRequest(poiRequestNode, poiResult);
         return ResponseEntity.ok().body(poiRequestNode.getPointOfInterestNode());
     }
 
     /**
      * modify a poi
      *
-     * @param poiId    id of poi to modify
+     * @param id id of poi to modify
      * @param username of ente who calls this api
      * @param body     http request that contains values
      * @return Poi modified
      */
     @PatchMapping("/poi")
-    public ResponseEntity<PointOfInterestNode> modifyPoi(@RequestParam Long poiId, @RequestParam String username,
+    public ResponseEntity<PointOfInterestNode> modifyPoi(@RequestParam Long id, @RequestParam String username,
                                                          @RequestBody Map<String, Object> body) {
         Ente ente = this.getEnteFromUsername(username);
-        PointOfInterestNode toModify = this.poiService.findPoiById(poiId);
+        PointOfInterestNode toModify = this.poiService.findPoiById(id);
         if (Objects.isNull(ente) || Objects.isNull(toModify)) return ResponseEntity.notFound().build();
         this.poiService.modifyPoiFromBody(toModify, body);
+        this.itineraryService.updateItinerariesByPoiModify(toModify);
         return ResponseEntity.ok(toModify);
     }
 
@@ -159,24 +163,27 @@ public class EnteController {
         if (Objects.isNull(ente)) return FORBIDDEN;
         String name = (String) body.get("name");
         String description = (String) body.get("description");
-        String geojson = (String) body.get("geojson");
-        Double travelTime = Double.parseDouble((String) body.get("travelTime"));
+        Collection<String> geoJsonList = (Collection<String>) body.get("geoJsonList");
+        if(geoJsonList.size() == 0) return NOT_FOUND;
         Collection<String> poiIds = (Collection<String>) body.get("poiIds");
         Collection<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
         //aggiunta controllo delle citta'
         Collection<CityNode> poiCities = pois.stream().map(this.utilityService::getCityOfPoi).distinct().toList();
-        if (!poiCities.contains(ente.getCity())) return HttpStatus.NOT_ACCEPTABLE;
+        System.out.println(poiCities.stream().map(CityDTO::new).toList());
+        System.out.println(poiCities.size());
+        /*System.out.println(new CityDTO(ente.getCity()));*/
+        if (!poiCities.contains(ente.getCity())) return NOT_ACCEPTABLE;
         if (poiCities.size() > 1) {
-            ItineraryRequestNode result = this.itineraryService.createItineraryRequest(name,description,pois, geojson, travelTime,
+            ItineraryRequestNode result = this.itineraryService.createItineraryRequest(name,description,pois, geoJsonList,
                     ente.getUser().getUsername(), poiCities.toArray(CityNode[]::new));
-            return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.CREATED;
+            return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
         }
         //fine controllo
-        ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geojson, travelTime,
-                ente.getUser().getUsername(), ente.getCity());
+        ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
+                ente.getUser().getUsername(),true, ente.getCity());
 
-        return Objects.isNull(result) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.CREATED;
+        return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
     }
 
     //TODO: controllare cosa ritorna nei vari casi
@@ -205,7 +212,8 @@ public class EnteController {
         if (Objects.isNull(ente)) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(this.itineraryService.getItinerariesFiltered(i -> i.getCities().stream()
                 .map(CityNode::getId)
-                .anyMatch(c -> c.equals(ente.getCity().getId()))).stream().map(ItineraryDTO::new).toList());
+                .anyMatch(c -> c.equals(ente.getCity().getId()))).stream().filter(ItineraryNode::getIsDefault)
+                .map(ItineraryDTO::new).toList());
     }
 
     /**
@@ -225,5 +233,14 @@ public class EnteController {
         }
         this.itineraryService.deleteItinerary(toDelete);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/itinerary/requests")
+    public ResponseEntity<Collection<ItineraryRequestDTO>> getItineraryRequests(@RequestParam String username){
+        Ente ente = this.getEnteFromUsername(username);
+        if (Objects.isNull(ente)) return ResponseEntity.notFound().build();
+        Collection<ItineraryRequestNode> requests = this.itineraryService.getItineraryRequests(r ->
+                r.getCities().contains(ente.getCity()));
+        return ResponseEntity.ok(requests.stream().map(ItineraryRequestDTO::new).toList());
     }
 }
