@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.Objects;
 public class UserServiceImpl implements UserServiceInterface, UserDetailsService {
     private final UserNodeRepository userNodeRepository;
     private final UserRoleRepository userRoleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -38,6 +40,7 @@ public class UserServiceImpl implements UserServiceInterface, UserDetailsService
 
     @Override
     public UserNode saveUser(UserNode user) {
+        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
         this.userNodeRepository.save(user);
         return user;
     }
