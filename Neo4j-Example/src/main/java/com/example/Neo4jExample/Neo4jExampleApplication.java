@@ -7,10 +7,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
 import java.time.LocalTime;
 import java.util.*;
 
 @SpringBootApplication
+@EnableScheduling
 public class Neo4jExampleApplication {
 
 	public static void main(String[] args) {
@@ -20,14 +23,14 @@ public class Neo4jExampleApplication {
 	/**
 	 * set Timer to update pois time open
 	 */
-	private void timerToUpdateTimeSlots(ProvaService provaService) {
+	/*private void timerToUpdateTimeSlots(ProvaService provaService) {
 		new Timer().scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
 				provaService.updateOpenPois(new Date());
 			}
 		},0,1000*60);
-	}
+	}*/
 	@Bean
 	CommandLineRunner initDatabase(AddressRepository addressRepository, CategoryRepository categoryRepository,
 								   CityRepository cityRepository,ContactRepository contactRepository,
@@ -420,7 +423,7 @@ public class Neo4jExampleApplication {
 			poiRequestRepository.save(poiRequestNode);*/
 
 			//Timer che verifica e setta se un poi e' aperto o meno secondo l'istante corrente
-			this.timerToUpdateTimeSlots(provaService);
+			//this.timerToUpdateTimeSlots(provaService);
 		};
 	}
 
