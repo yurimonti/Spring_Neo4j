@@ -1,12 +1,10 @@
 package com.example.Neo4jExample.service;
 
-import com.example.Neo4jExample.model.ClassicUserNode;
-import com.example.Neo4jExample.model.Ente;
-import com.example.Neo4jExample.model.ItineraryNode;
-import com.example.Neo4jExample.model.UserNode;
+import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.ClassicUserRepository;
 import com.example.Neo4jExample.repository.EnteRepository;
 import com.example.Neo4jExample.repository.UserNodeRepository;
+import com.example.Neo4jExample.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserNodeRepository userNodeRepository;
     private final EnteRepository enteRepository;
-
+    private final UserRoleRepository userRoleRepository;
     private final ClassicUserRepository classicUserRepository;
 
     /**
@@ -25,6 +23,14 @@ public class UserService {
      */
     public UserNode getUserByUsername(String username) {
         return this.userNodeRepository.findByUsername(username);
+    }
+
+    public boolean userHasRole(String username,String roleName) {
+        return this.userNodeRepository.findByUsername(username).getRoles().contains(this.getRoleFromName(roleName));
+    }
+
+    private UserRole getRoleFromName(String name) {
+        return this.userRoleRepository.findByName(name);
     }
 
     /**

@@ -5,19 +5,23 @@ import com.example.Neo4jExample.repository.ItineraryRepository;
 import com.example.Neo4jExample.repository.ItineraryRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-//FIXME: rivedere i tempi di visita
+@Transactional
 public class ItineraryService {
     private final ItineraryRepository itineraryRepository;
     private final ItineraryRequestRepository itineraryRequestRepository;
+    private final UserService userService;
+
+    private final PoiService poiService;
 
     private void setTimeToVisit(ItineraryNode result, Collection<PointOfInterestNode> pois) {
         result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum)*60);
@@ -84,6 +88,7 @@ public class ItineraryService {
                                          Collection<String> geoJsonList,String createdBy,Boolean isDefault,
                                          CityNode... cities) {
         ItineraryNode result = new ItineraryNode(name,description,indexedPoints(pois), geoJsonList, createdBy,isDefault, cities);
+        System.out.println(result.getCities().stream().map(CityNode::getName).toList());
         setTimeToVisit(result, pois);
         this.itineraryRepository.save(result);
         return result;
@@ -105,8 +110,15 @@ public class ItineraryService {
         ItineraryRequestNode result = new ItineraryRequestNode(name,description,this.indexedPoints(pois), geoJsonList,
                 createdBy, cities);
         setTimeToVisit(result, pois);
-        result.getConsensus().add(createdBy);
+        if(this.userService.userHasRole(createdBy,"ente"))
+            result.getConsensus().add(createdBy);
         this.itineraryRequestRepository.save(result);
+        return result;
+    }
+
+    private Collection<ItineraryRelPoi> createItineraryRelFromRequest(ItineraryRequestNode from){
+        Collection<ItineraryRelPoi> result = new ArrayList<>();
+        from.getPoints().forEach(rel -> result.add(new ItineraryRelPoi(rel.getPoi(),rel.getIndex())));
         return result;
     }
 
@@ -117,13 +129,15 @@ public class ItineraryService {
      * @return created Itinerary
      */
     public ItineraryNode createItineraryFromRequest(ItineraryRequestNode from) {
-        ItineraryNode result = new ItineraryNode(from.getName(), from.getDescription(),from.getPoints(),
-                from.getGeoJsonList(), from.getCreatedBy(),true,from.getCities().toArray(CityNode[]::new));
+        ItineraryNode result = new ItineraryNode(from.getName(), from.getDescription(),
+                this.createItineraryRelFromRequest(from),from.getGeoJsonList(), from.getCreatedBy(),true,
+                from.getCities().toArray(CityNode[]::new));
         result.setTimeToVisit(from.getTimeToVisit());
         this.itineraryRepository.save(result);
         return result;
     }
 
+    //FIXME: vedere perche non rimangono i POI
     public ItineraryNode updateConsensus(Ente ente, ItineraryRequestNode target, boolean consensus) {
         ItineraryNode result = null;
         if (!consensus) {
@@ -136,8 +150,10 @@ public class ItineraryService {
         if(target.getConsensus().size() == target.getCities().size()) {
             target.setAccepted(true);
             result = this.createItineraryFromRequest(target);
+            result.getPoints().forEach(p ->System.out.println(p.getIndex()+" "+p.getPoi().getName()));
         }
         this.itineraryRequestRepository.save(target);
+
         return result;
     }
 

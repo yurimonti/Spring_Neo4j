@@ -1,24 +1,20 @@
 package com.example.Neo4jExample.service;
 
-import com.example.Neo4jExample.dto.CityDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
-import com.example.Neo4jExample.service.util.MyGsonSerializer;
-import com.example.Neo4jExample.service.util.MySerializer;
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Predicate;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PoiService {
     private final PointOfIntRepository pointOfIntRepository;
     private final PoiRequestRepository poiRequestRepository;
@@ -31,6 +27,14 @@ public class PoiService {
     private final AddressRepository addressRepository;
     private final ContactRepository contactRepository;
     private final TagRepository tagRepository;
+
+    public void savePoi(PointOfInterestNode toSave){
+        this.pointOfIntRepository.save(toSave);
+    }
+
+    public void savePoi(Collection<PointOfInterestNode> toSave){
+        toSave.forEach(this::savePoi);
+    }
 
     private void setPoiTagRelTo(PointOfInterestNode target,Collection<Map<String, Object>> from) {
         target.getTagValues().clear();
@@ -130,20 +134,35 @@ public class PoiService {
      * modifies Poi parameters from a request
      * @param request to get modifies
      */
+    //FIXME: rivedere metodo perche crea nuovi nodi
     public void modifyPoiFromRequest(PoiRequestNode request){
         PointOfInterestNode result = request.getPointOfInterestNode();
-        result.setHours(copyTimeSlot(request.getHours()));
-        result.setCoordinate(copyCoordinate(request.getCoordinate()));
-        result.setTicketPrice(result.getTicketPrice());
-        result.setContact(copyContact(request.getContact()));
+        result.getHours().setMonday(request.getHours().getMonday());
+        result.getHours().setTuesday(request.getHours().getTuesday());
+        result.getHours().setWednesday(request.getHours().getWednesday());
+        result.getHours().setThursday(request.getHours().getThursday());
+        result.getHours().setFriday(request.getHours().getFriday());
+        result.getHours().setSaturday(request.getHours().getSaturday());
+        result.getHours().setSunday(request.getHours().getSunday());
+        this.timeSlotRepository.save(result.getHours());
+        result.getCoordinate().setLat(request.getCoordinate().getLat());
+        result.getCoordinate().setLon(request.getCoordinate().getLon());
+        this.coordinateRepository.save(result.getCoordinate());
+        result.setTicketPrice(request.getTicketPrice());
+        result.getContact().setEmail(request.getContact().getEmail());
+        result.getContact().setCellNumber(request.getContact().getCellNumber());
+        result.getContact().setFax(request.getContact().getFax());
+        this.contactRepository.save(result.getContact());
         result.setName(request.getName());
         result.setDescription(request.getDescription());
         result.setTimeToVisit(request.getTimeToVisit());
-        result.setAddress(copyAddress(request.getAddress()));
+        result.getAddress().setStreet(request.getAddress().getStreet());
+        result.getAddress().setNumber(request.getAddress().getNumber());
+        this.addressRepository.save(result.getAddress());
         result.getContributors().add(request.getUsername());
         result.setLink(request.getLink());
         result.setTypes(request.getTypes());
-        result.setTagValues(copyPoiTagRel(request.getTagValues()));
+        result.setTagValues(request.getTagValues());
         this.pointOfIntRepository.save(result);
         this.poiRequestRepository.save(request);
     }

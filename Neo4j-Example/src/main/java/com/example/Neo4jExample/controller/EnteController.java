@@ -194,7 +194,8 @@ public class EnteController {
         if (Objects.isNull(ente)) return ResponseEntity.status(FORBIDDEN).build();
         ItineraryRequestNode from = this.itineraryService.findRequestById(idRequest);
         if (Objects.isNull(from)) return ResponseEntity.notFound().build();
-        this.itineraryService.updateConsensus(ente, from, consensus);
+        ItineraryNode i = this.itineraryService.updateConsensus(ente, from, consensus);
+        System.out.println(this.itineraryService.findItineraryById(i.getId()).getPoints().size());
         if (Objects.isNull(from.getAccepted())) return ResponseEntity.ok("PENDING");
         if (!from.getAccepted()) return ResponseEntity.ok("REJECTED");
         return ResponseEntity.ok("ACCEPTED");
@@ -228,13 +229,18 @@ public class EnteController {
         Ente ente = this.getEnteFromUsername(username);
         ItineraryNode toDelete = this.itineraryService.findItineraryById(itineraryId);
         if (Objects.isNull(toDelete) || Objects.isNull(ente)) return ResponseEntity.notFound().build();
-        if (!Objects.equals(ente.getUser().getUsername(), toDelete.getCreatedBy())) {
+        if (!toDelete.getCities().contains(ente.getCity()) || !toDelete.getIsDefault()) {
             return ResponseEntity.status(FORBIDDEN).build();
         }
         this.itineraryService.deleteItinerary(toDelete);
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * get all itinerary's requests
+     * @param username of ente
+     * @return all requests for an ente
+     */
     @GetMapping("/itinerary/requests")
     public ResponseEntity<Collection<ItineraryRequestDTO>> getItineraryRequests(@RequestParam String username){
         Ente ente = this.getEnteFromUsername(username);

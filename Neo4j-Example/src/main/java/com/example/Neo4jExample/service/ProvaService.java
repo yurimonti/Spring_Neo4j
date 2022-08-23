@@ -24,7 +24,7 @@ public class ProvaService {
     private final TimeSlotRepository timeSlotRepository;
     private final MySerializer<Collection<TagNode>> tagsSerializer;
 
-    private final EnteRepository enteRepository;
+    private final ItineraryService itineraryService;
 
 
     public PointOfInterestNode createPoi(Ente ente, String name, String description, Coordinate coordinate,
@@ -131,6 +131,7 @@ public class ProvaService {
         poi.getHours().setIsOpen(toSet);
         timeSlotRepository.save(poi.getHours());
         pointOfIntRepository.save(poi);
+        this.itineraryService.updateItinerariesByPoiModify(poi);
     }
 
     /**
