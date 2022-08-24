@@ -3,6 +3,7 @@ package com.example.Neo4jExample.service;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional
 public class PoiService {
     private final PointOfIntRepository pointOfIntRepository;
@@ -34,6 +36,15 @@ public class PoiService {
 
     public void savePoi(Collection<PointOfInterestNode> toSave){
         toSave.forEach(this::savePoi);
+    }
+
+    public boolean poiIsContainedInCity(PointOfInterestNode isContained, CityNode from){
+        return from.getPointOfInterests().contains(isContained);
+    }
+
+    public void deletePoi(PointOfInterestNode toDelete) throws NullPointerException{
+        if(Objects.isNull(toDelete)) throw new NullPointerException("poi not available");
+        this.pointOfIntRepository.delete(toDelete);
     }
 
     private void setPoiTagRelTo(PointOfInterestNode target,Collection<Map<String, Object>> from) {
@@ -208,6 +219,16 @@ public class PoiService {
         return result;
     }
 
+    private void clearTimeSlot(TimeSlot toClear){
+        toClear.getMonday().clear();
+        toClear.getTuesday().clear();
+        toClear.getWednesday().clear();
+        toClear.getTuesday().clear();
+        toClear.getFriday().clear();
+        toClear.getSaturday().clear();
+        toClear.getSunday().clear();
+    }
+
     /**
      * modify a PointOfInterestNode with params contained in a body request
      *
@@ -235,7 +256,9 @@ public class PoiService {
         this.contactRepository.save(poiToModify.getContact());
         poiToModify.setTimeToVisit(Double.parseDouble(this.utilityService.getValueFromBody("timeToVisit",bodyFrom)));
         poiToModify.setTicketPrice(Double.parseDouble(this.utilityService.getValueFromBody("price",bodyFrom)));
-        poiToModify.setHours(this.utilityService.getTimeSlotFromBody(poiToModify.getHours(),bodyFrom));
+        this.clearTimeSlot(poiToModify.getHours());
+        this.utilityService.getTimeSlotFromBody(poiToModify.getHours(),bodyFrom);
+        //poiToModify.setHours(this.utilityService.getTimeSlotFromBody(poiToModify.getHours(),bodyFrom));
         Collection<PoiType> poiTypes = ((Collection<String>) bodyFrom.get("types")).stream()
                 .filter(a -> this.poiTypeRepository.findById(a).isPresent())
                 .map(a -> this.poiTypeRepository.findById(a).get())

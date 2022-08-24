@@ -9,6 +9,7 @@ import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.*;
 import com.example.Neo4jExample.service.util.MySerializer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import static org.springframework.http.HttpStatus.*;
 @RestController
 @RequestMapping("/ente")
 @CrossOrigin(origins = "*")
+@Slf4j
 @RequiredArgsConstructor
 public class EnteController {
 
@@ -148,6 +150,22 @@ public class EnteController {
         return ResponseEntity.ok(toModify);
     }
 
+    @DeleteMapping("/poi")
+    public ResponseEntity<?> deletePoi(@RequestParam String username,@RequestParam Long id){
+        Ente ente = this.getEnteFromUsername(username);
+        if(Objects.isNull(ente)) return ResponseEntity.status(FORBIDDEN).build();
+        PointOfInterestNode toDelete = this.poiService.findPoiById(id);
+        if(!this.poiService.poiIsContainedInCity(toDelete,ente.getCity()))
+            return ResponseEntity.status(FORBIDDEN).build();
+        try{
+            this.poiService.deletePoi(toDelete);
+            return ResponseEntity.ok().build();
+        }catch(NullPointerException e){
+            log.warn(e.getMessage()+ " with id: {}",id );
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     /**
      * create a new ItineraryNode if request contains only ente's city;
      * create a new ItineraryNodeRequest otherwise.
@@ -194,8 +212,7 @@ public class EnteController {
         if (Objects.isNull(ente)) return ResponseEntity.status(FORBIDDEN).build();
         ItineraryRequestNode from = this.itineraryService.findRequestById(idRequest);
         if (Objects.isNull(from)) return ResponseEntity.notFound().build();
-        ItineraryNode i = this.itineraryService.updateConsensus(ente, from, consensus);
-        System.out.println(this.itineraryService.findItineraryById(i.getId()).getPoints().size());
+        this.itineraryService.updateConsensus(ente, from, consensus);
         if (Objects.isNull(from.getAccepted())) return ResponseEntity.ok("PENDING");
         if (!from.getAccepted()) return ResponseEntity.ok("REJECTED");
         return ResponseEntity.ok("ACCEPTED");

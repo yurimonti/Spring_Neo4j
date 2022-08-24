@@ -6,10 +6,12 @@ import com.example.Neo4jExample.repository.EnteRepository;
 import com.example.Neo4jExample.repository.UserNodeRepository;
 import com.example.Neo4jExample.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserNodeRepository userNodeRepository;
     private final EnteRepository enteRepository;
@@ -44,6 +46,7 @@ public class UserService {
     }
 
     public ClassicUserNode getClassicUserFromUser(String username){
+        log.info("getting username for an ClassicUserNode {}", username);
         return this.classicUserRepository.findAll().stream().filter(classicUserNode -> classicUserNode.getUser()
                 .equals(this.getUserByUsername(username))).findFirst().orElseThrow();
     }

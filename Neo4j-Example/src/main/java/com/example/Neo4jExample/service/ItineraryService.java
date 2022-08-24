@@ -24,41 +24,43 @@ public class ItineraryService {
     private final PoiService poiService;
 
     private void setTimeToVisit(ItineraryNode result, Collection<PointOfInterestNode> pois) {
-        result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum)*60);
+        result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum) * 60);
     }
 
     private void setTimeToVisit(ItineraryRequestNode result, Collection<PointOfInterestNode> pois) {
-        result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum)*60);
+        result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum) * 60);
     }
+
     private Collection<ItineraryRelPoi> indexedPoints(Collection<PointOfInterestNode> points) {
         Collection<ItineraryRelPoi> pointsNodes = new ArrayList<>();
         PointOfInterestNode[] nodes = points.toArray(PointOfInterestNode[]::new);
         for (int i = 0; i < points.size(); i++) {
             PointOfInterestNode node = nodes[i];
-            pointsNodes.add(new ItineraryRelPoi(node,i));
+            pointsNodes.add(new ItineraryRelPoi(node, i));
         }
         return pointsNodes;
     }
 
     /**
-     *
      * @param predicate filter to apply
      * @return all itineraryRequests if is not presente a predicate, otherwise returns filtered by predicate
      */
     public Collection<ItineraryRequestNode> getItineraryRequests(Predicate<ItineraryRequestNode> predicate) {
         Collection<ItineraryRequestNode> requests = this.itineraryRequestRepository.findAll();
-        if(Objects.isNull(predicate)) return requests;
+        if (Objects.isNull(predicate)) return requests;
         return requests.stream().filter(predicate).toList();
     }
+
     /**
      * uodate all itineraries that contain the given poi modified
+     *
      * @param poi modified
      */
-    public void updateItinerariesByPoiModify(PointOfInterestNode poi){
+    public void updateItinerariesByPoiModify(PointOfInterestNode poi) {
         Collection<ItineraryNode> toModify = this.itineraryRepository.findAll().stream().filter(it -> it.getPoints()
                 .stream().map(ItineraryRelPoi::getPoi).toList()
                 .contains(poi)).toList();
-        toModify.forEach(it -> setTimeToVisit(it,it.getPoints().stream().map(ItineraryRelPoi::getPoi).toList()));
+        toModify.forEach(it -> setTimeToVisit(it, it.getPoints().stream().map(ItineraryRelPoi::getPoi).toList()));
         this.itineraryRepository.saveAll(toModify);
     }
 
@@ -78,16 +80,16 @@ public class ItineraryService {
     /**
      * create an Itinerary and save it
      *
-     * @param pois       contained in Itinerary
+     * @param pois        contained in Itinerary
      * @param geoJsonList collection of geojson that contains information about directions for various Profiles
-     * @param createdBy  user who creates itinerary
-     * @param cities     that contain this itinerary
+     * @param createdBy   user who creates itinerary
+     * @param cities      that contain this itinerary
      * @return a created Itinerary
      */
-    public ItineraryNode createItinerary(String name,String description,Collection<PointOfInterestNode> pois,
-                                         Collection<String> geoJsonList,String createdBy,Boolean isDefault,
+    public ItineraryNode createItinerary(String name, String description, Collection<PointOfInterestNode> pois,
+                                         Collection<String> geoJsonList, String createdBy, Boolean isDefault,
                                          CityNode... cities) {
-        ItineraryNode result = new ItineraryNode(name,description,indexedPoints(pois), geoJsonList, createdBy,isDefault, cities);
+        ItineraryNode result = new ItineraryNode(name, description, indexedPoints(pois), geoJsonList, createdBy, isDefault, cities);
         System.out.println(result.getCities().stream().map(CityNode::getName).toList());
         setTimeToVisit(result, pois);
         this.itineraryRepository.save(result);
@@ -97,28 +99,28 @@ public class ItineraryService {
     /**
      * create an ItineraryRequest and save it
      *
-     * @param pois       contained in Itinerary
+     * @param pois        contained in Itinerary
      * @param geoJsonList collection of geojson that contains information about directions for various Profiles
-     * @param createdBy  user who creates itinerary
-     * @param cities     that contain this itinerary
+     * @param createdBy   user who creates itinerary
+     * @param cities      that contain this itinerary
      * @return a created ItineraryRequest
      */
-    public ItineraryRequestNode createItineraryRequest(String name,String description,
+    public ItineraryRequestNode createItineraryRequest(String name, String description,
                                                        Collection<PointOfInterestNode> pois,
-                                                       Collection<String> geoJsonList,String createdBy,
+                                                       Collection<String> geoJsonList, String createdBy,
                                                        CityNode... cities) {
-        ItineraryRequestNode result = new ItineraryRequestNode(name,description,this.indexedPoints(pois), geoJsonList,
+        ItineraryRequestNode result = new ItineraryRequestNode(name, description, this.indexedPoints(pois), geoJsonList,
                 createdBy, cities);
         setTimeToVisit(result, pois);
-        if(this.userService.userHasRole(createdBy,"ente"))
+        if (this.userService.userHasRole(createdBy, "ente"))
             result.getConsensus().add(createdBy);
         this.itineraryRequestRepository.save(result);
         return result;
     }
 
-    private Collection<ItineraryRelPoi> createItineraryRelFromRequest(ItineraryRequestNode from){
+    private Collection<ItineraryRelPoi> createItineraryRelFromRequest(ItineraryRequestNode from) {
         Collection<ItineraryRelPoi> result = new ArrayList<>();
-        from.getPoints().forEach(rel -> result.add(new ItineraryRelPoi(rel.getPoi(),rel.getIndex())));
+        from.getPoints().forEach(rel -> result.add(new ItineraryRelPoi(rel.getPoi(), rel.getIndex())));
         return result;
     }
 
@@ -130,7 +132,7 @@ public class ItineraryService {
      */
     public ItineraryNode createItineraryFromRequest(ItineraryRequestNode from) {
         ItineraryNode result = new ItineraryNode(from.getName(), from.getDescription(),
-                this.createItineraryRelFromRequest(from),from.getGeoJsonList(), from.getCreatedBy(),true,
+                this.createItineraryRelFromRequest(from), from.getGeoJsonList(), from.getCreatedBy(), true,
                 from.getCities().toArray(CityNode[]::new));
         result.setTimeToVisit(from.getTimeToVisit());
         this.itineraryRepository.save(result);
@@ -142,23 +144,22 @@ public class ItineraryService {
         ItineraryNode result = null;
         if (!consensus) {
             target.setAccepted(false);
-        }
-        else {
-            if(!target.getConsensus().contains(ente.getUser().getUsername()))
+        } else {
+            if (!target.getConsensus().contains(ente.getUser().getUsername()) && target.getCities().contains(ente.getCity()))
                 target.getConsensus().add(ente.getUser().getUsername());
         }
-        if(target.getConsensus().size() == target.getCities().size()) {
+        if (target.getConsensus().size() == target.getCities().size()) {
             target.setAccepted(true);
             result = this.createItineraryFromRequest(target);
-            result.getPoints().forEach(p ->System.out.println(p.getIndex()+" "+p.getPoi().getName()));
+            result.getPoints().forEach(p -> System.out.println(p.getIndex() + " " + p.getPoi().getName()));
         }
         this.itineraryRequestRepository.save(target);
-
         return result;
     }
 
     /**
      * Delete an Itinerary from App
+     *
      * @param toDelete Itinerary to delete
      */
     public void deleteItinerary(ItineraryNode toDelete) {
