@@ -127,7 +127,7 @@ public class UserController {
         Collection<String> poiIds = (Collection<String>) body.get("poiIds");
         Collection<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
-        Collection<CityNode> poiCities = pois.stream().map(this.utilityService::getCityOfPoi).distinct().toList();
+        Collection<CityNode> poiCities = pois.stream().map(PointOfInterestNode::getId).map(this.utilityService::getCityOfPoi).distinct().toList();
         System.out.println(poiCities.stream().map(CityDTO::new).toList());
         ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
                 user.getUser().getUsername(),false, poiCities.toArray(CityNode[]::new));

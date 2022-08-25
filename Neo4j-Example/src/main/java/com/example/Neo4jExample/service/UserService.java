@@ -41,7 +41,7 @@ public class UserService {
      * @return Ente by his username
      */
     public Ente getEnteFromUser(String username){
-        return enteRepository.findAll().stream().filter(ente -> ente.getUser()
+        return this.enteRepository.findAll().stream().filter(ente -> ente.getUser()
                         .equals(this.getUserByUsername(username))).findFirst().orElseThrow();
     }
 

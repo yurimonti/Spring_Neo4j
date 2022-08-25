@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -24,6 +25,12 @@ public class PoiRequestService {
     private final CityRepository cityRepository;
     private final PointOfIntRepository pointOfIntRepository;
     private final MySerializer<CityDTO> cityDTOMySerializer;
+
+    public void saveRequestByItsPoi(Long poiId){
+        List<PoiRequestNode> requestsToSave = this.getFilteredRequests(r -> r.getPointOfInterestNode().getId()
+                .equals(poiId)).stream().toList();
+        this.poiRequestRepository.saveAll(requestsToSave);
+    }
 
     //create a basic request without some data, like city and poi
     //TODO: rivedere perché non funziona tag values ecc
@@ -109,7 +116,7 @@ public class PoiRequestService {
         PointOfInterestNode pointOfInterestNode = this.pointOfIntRepository.findById(Long.parseLong(poi))
                 .orElse(null);
         if(Objects.isNull(pointOfInterestNode)) return null;
-        CityNode city = this.utilityService.getCityOfPoi(pointOfInterestNode);
+        CityNode city = this.utilityService.getCityOfPoi(pointOfInterestNode.getId());
         PoiRequestNode result = this.getBasicRequestFromBody(bodyFrom);
         result.setPointOfInterestNode(pointOfInterestNode);
         result.setCity(city);

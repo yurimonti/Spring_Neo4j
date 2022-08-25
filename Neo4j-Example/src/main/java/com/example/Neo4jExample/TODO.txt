@@ -1,0 +1,3 @@
+Cambiare i controlli su gli id dei nodi.
+Cambiare requests e salvare le city.
+cambiare poi della request se eliminato.

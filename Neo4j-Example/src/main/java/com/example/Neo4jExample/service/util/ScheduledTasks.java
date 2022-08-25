@@ -18,9 +18,9 @@ public class ScheduledTasks {
     private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
 
 
-    @Scheduled(fixedRate = 60000,initialDelay = 15000)
+    /*@Scheduled(fixedRate = 60000,initialDelay = 15000)
     public void printScemo() {
         provaService.updateOpenPois(new Date());
         log.info("pois time open updated!!");
-    }
+    }*/
 }

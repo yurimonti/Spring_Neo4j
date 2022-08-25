@@ -4,6 +4,7 @@ import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.ItineraryRepository;
 import com.example.Neo4jExample.repository.ItineraryRequestRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional
 public class ItineraryService {
     private final ItineraryRepository itineraryRepository;
@@ -90,9 +92,11 @@ public class ItineraryService {
                                          Collection<String> geoJsonList, String createdBy, Boolean isDefault,
                                          CityNode... cities) {
         ItineraryNode result = new ItineraryNode(name, description, indexedPoints(pois), geoJsonList, createdBy, isDefault, cities);
-        System.out.println(result.getCities().stream().map(CityNode::getName).toList());
+        log.info("itinerary without save it : {}",result);
         setTimeToVisit(result, pois);
+        log.info("added timetovisit to itinerary : {}",result);
         this.itineraryRepository.save(result);
+        log.info("itinerary after save : {}",result);
         return result;
     }
 
@@ -111,10 +115,13 @@ public class ItineraryService {
                                                        CityNode... cities) {
         ItineraryRequestNode result = new ItineraryRequestNode(name, description, this.indexedPoints(pois), geoJsonList,
                 createdBy, cities);
+        log.info("itinerary request without save it : {}",result);
         setTimeToVisit(result, pois);
+        log.info("added timetovisit to itinerary request : {}",result);
         if (this.userService.userHasRole(createdBy, "ente"))
             result.getConsensus().add(createdBy);
         this.itineraryRequestRepository.save(result);
+        log.info("itinerary request after save : {}",result);
         return result;
     }
 
@@ -144,16 +151,20 @@ public class ItineraryService {
         ItineraryNode result = null;
         if (!consensus) {
             target.setAccepted(false);
+            log.info("consensus to : {}",consensus);
         } else {
             if (!target.getConsensus().contains(ente.getUser().getUsername()) && target.getCities().contains(ente.getCity()))
                 target.getConsensus().add(ente.getUser().getUsername());
+            log.info("consensus to : {}",consensus);
         }
         if (target.getConsensus().size() == target.getCities().size()) {
             target.setAccepted(true);
+            log.info("accepted!");
             result = this.createItineraryFromRequest(target);
-            result.getPoints().forEach(p -> System.out.println(p.getIndex() + " " + p.getPoi().getName()));
+            log.info("points in itinerary accepted : {}",result.getPoints());
         }
         this.itineraryRequestRepository.save(target);
+        log.info("itinerary after save it : {}",target);
         return result;
     }
 

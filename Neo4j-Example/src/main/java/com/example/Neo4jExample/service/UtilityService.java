@@ -18,6 +18,7 @@ public class UtilityService {
     private final AddressRepository addressRepository;
     private final CoordinateRepository coordinateRepository;
     private final TimeSlotRepository timeSlotRepository;
+    private final ContactRepository contactRepository;
     private final CityRepository cityRepository;
 
     /**
@@ -30,6 +31,7 @@ public class UtilityService {
         Coordinate result = new Coordinate(Double.parseDouble(lat),
                 Double.parseDouble(lng));
         this.coordinateRepository.save(result);
+        System.out.println("contact id: "+result.getId());
         return result;
     }
 
@@ -42,6 +44,12 @@ public class UtilityService {
     public Address createAddress(String street, Integer number){
         Address result = new Address(street,number);
         this.addressRepository.save(result);
+        return result;
+    }
+
+    public Contact createContact(String email,String cellNumber,String fax){
+        Contact result = new Contact(email,cellNumber,fax);
+        this.contactRepository.save(result);
         return result;
     }
 
@@ -103,11 +111,12 @@ public class UtilityService {
 
     /**
      * return the City of a certain PointOfInterestNode
-     * @param poi to take city from
+     * @param poiId to take city from
      * @return the City of the PointOfInterestNode
      */
-    public CityNode getCityOfPoi(PointOfInterestNode poi) {
-        return this.cityRepository.findAll().stream().filter(cityNode -> cityNode.getPointOfInterests().contains(poi))
+    public CityNode getCityOfPoi(Long poiId) {
+        return this.cityRepository.findAll().stream().filter(cityNode -> cityNode.getPointOfInterests().stream()
+                        .map(PointOfInterestNode::getId).toList().contains(poiId))
                 .findFirst().orElse(null);
     }
 }
