@@ -16,6 +16,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ProvaService {
     private final PointOfIntRepository pointOfIntRepository;
+
+    private final PoiService poiService;
     private final CityRepository cityRepository;
     private final CategoryRepository categoryRepository;
     private final PoiTypeRepository poiTypeRepository;
@@ -24,7 +26,7 @@ public class ProvaService {
     private final TimeSlotRepository timeSlotRepository;
     private final MySerializer<Collection<TagNode>> tagsSerializer;
 
-    private final EnteRepository enteRepository;
+    private final ItineraryService itineraryService;
 
 
     public PointOfInterestNode createPoi(Ente ente, String name, String description, Coordinate coordinate,
@@ -129,8 +131,9 @@ public class ProvaService {
                 toSet = true;
         }
         poi.getHours().setIsOpen(toSet);
-        timeSlotRepository.save(poi.getHours());
-        pointOfIntRepository.save(poi);
+        this.timeSlotRepository.save(poi.getHours());
+        this.pointOfIntRepository.save(poi);
+        this.itineraryService.updateItinerariesByPoiModify(poi);
     }
 
     /**
@@ -159,6 +162,7 @@ public class ProvaService {
         result.setLink(poiRequestNode.getLink());
         result.setTypes(poiRequestNode.getTypes());
         result.setTagValues(poiRequestNode.getTagValues());
-        pointOfIntRepository.save(result);
+        this.pointOfIntRepository.save(result);
+
     }
 }

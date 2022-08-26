@@ -54,12 +54,14 @@
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/repository/MenuNodeRepository.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/repository/ItineraryRepository.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/repository/UserNodeRepository.java
+/home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/service/PoiServiceInterface.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/Address.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/controller/EnteController.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/service/util/MySerializer.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/repository/DishNodeRepository.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/PoiTagRel.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/FoodSectionNode.java
+/home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/service/util/ScheduledTasks.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/TimeSlot.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/UserRole.java
 /home/yuri/Projects/GitHub-Repos/Spring_Neo4j/Neo4j-Example/src/main/java/com/example/Neo4jExample/model/ItineraryNode.java

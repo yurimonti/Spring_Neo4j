@@ -2,12 +2,14 @@ package com.example.Neo4jExample.controller;
 
 import com.example.Neo4jExample.dto.CityDTO;
 import com.example.Neo4jExample.dto.ItineraryDTO;
+import com.example.Neo4jExample.dto.ItineraryRequestDTO;
 import com.example.Neo4jExample.dto.PoiRequestDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.*;
 import com.example.Neo4jExample.service.util.MySerializer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 @RequestMapping("/user")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService userService;
     private final PoiRequestService poiRequestService;
@@ -43,9 +46,17 @@ public class UserController {
      */
     @PostMapping("/modifyPoi")
     public ResponseEntity<PoiRequestNode> modifyPoi(@RequestBody Map<String, Object> body) {
-        PoiRequestNode result = this.poiRequestService.createModifyRequestFromBody(body);
-        if (Objects.isNull(result)) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(result);
+        PoiRequestNode result;
+        try{
+            result = this.poiRequestService.createModifyRequestFromBody(body);
+            log.info("modify request created successfully for poi : {}",result.getPointOfInterestNode().getName());
+            return ResponseEntity.ok(result);
+        }
+        catch(Exception e){
+            log.warn("error creating request cause poi is null : {} message: {}",
+                    e.getClass().getSimpleName(),e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /**
@@ -102,6 +113,19 @@ public class UserController {
         return ResponseEntity.ok(user.getItineraries().stream().map(ItineraryDTO::new).toList());
     }
 
+    //FIXME: vedere perche se accetta non compaiono i pois
+    @PostMapping("/itinerary/owner")
+    public ResponseEntity<ItineraryRequestDTO> createUserRequestItinerary(@RequestParam String username, @RequestParam Long id){
+        ClassicUserNode user = this.userService.getClassicUserFromUser(username);
+        ItineraryNode toSet = this.itineraryService.findItineraryById(id);
+        if (Objects.isNull(user) || Objects.isNull(toSet)) return ResponseEntity.notFound().build();
+        Collection<PointOfInterestNode> pois = toSet.getPoints().stream().map(ItineraryRelPoi::getPoi).toList();
+        ItineraryRequestNode result = this.itineraryService.createItineraryRequest(toSet.getName(),toSet.getDescription()
+                ,pois,toSet.getGeoJsonList(),username, toSet.getCities().toArray(CityNode[]::new));
+        if(Objects.isNull(result)) return ResponseEntity.internalServerError().build();
+        return ResponseEntity.ok(new ItineraryRequestDTO(result));
+    }
+
     @PostMapping("/itinerary")
     public HttpStatus createItinerary(@RequestParam String username,
                                       @RequestBody Map<String, Object> body) {
@@ -113,12 +137,25 @@ public class UserController {
         Collection<String> poiIds = (Collection<String>) body.get("poiIds");
         Collection<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
-        Collection<CityNode> poiCities = pois.stream().map(this.utilityService::getCityOfPoi).distinct().toList();
+        Collection<CityNode> poiCities = pois.stream().map(PointOfInterestNode::getId).map(this.utilityService::getCityOfPoi).distinct().toList();
+        System.out.println(poiCities.stream().map(CityDTO::new).toList());
         ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
                 user.getUser().getUsername(),false, poiCities.toArray(CityNode[]::new));
         if(Objects.isNull(result)) return HttpStatus.INTERNAL_SERVER_ERROR;
         this.userService.addItineraryToUser(user,result);
         return HttpStatus.CREATED;
+    }
+
+    @DeleteMapping("/itinerary")
+    public ResponseEntity<HttpStatus> deleteItinerary(@RequestParam Long itineraryId, @RequestParam String username) {
+        ClassicUserNode user = this.userService.getClassicUserFromUser(username);
+        ItineraryNode toDelete = this.itineraryService.findItineraryById(itineraryId);
+        if (Objects.isNull(toDelete) || Objects.isNull(user)) return ResponseEntity.notFound().build();
+        if (!Objects.equals(user.getUser().getUsername(), toDelete.getCreatedBy()) && (!toDelete.getIsDefault())) {
+            return ResponseEntity.status(FORBIDDEN).build();
+        }
+        this.itineraryService.deleteItinerary(toDelete);
+        return ResponseEntity.ok().build();
     }
 
 }

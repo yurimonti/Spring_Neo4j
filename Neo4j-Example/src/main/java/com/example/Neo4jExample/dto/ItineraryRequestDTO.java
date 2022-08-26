@@ -5,6 +5,7 @@ import com.example.Neo4jExample.model.ItineraryRequestNode;
 import com.example.Neo4jExample.model.PointOfInterestNode;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
@@ -23,6 +24,13 @@ public class ItineraryRequestDTO {
     private Collection<String> consensus;
     private Double timeToVisit;
     private Collection<String> geoJsonList;
+
+    public ItineraryRequestDTO(){
+        this.points = new ArrayList<>();
+        this.cities = new ArrayList<>();
+        this.consensus = new ArrayList<>();
+        this.geoJsonList = new ArrayList<>();
+    }
 
     public ItineraryRequestDTO(ItineraryRequestNode itineraryRequestNode){
         if (Objects.isNull(itineraryRequestNode.getAccepted())) this.status = StatusEnum.PENDING;
