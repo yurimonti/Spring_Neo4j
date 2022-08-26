@@ -5,6 +5,7 @@ import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.util.MySerializer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PoiRequestService {
 
     private final UtilityService utilityService;
@@ -66,7 +68,10 @@ public class PoiRequestService {
         poiRequestNode.setTicketPrice(ticketPrice);
         poiRequestNode.setHours(timeSlot);
         poiRequestNode.setTypes(poiTypes);
+        log.info("tag and Value of request {}: {}",
+                poiRequestNode.getName(), tagRels.stream().map(PoiTagRel::getBooleanValue).toList());
         poiRequestNode.getTagValues().addAll(tagRels);
+        log.info("Basic Request {}",poiRequestNode.getName());
         return poiRequestNode;
     }
 
@@ -110,12 +115,12 @@ public class PoiRequestService {
      * @param bodyFrom http body where get values
      * @return Request created
      */
-    public PoiRequestNode createModifyRequestFromBody(Map<String, Object> bodyFrom){
+    public PoiRequestNode createModifyRequestFromBody(Map<String, Object> bodyFrom)throws NullPointerException{
+        //da rivedere....
         String poi = this.utilityService.getValueFromBody("poi",bodyFrom);
-        if(poi == null) return null;
+        if(Objects.isNull(poi)) throw new NullPointerException("null value");
         PointOfInterestNode pointOfInterestNode = this.pointOfIntRepository.findById(Long.parseLong(poi))
-                .orElse(null);
-        if(Objects.isNull(pointOfInterestNode)) return null;
+                .orElseThrow(()->new NullPointerException("poi with id " + Long.parseLong(poi) + " not found"));
         CityNode city = this.utilityService.getCityOfPoi(pointOfInterestNode.getId());
         PoiRequestNode result = this.getBasicRequestFromBody(bodyFrom);
         result.setPointOfInterestNode(pointOfInterestNode);

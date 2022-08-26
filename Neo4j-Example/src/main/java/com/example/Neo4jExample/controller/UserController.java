@@ -9,6 +9,7 @@ import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.*;
 import com.example.Neo4jExample.service.util.MySerializer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 @RequestMapping("/user")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService userService;
     private final PoiRequestService poiRequestService;
@@ -44,9 +46,17 @@ public class UserController {
      */
     @PostMapping("/modifyPoi")
     public ResponseEntity<PoiRequestNode> modifyPoi(@RequestBody Map<String, Object> body) {
-        PoiRequestNode result = this.poiRequestService.createModifyRequestFromBody(body);
-        if (Objects.isNull(result)) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(result);
+        PoiRequestNode result;
+        try{
+            result = this.poiRequestService.createModifyRequestFromBody(body);
+            log.info("modify request created successfully for poi : {}",result.getPointOfInterestNode().getName());
+            return ResponseEntity.ok(result);
+        }
+        catch(Exception e){
+            log.warn("error creating request cause poi is null : {} message: {}",
+                    e.getClass().getSimpleName(),e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /**

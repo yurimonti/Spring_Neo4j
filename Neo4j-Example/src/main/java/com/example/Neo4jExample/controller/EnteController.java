@@ -26,7 +26,6 @@ import static org.springframework.http.HttpStatus.*;
 @Slf4j
 @RequiredArgsConstructor
 public class EnteController {
-
     private final PoiService poiService;
     private final PoiRequestService poiRequestService;
     private final ItineraryService itineraryService;
@@ -125,11 +124,7 @@ public class EnteController {
             log.info("Poi before modify request {}",poiRequestNode.getPointOfInterestNode().toString());
             this.poiService.modifyPoiFromBody(poiRequestNode.getPointOfInterestNode(), body);
             log.info("Poi after modify request {}",poiRequestNode.getPointOfInterestNode().toString());
-            this.poiRequestService.saveRequestByItsPoi(poiRequestNode.getPointOfInterestNode().getId());
-            log.info("Poi after saving request {}",poiRequestNode.getPointOfInterestNode().toString());
             this.itineraryService.updateItinerariesByPoiModify(poiRequestNode.getPointOfInterestNode());
-            this.poiService.savePoiCity(poiRequestNode.getPointOfInterestNode());
-            log.info("Poi after saving city {}",poiRequestNode.getPointOfInterestNode().toString());
         } else {
             PointOfInterestNode poiResult = this.poiService.createPoiFromBody(body);
             this.poiRequestService.setPoiToRequest(poiRequestNode, poiResult);
@@ -156,26 +151,32 @@ public class EnteController {
         log.info("Poi before modifying {}", toModify);
         this.poiService.modifyPoiFromBody(toModify, body);
         log.info("Poi after modifying {}", toModify);
-        this.poiRequestService.saveRequestByItsPoi(toModify.getId());
         this.itineraryService.updateItinerariesByPoiModify(toModify);
-        this.poiService.savePoiCity(toModify);
         return ResponseEntity.ok(toModify);
     }
 
+    /**
+     * delete a poi
+     * @param username of ente who wants to delete poi
+     * @param id of poi to delete
+     * @return FORBIDDEN if ente is not authorized to delete this poi; NOT FOUND if poi not exists; OK if ended eith success
+     */
     //SAFE!
     @DeleteMapping("/poi")
     public ResponseEntity<?> deletePoi(@RequestParam String username,@RequestParam Long id){
         Ente ente = this.getEnteFromUsername(username);
         if(Objects.isNull(ente)) return ResponseEntity.status(FORBIDDEN).build();
         PointOfInterestNode toDelete = this.poiService.findPoiById(id);
-        log.info("toDelete: " + toDelete.toString());
         if(!this.poiService.poiIsContainedInCity(toDelete,ente.getCity()))
             return ResponseEntity.status(FORBIDDEN).build();
         try{
             this.poiService.deletePoi(toDelete);
+            log.info("toDelete: " + toDelete.toString());
             return ResponseEntity.ok().build();
         }catch(Exception e){
-            log.error(e.getClass().toString()+" "+e.getMessage()+ " with id: {}",id );
+            log.error(e.getClass()+" "+e.getMessage()+ " with id: {}",id );
+            if(Objects.equals(e.getClass(),IllegalArgumentException.class))
+                return ResponseEntity.badRequest().build();
             return ResponseEntity.notFound().build();
         }
     }
@@ -220,6 +221,13 @@ public class EnteController {
         return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
     }
 
+    /**
+     * set consensus to an itinerary request if the caller ente didn't before
+     * @param username of ente who want to set consensus
+     * @param consensus true if ente wants accept the itinerary
+     * @param idRequest of itinerary to set consensus
+     * @return status accepted if the others ente's set a positive consensus, rejected status otherwise
+     */
     //TODO: da rendere safe se non lo e' !!
     @PatchMapping("/itinerary/consensus")
     public ResponseEntity<String> setConsensus(@RequestParam String username, @RequestParam boolean consensus,

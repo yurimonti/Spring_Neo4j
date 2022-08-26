@@ -17,14 +17,13 @@ public class PoiService {
     private final PointOfIntRepository pointOfIntRepository;
     private final PoiRequestRepository poiRequestRepository;
     private final UtilityService utilityService;
-
     private final CityRepository cityRepository;
     private final PoiTypeRepository poiTypeRepository;
     private final CoordinateRepository coordinateRepository;
     private final TimeSlotRepository timeSlotRepository;
     private final AddressRepository addressRepository;
     private final ContactRepository contactRepository;
-    private final TagRepository tagRepository;
+    private final ItineraryRepository itineraryRepository;
 
     public void savePoi(PointOfInterestNode toSave){
         this.pointOfIntRepository.save(toSave);
@@ -56,12 +55,21 @@ public class PoiService {
         this.coordinateRepository.delete(toDelete);
     }
 
-    public void deletePoi(PointOfInterestNode toDelete) throws NullPointerException{
+    public void deletePoi(PointOfInterestNode toDelete) throws NullPointerException,IllegalArgumentException{
         if(Objects.isNull(toDelete)) throw new NullPointerException("poi not available");
         log.info("toDelete {}",toDelete);
         CityNode cityToSave = this.utilityService.getCityOfPoi(toDelete.getId());
+        List<ItineraryNode> allItineraries = this.itineraryRepository.findAll().stream()
+                .filter(i -> i.getCities().contains(cityToSave))
+                .filter(i -> i.getPoints().stream().map(ItineraryRelPoi::getPoi).toList().contains(toDelete)).toList();
+        if(allItineraries.stream().anyMatch(ItineraryNode::getIsDefault)) throw
+                new IllegalArgumentException("Impossible to delete cause there are some itineraries linked to this poi");
+        this.itineraryRepository.deleteAll(allItineraries);
+        log.info("All itineraries with poi name: {} deleted",toDelete.getName());
         cityToSave.getPointOfInterests().remove(toDelete);
         this.cityRepository.save(cityToSave);
+        //eliminare tutti gli itinerari che contengono il poi da eliminare;
+        // lo stesso per le richieste;
         log.info("citta salvata");
         log.info("coordinate id {}",toDelete.getCoordinate().getId());
         log.info("timeslot id {}",toDelete.getHours().toString());
@@ -152,6 +160,7 @@ public class PoiService {
                 request.getTimeToVisit(),this.copyAddress(request.getAddress()),request.getTicketPrice(),
                 request.getLink(),request.getTypes(),this.copyContact(request.getContact()),
                 this.copyPoiTagRel(request.getTagValues()));
+        result.getContributors().add(request.getUsername());
         this.pointOfIntRepository.save(result);
         this.savePoiInACity(request.getCity(),result);
         return result;
@@ -189,7 +198,7 @@ public class PoiService {
         result.getContributors().add(request.getUsername());
         result.setLink(request.getLink());
         result.setTypes(request.getTypes());
-        result.setTagValues(request.getTagValues());
+        result.setTagValues(this.copyPoiTagRel(request.getTagValues()));
         this.pointOfIntRepository.save(result);
         this.poiRequestRepository.save(request);
         this.savePoiCity(result);

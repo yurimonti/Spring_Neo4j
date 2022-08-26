@@ -2,6 +2,7 @@ package com.example.Neo4jExample.service.util;
 
 import com.example.Neo4jExample.service.ProvaService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -11,16 +12,15 @@ import org.slf4j.LoggerFactory;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ScheduledTasks {
 
     private final ProvaService provaService;
 
-    private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
 
-
-    /*@Scheduled(fixedRate = 60000,initialDelay = 15000)
+    @Scheduled(fixedRate = 60000,initialDelay = 15000)
     public void printScemo() {
-        provaService.updateOpenPois(new Date());
+        this.provaService.updateOpenPois(new Date());
         log.info("pois time open updated!!");
-    }*/
+    }
 }

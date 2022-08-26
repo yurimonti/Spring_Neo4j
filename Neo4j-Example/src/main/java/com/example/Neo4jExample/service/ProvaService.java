@@ -133,7 +133,6 @@ public class ProvaService {
         poi.getHours().setIsOpen(toSet);
         this.timeSlotRepository.save(poi.getHours());
         this.pointOfIntRepository.save(poi);
-        this.poiService.savePoiCity(poi);
         this.itineraryService.updateItinerariesByPoiModify(poi);
     }
 
