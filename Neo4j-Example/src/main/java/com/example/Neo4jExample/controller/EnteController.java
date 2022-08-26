@@ -9,6 +9,7 @@ import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.*;
 import com.example.Neo4jExample.service.util.MySerializer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +23,9 @@ import static org.springframework.http.HttpStatus.*;
 @RestController
 @RequestMapping("/ente")
 @CrossOrigin(origins = "*")
+@Slf4j
 @RequiredArgsConstructor
 public class EnteController {
-
     private final PoiService poiService;
     private final PoiRequestService poiRequestService;
     private final ItineraryService itineraryService;
@@ -45,10 +46,12 @@ public class EnteController {
      * @param body     http request that contains values
      * @return new Poi
      */
+    //SAFE!
     @PostMapping("/createPoi")
     public ResponseEntity<PointOfInterestNode> createPoi(@RequestParam String username, @RequestBody Map<String, Object> body) {
         Ente ente = this.getEnteFromUsername(username);
         PointOfInterestNode poi = this.poiService.createPoiFromBody(body);
+        log.info("created poi id: {}",poi.getId());
         CityNode city = ente.getCity();
         this.poiService.savePoiInACity(city, poi);
         return Objects.isNull(poi) ? ResponseEntity.internalServerError().build() : ResponseEntity.ok(poi);
@@ -108,6 +111,7 @@ public class EnteController {
      * @param body     http request that contains values of modify
      * @return Poi modified
      */
+    //TODO: modificato!! Guardare bene implementazione precedente se qualcosa va storto!!
     @PostMapping("/notifies/modify")
     public ResponseEntity<PointOfInterestNode> setRequestTo(@RequestParam Long id, @RequestParam String username,
                                                             @RequestBody Map<String, Object> body) {
@@ -115,18 +119,18 @@ public class EnteController {
         PoiRequestNode poiRequestNode = this.poiRequestService.findRequestById(id);
         if (Objects.isNull(poiRequestNode)) return ResponseEntity.noContent().build();
         poiRequestNode.setAccepted(true);
-        PointOfInterestNode poiResult;
         if (!Objects.isNull(poiRequestNode.getPointOfInterestNode())) {
-            poiResult = poiRequestNode.getPointOfInterestNode();
-            this.poiService.modifyPoiFromBody(poiResult, body);
-            this.poiRequestService.setPoiToRequest(poiRequestNode, poiResult);
-            this.itineraryService.updateItinerariesByPoiModify(poiResult);
+            //poiResult = poiRequestNode.getPointOfInterestNode();
+            log.info("Poi before modify request {}",poiRequestNode.getPointOfInterestNode().toString());
+            this.poiService.modifyPoiFromBody(poiRequestNode.getPointOfInterestNode(), body);
+            log.info("Poi after modify request {}",poiRequestNode.getPointOfInterestNode().toString());
+            this.itineraryService.updateItinerariesByPoiModify(poiRequestNode.getPointOfInterestNode());
         } else {
-            poiResult = this.poiService.createPoiFromBody(body);
+            PointOfInterestNode poiResult = this.poiService.createPoiFromBody(body);
             this.poiRequestService.setPoiToRequest(poiRequestNode, poiResult);
             this.poiService.savePoiInACity(ente.getCity(), poiResult);
         }
-        return ResponseEntity.ok().body(poiRequestNode.getPointOfInterestNode());
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -137,15 +141,44 @@ public class EnteController {
      * @param body     http request that contains values
      * @return Poi modified
      */
+    //SAFE!
     @PatchMapping("/poi")
     public ResponseEntity<PointOfInterestNode> modifyPoi(@RequestParam Long id, @RequestParam String username,
                                                          @RequestBody Map<String, Object> body) {
         Ente ente = this.getEnteFromUsername(username);
         PointOfInterestNode toModify = this.poiService.findPoiById(id);
         if (Objects.isNull(ente) || Objects.isNull(toModify)) return ResponseEntity.notFound().build();
+        log.info("Poi before modifying {}", toModify);
         this.poiService.modifyPoiFromBody(toModify, body);
+        log.info("Poi after modifying {}", toModify);
         this.itineraryService.updateItinerariesByPoiModify(toModify);
         return ResponseEntity.ok(toModify);
+    }
+
+    /**
+     * delete a poi
+     * @param username of ente who wants to delete poi
+     * @param id of poi to delete
+     * @return FORBIDDEN if ente is not authorized to delete this poi; NOT FOUND if poi not exists; OK if ended eith success
+     */
+    //SAFE!
+    @DeleteMapping("/poi")
+    public ResponseEntity<?> deletePoi(@RequestParam String username,@RequestParam Long id){
+        Ente ente = this.getEnteFromUsername(username);
+        if(Objects.isNull(ente)) return ResponseEntity.status(FORBIDDEN).build();
+        PointOfInterestNode toDelete = this.poiService.findPoiById(id);
+        if(!this.poiService.poiIsContainedInCity(toDelete,ente.getCity()))
+            return ResponseEntity.status(FORBIDDEN).build();
+        try{
+            this.poiService.deletePoi(toDelete);
+            log.info("toDelete: " + toDelete.toString());
+            return ResponseEntity.ok().build();
+        }catch(Exception e){
+            log.error(e.getClass()+" "+e.getMessage()+ " with id: {}",id );
+            if(Objects.equals(e.getClass(),IllegalArgumentException.class))
+                return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
@@ -156,6 +189,7 @@ public class EnteController {
      * @param body     http request that contains values
      * @return HttpStatus of response call.
      */
+    //TODO:da rendere safe se non lo e' !!
     @PostMapping("/itinerary")
     public HttpStatus createItinerary(@RequestParam String username,
                                       @RequestBody Map<String, Object> body) {
@@ -168,25 +202,33 @@ public class EnteController {
         Collection<String> poiIds = (Collection<String>) body.get("poiIds");
         Collection<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
+        log.info("list of pois to insert in itinerary : {}",pois.stream().map(PointOfInterestNode::getName).toList());
         //aggiunta controllo delle citta'
-        Collection<CityNode> poiCities = pois.stream().map(this.utilityService::getCityOfPoi).distinct().toList();
-        System.out.println(poiCities.stream().map(CityDTO::new).toList());
-        System.out.println(poiCities.size());
-        /*System.out.println(new CityDTO(ente.getCity()));*/
+        Collection<CityNode> poiCities = pois.stream().map(PointOfInterestNode::getId)
+                .map(this.utilityService::getCityOfPoi).distinct().toList();
+        log.info("list of cities to insert in itinerary : {}",poiCities.stream().map(CityNode::getName).toList());
         if (!poiCities.contains(ente.getCity())) return NOT_ACCEPTABLE;
         if (poiCities.size() > 1) {
             ItineraryRequestNode result = this.itineraryService.createItineraryRequest(name,description,pois, geoJsonList,
                     ente.getUser().getUsername(), poiCities.toArray(CityNode[]::new));
+            log.info("itinerary request created : {}",result.toString());
             return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
         }
         //fine controllo
         ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
                 ente.getUser().getUsername(),true, ente.getCity());
-
+        log.info("itinerary created : {}",result.toString());
         return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
     }
 
-    //TODO: controllare cosa ritorna nei vari casi
+    /**
+     * set consensus to an itinerary request if the caller ente didn't before
+     * @param username of ente who want to set consensus
+     * @param consensus true if ente wants accept the itinerary
+     * @param idRequest of itinerary to set consensus
+     * @return status accepted if the others ente's set a positive consensus, rejected status otherwise
+     */
+    //TODO: da rendere safe se non lo e' !!
     @PatchMapping("/itinerary/consensus")
     public ResponseEntity<String> setConsensus(@RequestParam String username, @RequestParam boolean consensus,
                                                @RequestParam Long idRequest) {
@@ -218,7 +260,6 @@ public class EnteController {
 
     /**
      * Delete an Itinerary from the database
-     *
      * @param itineraryId id of ItineraryNode to delete
      * @param username of ente who calls api
      * @return status of the operation
@@ -228,13 +269,19 @@ public class EnteController {
         Ente ente = this.getEnteFromUsername(username);
         ItineraryNode toDelete = this.itineraryService.findItineraryById(itineraryId);
         if (Objects.isNull(toDelete) || Objects.isNull(ente)) return ResponseEntity.notFound().build();
-        if (!Objects.equals(ente.getUser().getUsername(), toDelete.getCreatedBy())) {
+        if (!toDelete.getCities().contains(ente.getCity()) || !toDelete.getIsDefault()) {
             return ResponseEntity.status(FORBIDDEN).build();
         }
         this.itineraryService.deleteItinerary(toDelete);
+        log.info("itinerary deleted? --> {}",Objects.isNull(this.itineraryService.findItineraryById(itineraryId)));
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * get all itinerary's requests
+     * @param username of ente
+     * @return all requests for an ente
+     */
     @GetMapping("/itinerary/requests")
     public ResponseEntity<Collection<ItineraryRequestDTO>> getItineraryRequests(@RequestParam String username){
         Ente ente = this.getEnteFromUsername(username);

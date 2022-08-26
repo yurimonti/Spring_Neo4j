@@ -1,9 +1,6 @@
 package com.example.Neo4jExample.controller;
 
-import com.example.Neo4jExample.dto.CityDTO;
-import com.example.Neo4jExample.dto.ItineraryDTO;
-import com.example.Neo4jExample.dto.PoiDTO;
-import com.example.Neo4jExample.dto.PoiRequestDTO;
+import com.example.Neo4jExample.dto.*;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.ItineraryService;
@@ -97,6 +94,14 @@ public class DefaultController {
         ItineraryNode it = this.itineraryService.findItineraryById(id);
         ItineraryDTO result = new ItineraryDTO();
         if(!Objects.isNull(it)) result = new ItineraryDTO(it);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/itinerary-request")
+    public ResponseEntity<ItineraryRequestDTO> getItineraryRequestById(@RequestParam Long id){
+        ItineraryRequestNode it = this.itineraryService.findRequestById(id);
+        ItineraryRequestDTO result = new ItineraryRequestDTO();
+        if(!Objects.isNull(it)) result = new ItineraryRequestDTO(it);
         return ResponseEntity.ok(result);
     }
 

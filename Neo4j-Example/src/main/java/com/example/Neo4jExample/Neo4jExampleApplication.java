@@ -7,10 +7,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
 import java.time.LocalTime;
 import java.util.*;
 
 @SpringBootApplication
+@EnableScheduling
 public class Neo4jExampleApplication {
 
 	public static void main(String[] args) {
@@ -20,14 +23,14 @@ public class Neo4jExampleApplication {
 	/**
 	 * set Timer to update pois time open
 	 */
-	private void timerToUpdateTimeSlots(ProvaService provaService) {
+	/*private void timerToUpdateTimeSlots(ProvaService provaService) {
 		new Timer().scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
 				provaService.updateOpenPois(new Date());
 			}
 		},0,1000*60);
-	}
+	}*/
 	@Bean
 	CommandLineRunner initDatabase(AddressRepository addressRepository, CategoryRepository categoryRepository,
 								   CityRepository cityRepository,ContactRepository contactRepository,
@@ -43,7 +46,7 @@ public class Neo4jExampleApplication {
 		return args -> {
 
 			//prova user
-			/*userNodeRepository.deleteAll();
+			userNodeRepository.deleteAll();
 			userRoleRepository.deleteAll();
 			classicUserRepository.deleteAll();
 			Collection<UserRole> roles = new ArrayList<>();
@@ -104,11 +107,11 @@ public class Neo4jExampleApplication {
 			TagNode tag1 = new TagNode("ingresso animali",true);
 			TagNode tag2 = new TagNode("accessibilita disabili",true);
 			TagNode tag3 = new TagNode("potabile",true);
-			TagNode tag4 = new TagNode("costo",false);
+			//TagNode tag4 = new TagNode("costo",false);
 			tagRepository.save(tag1);
 			tagRepository.save(tag2);
 			tagRepository.save(tag3);
-			tagRepository.save(tag4);
+			//tagRepository.save(tag4);
 
 			//creazione CategoryNode
 			CategoryNode culturale =  new CategoryNode("Culturale");
@@ -201,7 +204,7 @@ public class Neo4jExampleApplication {
 
 			PoiType museo = new PoiType("Museo");
 			museo.getCategories().addAll(Arrays.asList(culturale,architetturale));
-			museo.getTags().addAll(Arrays.asList(tag1,tag2,tag4));
+			museo.getTags().addAll(Arrays.asList(tag1,tag2/*,tag4*/));
 			poiTypeRepository.save(museo);
 
 			PoiType ristorante = new PoiType("Ristorante");
@@ -393,7 +396,7 @@ public class Neo4jExampleApplication {
 			pointProvaCoords = new Coordinate(43.2104315,13.0526301);
 			createPoiProva2(coordinateRepository, pointOfIntRepository, "PalaSport Castel Raimondo",castelRaimondo,
 					palazzo,pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
-			cityRepository.save(castelRaimondo);*/
+			cityRepository.save(castelRaimondo);
 
 			//------------------- Fine Creazione Poi --------------------
 
@@ -420,7 +423,7 @@ public class Neo4jExampleApplication {
 			poiRequestRepository.save(poiRequestNode);*/
 
 			//Timer che verifica e setta se un poi e' aperto o meno secondo l'istante corrente
-			this.timerToUpdateTimeSlots(provaService);
+			//this.timerToUpdateTimeSlots(provaService);
 		};
 	}
 
