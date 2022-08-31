@@ -2,6 +2,7 @@ package com.example.Neo4jExample.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
@@ -10,7 +11,8 @@ import org.springframework.data.neo4j.core.schema.Node;
 @Node
 public class CategoryNode {
 
-    @Id
+    @Id@GeneratedValue
+    private Long id;
     private String name;
 
     public CategoryNode(String name) {

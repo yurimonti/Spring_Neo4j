@@ -30,16 +30,32 @@ public class PoiRequestNode {
     private String username;
 
     private PointOfInterestNode pointOfInterestNode;
-    @Relationship(type = "POI_HAS_TYPE")
+    @Relationship(type = "REQUEST_HAS_TYPE")
     private Collection<PoiType> types;
-    @Relationship(type = "POI_HAS_CONTACT")
+    @Relationship(type = "REQUEST_HAS_CONTACT")
     private Contact contact;
-    @Relationship(type = "TAG_VALUE",direction = Relationship.Direction.OUTGOING)
+    @Relationship(type = "REQUEST_TAG_VALUE")
     private Collection<PoiTagRel> tagValues;
 
     public PoiRequestNode(){
         this.types = new ArrayList<>();
         this.tagValues = new ArrayList<>();
+    }
+
+    public PoiRequestNode(String name, String description, Coordinate coordinate, TimeSlot hours, Double timeToVisit,
+                          Address address, Double ticketPrice,String username, Collection<PoiType> types, Contact contact,
+                          Collection<PoiTagRel> tagValues) {
+        this.name = name;
+        this.description = description;
+        this.coordinate = coordinate;
+        this.hours = hours;
+        this.timeToVisit = timeToVisit;
+        this.address = address;
+        this.ticketPrice = ticketPrice;
+        this.username = username;
+        this.types = types;
+        this.contact = contact;
+        this.tagValues = tagValues;
     }
 
     public PoiRequestNode(String name, String description, CityNode city, Coordinate coordinate, Address address,
@@ -67,6 +83,22 @@ public class PoiRequestNode {
         this.timeToVisit = timeToVisit;
         this.ticketPrice = ticketPrice;
         this.username = username;
+        this.contact = contact;
+    }
+
+    public PoiRequestNode(String name, String description, Coordinate coordinate, TimeSlot timeSlot, Double timeToVisit,
+                          Address address, Double ticketPrice, String username, Collection<PoiType> poiTypes,
+                          Contact contact) {
+        this();
+        this.name = name;
+        this.description = description;
+        this.coordinate = coordinate;
+        this.hours = timeSlot;
+        this.timeToVisit = timeToVisit;
+        this.address = address;
+        this.ticketPrice = ticketPrice;
+        this.username = username;
+        this.types = poiTypes;
         this.contact = contact;
     }
 }

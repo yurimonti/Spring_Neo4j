@@ -7,6 +7,7 @@ import com.example.Neo4jExample.service.util.MySerializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,10 +35,14 @@ public class PoiRequestService {
         this.poiRequestRepository.saveAll(requestsToSave);
     }
 
+    public void saveRequest(PoiRequestNode toSave){
+        this.poiRequestRepository.save(toSave);
+    }
+
     //create a basic request without some data, like city and poi
     //TODO: rivedere perché non funziona tag values ecc
     private PoiRequestNode getBasicRequestFromBody(Map<String, Object> bodyFrom) {
-        PoiRequestNode poiRequestNode = new PoiRequestNode();
+        //PoiRequestNode poiRequestNode = new PoiRequestNode();
         String username = this.utilityService.getValueFromBody("username", bodyFrom);
         String name = this.utilityService.getValueFromBody("name", bodyFrom);
         String description = this.utilityService.getValueFromBody("description", bodyFrom);
@@ -54,11 +59,13 @@ public class PoiRequestService {
         Double ticketPrice = Double.parseDouble(this.utilityService.getValueFromBody("price", bodyFrom));
         TimeSlot timeSlot = this.utilityService.getTimeSlotFromBody(new TimeSlot(),bodyFrom);
         Collection<PoiType> poiTypes = ((Collection<String>) bodyFrom.get("types")).stream()
-                .filter(a -> this.poiTypeRepository.findById(a).isPresent())
-                .map(a -> this.poiTypeRepository.findById(a).get())
+                .filter(a -> this.poiTypeRepository.findByName(a).isPresent())
+                .map(a -> this.poiTypeRepository.findByName(a).get())
                 .collect(Collectors.toList());
         Collection<PoiTagRel> tagRels = this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags"));
-        poiRequestNode.setUsername(username);
+        PoiRequestNode poiRequestNode = new PoiRequestNode(name,description,coordinate,timeSlot,timeToVisit,address,
+                ticketPrice,username,poiTypes,contact,tagRels);
+        /*poiRequestNode.setUsername(username);
         poiRequestNode.setName(name);
         poiRequestNode.setDescription(description);
         poiRequestNode.setCoordinate(coordinate);
@@ -67,11 +74,12 @@ public class PoiRequestService {
         poiRequestNode.setTimeToVisit(timeToVisit);
         poiRequestNode.setTicketPrice(ticketPrice);
         poiRequestNode.setHours(timeSlot);
-        poiRequestNode.setTypes(poiTypes);
+        poiRequestNode.setTypes(poiTypes);*/
         log.info("tag and Value of request {}: {}",
                 poiRequestNode.getName(), tagRels.stream().map(PoiTagRel::getBooleanValue).toList());
         poiRequestNode.getTagValues().addAll(tagRels);
         log.info("Basic Request {}",poiRequestNode.getName());
+        this.poiRequestRepository.save(poiRequestNode);
         return poiRequestNode;
     }
 
@@ -118,13 +126,19 @@ public class PoiRequestService {
     public PoiRequestNode createModifyRequestFromBody(Map<String, Object> bodyFrom)throws NullPointerException{
         //da rivedere....
         String poi = this.utilityService.getValueFromBody("poi",bodyFrom);
+        log.info("poiId: {}",poi);
         if(Objects.isNull(poi)) throw new NullPointerException("null value");
         PointOfInterestNode pointOfInterestNode = this.pointOfIntRepository.findById(Long.parseLong(poi))
                 .orElseThrow(()->new NullPointerException("poi with id " + Long.parseLong(poi) + " not found"));
         CityNode city = this.utilityService.getCityOfPoi(pointOfInterestNode.getId());
+        log.info("city of node {} : {}",pointOfInterestNode.getName(),city.getName());
         PoiRequestNode result = this.getBasicRequestFromBody(bodyFrom);
+        log.info("request with types : {}",result.getTypes());
         result.setPointOfInterestNode(pointOfInterestNode);
+        log.info("{} setted with types : {}",result.getPointOfInterestNode().getName(),result.getPointOfInterestNode()
+                .getTypes());
         result.setCity(city);
+        log.info("{} setted",city.getName());
         this.poiRequestRepository.save(result);
         return result;
     }

@@ -4,6 +4,7 @@ import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
