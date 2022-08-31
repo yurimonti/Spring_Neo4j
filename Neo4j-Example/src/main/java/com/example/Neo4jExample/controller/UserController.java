@@ -15,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -34,7 +31,16 @@ public class UserController {
     private final PoiRequestService poiRequestService;
     private final CityRepository cityRepository;
     private final ItineraryService itineraryService;
-
+    //TODO:cancellare
+    /*private final PoiRequestRepository poiRequestRepository;
+    private final ContactRepository contactRepository;
+    private final PoiTypeRepository poiTypeRepository;
+    private final PointOfIntRepository pointOfIntRepository;
+    private final CoordinateRepository coordinateRepository;
+    private final AddressRepository addressRepository;
+    private final TimeSlotRepository timeSlotRepository;
+    private final TagRepository tagRepository;*/
+    //fine cancellazione
     private final PoiService poiService;
     private final UtilityService utilityService;
 
@@ -58,6 +64,74 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
     }
+   /* @PostMapping("/modifyPoi")
+    public ResponseEntity<PoiRequestNode> modifyPoi(@RequestBody Map<String, Object> body) {
+        List<PoiType> types = this.poiTypeRepository.findAll();
+        types.forEach(t -> log.info("type {}", t.getName()));
+        String poi = (String)body.get("poi");
+        log.info("poiId: {}",poi);
+        if(Objects.isNull(poi)) return ResponseEntity.notFound().build();
+        PointOfInterestNode pointOfInterestNode = this.pointOfIntRepository.findById(Long.parseLong(poi)).orElse(null);
+        if(Objects.isNull(pointOfInterestNode)) return ResponseEntity.notFound().build();
+        CityNode city = this.cityRepository.findAll().stream()
+                .filter(c -> c.getPointOfInterests().stream().map(PointOfInterestNode::getId).toList()
+                        .contains(pointOfInterestNode.getId()))
+                .findFirst().orElse(null);
+        if(Objects.isNull(city)) return ResponseEntity.notFound().build();
+        String username = (String)body.get("username");
+        String name = (String)body.get("name");
+        String description = (String)body.get("description");
+        Coordinate coordinate = new Coordinate(Double.parseDouble((String)body.get("lat")),
+                Double.parseDouble((String)body.get("lon")));
+        this.coordinateRepository.save(coordinate);
+        String street = (String)body.get("street");
+        Integer number = Integer.parseInt((String)body.get("number"));
+        Address address = new Address(street, number);
+        this.addressRepository.save(address);
+        Contact contact = new Contact((String)body.get("email"),(String)body.get("phone"),(String)body.get("fax"));
+        this.contactRepository.save(contact);
+        Double timeToVisit = Double.parseDouble((String)body.get("timeToVisit"));
+        Double ticketPrice = Double.parseDouble((String)body.get("price"));
+        Collection<String> monday = (Collection<String>) body.get("monday");
+        Collection<String> tuesday = (Collection<String>) body.get("tuesday");
+        Collection<String> wednesday = (Collection<String>) body.get("wednesday");
+        Collection<String> thursday = (Collection<String>) body.get("thursday");
+        Collection<String> friday = (Collection<String>) body.get("friday");
+        Collection<String> saturday = (Collection<String>) body.get("saturday");
+        Collection<String> sunday = (Collection<String>) body.get("sunday");
+        TimeSlot timeSlot = new TimeSlot(monday.stream().map(LocalTime::parse).toList(),
+                tuesday.stream().map(LocalTime::parse).toList(),wednesday.stream().map(LocalTime::parse).toList(),
+                thursday.stream().map(LocalTime::parse).toList(),friday.stream().map(LocalTime::parse).toList(),
+                saturday.stream().map(LocalTime::parse).toList(),sunday.stream().map(LocalTime::parse).toList());
+        this.timeSlotRepository.save(timeSlot);
+        *//*TimeSlot timeSlot = this.utilityService.getTimeSlotFromBody(new TimeSlot(),body);*//*
+        Collection<PoiType> poiTypes = ((Collection<String>) body.get("types")).stream()
+                .filter(a -> this.poiTypeRepository.findByName(a).isPresent())
+                .map(a -> this.poiTypeRepository.findByName(a).get())
+                .collect(Collectors.toList());
+        log.info("types: {}",poiTypes);
+        PoiRequestNode poiRequestNode = new PoiRequestNode(name,description,coordinate,timeSlot,timeToVisit,address,
+                ticketPrice,username,poiTypes,contact);
+        for (Map<String, Object> map : ((Collection<Map<String, Object>>) body.get("tags"))) {
+            String tag = (String) map.get("tag");
+            TagNode tagNode = this.tagRepository.findByName(tag).orElse(null);
+            if (!Objects.isNull(tagNode)) {
+                PoiTagRel poiTagRel = new PoiTagRel(tagNode);
+                if (tagNode.getIsBooleanType()) {
+                    poiTagRel.setBooleanValue((Boolean) map.get("value"));
+                } else poiTagRel.setStringValue((String) map.get("value"));
+                log.info("poiTagRel: {}",poiTagRel);
+                poiRequestNode.getTagValues().add(poiTagRel);
+            }
+        }
+        log.info("tag and Value of request {}: {}",poiRequestNode.getName(), poiRequestNode.getTagValues());
+        log.info("Basic Request {}",poiRequestNode.getName());
+        poiRequestNode.setPointOfInterestNode(pointOfInterestNode);
+        poiRequestNode.setCity(city);
+        this.poiRequestRepository.save(poiRequestNode);
+        log.info("{}",poiRequestNode.getTagValues());
+        return ResponseEntity.ok(poiRequestNode);
+    }*/
 
     /**
      * create an Add Request of a poi

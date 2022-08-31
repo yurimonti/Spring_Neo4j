@@ -125,6 +125,7 @@ public class EnteController {
             this.poiService.modifyPoiFromBody(poiRequestNode.getPointOfInterestNode(), body);
             log.info("Poi after modify request {}",poiRequestNode.getPointOfInterestNode().toString());
             this.itineraryService.updateItinerariesByPoiModify(poiRequestNode.getPointOfInterestNode());
+            this.poiRequestService.saveRequest(poiRequestNode);
         } else {
             PointOfInterestNode poiResult = this.poiService.createPoiFromBody(body);
             this.poiRequestService.setPoiToRequest(poiRequestNode, poiResult);

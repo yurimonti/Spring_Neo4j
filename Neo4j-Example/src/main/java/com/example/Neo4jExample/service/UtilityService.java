@@ -4,6 +4,7 @@ import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -97,7 +98,7 @@ public class UtilityService {
         Collection<PoiTagRel> result = new ArrayList<>();
         for (Map<String, Object> map : from) {
             String tag = (String) map.get("tag");
-            TagNode tagNode = this.tagRepository.findById(tag).orElse(null);
+            TagNode tagNode = this.tagRepository.findByName(tag).orElse(null);
             PoiTagRel poiTagRel = new PoiTagRel(tagNode);
             if (!Objects.isNull(tagNode)) {
                 if (tagNode.getIsBooleanType()) {

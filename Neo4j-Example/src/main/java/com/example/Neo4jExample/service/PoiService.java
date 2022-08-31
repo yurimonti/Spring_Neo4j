@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 public class PoiService {
     private final PointOfIntRepository pointOfIntRepository;
     private final PoiRequestRepository poiRequestRepository;
@@ -170,7 +169,7 @@ public class PoiService {
      * modifies Poi parameters from a request
      * @param request to get modifies
      */
-    //FIXME: rivedere metodo perche crea nuovi nodi
+    //FIXME: rivedere metodo perche elimina collegamenti su dei poi con poitype
     public void modifyPoiFromRequest(PoiRequestNode request){
         PointOfInterestNode result = request.getPointOfInterestNode();
         result.getHours().setMonday(request.getHours().getMonday());
@@ -239,8 +238,8 @@ public class PoiService {
         TimeSlot timeSlot = this.utilityService.getTimeSlotFromBody(new TimeSlot(),bodyFrom);
         result.setHours(timeSlot);
         Collection<PoiType> poiTypes = ((Collection<String>) bodyFrom.get("types")).stream()
-                .filter(a -> poiTypeRepository.findById(a).isPresent())
-                .map(a -> poiTypeRepository.findById(a).get())
+                .filter(a -> poiTypeRepository.findByName(a).isPresent())
+                .map(a -> poiTypeRepository.findByName(a).get())
                 .collect(Collectors.toList());
         result.setTypes(poiTypes);
         result.getTagValues().addAll(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
@@ -287,8 +286,8 @@ public class PoiService {
         this.clearTimeSlot(poiToModify.getHours());
         this.utilityService.getTimeSlotFromBody(poiToModify.getHours(),bodyFrom);
         Collection<PoiType> poiTypes = ((Collection<String>) bodyFrom.get("types")).stream()
-                .filter(a -> this.poiTypeRepository.findById(a).isPresent())
-                .map(a -> this.poiTypeRepository.findById(a).get())
+                .filter(a -> this.poiTypeRepository.findByName(a).isPresent())
+                .map(a -> this.poiTypeRepository.findByName(a).get())
                 .collect(Collectors.toList());
         poiToModify.setTypes(poiTypes);
         poiToModify.getTagValues().clear();
