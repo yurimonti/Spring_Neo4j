@@ -9,6 +9,10 @@ import org.springframework.data.neo4j.core.schema.Node;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+
+/**
+ * Represents an itinerary request
+ */
 @Node
 @Data
 public class ItineraryRequestNode {

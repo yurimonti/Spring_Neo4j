@@ -10,6 +10,9 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Represents a time slot
+ */
 @Data
 @Node
 public class TimeSlot {

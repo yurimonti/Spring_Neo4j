@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * Represents a food section
+ */
 @Data
 @Node
 @NoArgsConstructor

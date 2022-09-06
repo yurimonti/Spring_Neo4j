@@ -9,6 +9,9 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a data transfer object for the class ItineraryNode
+ */
 @Data
 public class ItineraryDTO {
     private Long id;

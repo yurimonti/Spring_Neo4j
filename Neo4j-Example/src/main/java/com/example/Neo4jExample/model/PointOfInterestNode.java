@@ -8,8 +8,12 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * Represents a point of interest
+ */
 @Data
 @Node
 public class PointOfInterestNode {
@@ -64,6 +68,12 @@ public class PointOfInterestNode {
         this.timeToVisit = timeToVisit;
         this.ticketPrice = ticketPrice;
         this.contact = contact;
+    }
+    public PointOfInterestNode(String name, String description, Coordinate coordinate, Address address,
+                               TimeSlot hours,Double timeToVisit,Double ticketPrice,Contact contact,
+                               PoiType ...types) {
+        this(name,description,coordinate,address,hours,timeToVisit,ticketPrice,contact);
+        this.types = Arrays.stream(types).toList();
     }
 
     public PointOfInterestNode(String name, String description,Coordinate coordinate,TimeSlot hours,Double timeToVisit,

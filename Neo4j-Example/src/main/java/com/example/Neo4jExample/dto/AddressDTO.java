@@ -3,6 +3,9 @@ package com.example.Neo4jExample.dto;
 import com.example.Neo4jExample.model.Address;
 import lombok.Data;
 
+/**
+ * Represents a data transfer object for the class Address
+ */
 @Data
 public class AddressDTO {
     private Long id;

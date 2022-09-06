@@ -5,14 +5,12 @@ import com.example.Neo4jExample.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 public class PoiService {
     private final PointOfIntRepository pointOfIntRepository;
     private final PoiRequestRepository poiRequestRepository;
@@ -25,18 +23,20 @@ public class PoiService {
     private final ContactRepository contactRepository;
     private final ItineraryRepository itineraryRepository;
 
-    public void savePoi(PointOfInterestNode toSave){
-        this.pointOfIntRepository.save(toSave);
-    }
-
-    public void savePoi(Collection<PointOfInterestNode> toSave){
-        toSave.forEach(this::savePoi);
-    }
-
+    /**
+     * Find if a point of interest is contained in a specific city
+     * @param isContained the point of interest
+     * @param from the city
+     * @return true if contained, false otherwise
+     */
     public boolean poiIsContainedInCity(PointOfInterestNode isContained, CityNode from){
         return from.getPointOfInterests().contains(isContained);
     }
 
+    /**
+     * Save a point of interest in the db
+     * @param containedInCity the point of interest
+     */
     public void savePoiCity(PointOfInterestNode containedInCity){
         this.cityRepository.save(this.utilityService.getCityOfPoi(containedInCity.getId()));
         log.info("City of Poi {} saved successfully",containedInCity.getName());
@@ -55,6 +55,12 @@ public class PoiService {
         this.coordinateRepository.delete(toDelete);
     }
 
+    /**
+     * Delete a point of interest from the db
+     * @param toDelete the point of interest
+     * @throws NullPointerException if toDelete is null
+     * @throws IllegalArgumentException if any of the default itineraries has this point of interest in it
+     */
     public void deletePoi(PointOfInterestNode toDelete) throws NullPointerException,IllegalArgumentException{
         if(Objects.isNull(toDelete)) throw new NullPointerException("poi not available");
         log.info("toDelete {}",toDelete);
@@ -68,8 +74,6 @@ public class PoiService {
         log.info("All itineraries with poi name: {} deleted",toDelete.getName());
         cityToSave.getPointOfInterests().remove(toDelete);
         this.cityRepository.save(cityToSave);
-        //eliminare tutti gli itinerari che contengono il poi da eliminare;
-        // lo stesso per le richieste;
         log.info("citta salvata");
         log.info("coordinate id {}",toDelete.getCoordinate().getId());
         log.info("timeslot id {}",toDelete.getHours().toString());
@@ -87,30 +91,25 @@ public class PoiService {
         log.info("eliminato");
     }
 
+    /**
+     * Find a point of interest given its id
+     * @param id the id of the point of interest
+     * @return the point of interest or null if not found
+     */
     public PointOfInterestNode findPoiById(Long id){
         return this.pointOfIntRepository.findById(id).orElse(null);
     }
 
     /**
-     * save a PointOfInterest in a City
-     * @param where city to insert poi
-     * @param toSave poi to save
+     * Save a point of interest in a specific city
+     * @param where the city
+     * @param toSave point of interest to save
      */
     public void savePoiInACity(CityNode where,PointOfInterestNode toSave){
         where.getPointOfInterests().add(toSave);
         this.cityRepository.save(where);
     }
 
-/*    private void clearTimeSlot(TimeSlot timeToClear) {
-        timeToClear.setMonday(new ArrayList<>());
-        timeToClear.setTuesday(new ArrayList<>());
-        timeToClear.setWednesday(new ArrayList<>());
-        timeToClear.setThursday(new ArrayList<>());
-        timeToClear.setFriday(new ArrayList<>());
-        timeToClear.setSaturday(new ArrayList<>());
-        timeToClear.setSunday(new ArrayList<>());
-        this.timeSlotRepository.save(timeToClear);
-    }*/
 
     private TimeSlot copyTimeSlot(TimeSlot toCopy){
         TimeSlot timeSlot = new TimeSlot(toCopy.getMonday(),toCopy.getTuesday(),toCopy.getWednesday(),toCopy.getThursday(),
@@ -150,9 +149,9 @@ public class PoiService {
     }
 
     /**
-     * Create a Poi from a Poi Request
-     * @param request from get paramaeters to create poi
-     * @return created poi
+     * Create a point of interest from a point of interest request
+     * @param request the point of interest request
+     * @return the point of interest created
      */
     public PointOfInterestNode createPoiFromRequest(PoiRequestNode request){
         PointOfInterestNode result = new PointOfInterestNode(request.getName(),request.getDescription(),
@@ -167,10 +166,9 @@ public class PoiService {
     }
 
     /**
-     * modifies Poi parameters from a request
-     * @param request to get modifies
+     * Modifies point of interest parameters from a request
+     * @param request the point of interest request
      */
-    //FIXME: rivedere metodo perche crea nuovi nodi
     public void modifyPoiFromRequest(PoiRequestNode request){
         PointOfInterestNode result = request.getPointOfInterestNode();
         result.getHours().setMonday(request.getHours().getMonday());
@@ -205,12 +203,10 @@ public class PoiService {
     }
 
     /**
-     * create a PointOfInterestNode from a body request
-     *
-     * @param bodyFrom body request
-     * @return PointOfInterestNode just created
+     * Create a point of interest from a body
+     * @param bodyFrom body of the http request that contains values
+     * @return the point of interest created
      */
-    //TODO:stiamo modificando
     public PointOfInterestNode createPoiFromBody(Map<String, Object> bodyFrom) {
         PointOfInterestNode result = new PointOfInterestNode();
         String username = (String) bodyFrom.get("username");
@@ -239,8 +235,8 @@ public class PoiService {
         TimeSlot timeSlot = this.utilityService.getTimeSlotFromBody(new TimeSlot(),bodyFrom);
         result.setHours(timeSlot);
         Collection<PoiType> poiTypes = ((Collection<String>) bodyFrom.get("types")).stream()
-                .filter(a -> poiTypeRepository.findById(a).isPresent())
-                .map(a -> poiTypeRepository.findById(a).get())
+                .filter(a -> poiTypeRepository.findByName(a).isPresent())
+                .map(a -> poiTypeRepository.findByName(a).get())
                 .collect(Collectors.toList());
         result.setTypes(poiTypes);
         result.getTagValues().addAll(this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags")));
@@ -259,12 +255,10 @@ public class PoiService {
     }
 
     /**
-     * modify a PointOfInterestNode with params contained in a body request
-     *
-     * @param poiToModify PointOfInterestNode to modify
-     * @param bodyFrom    body request contained values to set
+     * Modify a point of interest with parameters contained in a body
+     * @param poiToModify point of interest to modify
+     * @param bodyFrom body of the http request that contains values
      */
-    //TODO: modificare solo quello che cambia dal body
     public void modifyPoiFromBody(PointOfInterestNode poiToModify, Map<String, Object> bodyFrom) {
         String username = (String) bodyFrom.get("username");
         if(!Objects.isNull(username)) poiToModify.getContributors().add(username);
@@ -287,8 +281,8 @@ public class PoiService {
         this.clearTimeSlot(poiToModify.getHours());
         this.utilityService.getTimeSlotFromBody(poiToModify.getHours(),bodyFrom);
         Collection<PoiType> poiTypes = ((Collection<String>) bodyFrom.get("types")).stream()
-                .filter(a -> this.poiTypeRepository.findById(a).isPresent())
-                .map(a -> this.poiTypeRepository.findById(a).get())
+                .filter(a -> this.poiTypeRepository.findByName(a).isPresent())
+                .map(a -> this.poiTypeRepository.findByName(a).get())
                 .collect(Collectors.toList());
         poiToModify.setTypes(poiTypes);
         poiToModify.getTagValues().clear();

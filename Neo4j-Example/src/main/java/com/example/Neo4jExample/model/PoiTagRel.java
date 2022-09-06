@@ -6,6 +6,10 @@ import org.springframework.data.neo4j.core.schema.RelationshipId;
 import org.springframework.data.neo4j.core.schema.RelationshipProperties;
 import org.springframework.data.neo4j.core.schema.TargetNode;
 
+/**
+ * Represents a relationship between a point of interest and a tag,
+ * saving the value the tag would assume with this point of interest
+ */
 @RelationshipProperties
 @Data
 @NoArgsConstructor

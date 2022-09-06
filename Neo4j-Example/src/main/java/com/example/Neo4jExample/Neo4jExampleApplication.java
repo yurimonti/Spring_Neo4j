@@ -19,18 +19,6 @@ public class Neo4jExampleApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(Neo4jExampleApplication.class, args);
 	}
-
-	/**
-	 * set Timer to update pois time open
-	 */
-	/*private void timerToUpdateTimeSlots(ProvaService provaService) {
-		new Timer().scheduleAtFixedRate(new TimerTask() {
-			@Override
-			public void run() {
-				provaService.updateOpenPois(new Date());
-			}
-		},0,1000*60);
-	}*/
 	@Bean
 	CommandLineRunner initDatabase(AddressRepository addressRepository, CategoryRepository categoryRepository,
 								   CityRepository cityRepository,ContactRepository contactRepository,
@@ -261,141 +249,145 @@ public class Neo4jExampleApplication {
 						localTimes.add(LocalTime.parse("20:00"));
 					}
 			);
-			TimeSlot timeSlot;
+			//TimeSlot timeSlot;
 			//fine setup TimeSlot
 
-			Coordinate pointProvaCoords;
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1392,13.0732);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Monastero di S. Chiara",
-					camerino, monastero, pointProvaCoords,orari,timeSlotRepository,contactRepository,addressRepository);
+			//Coordinate pointProvaCoords;
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1392,13.0732);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Monastero di S. Chiara",
+					camerino, monastero, new Coordinate(43.1392,13.0732),orari,timeSlotRepository,contactRepository,
+					addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1483,13.102);
-			createPoiProva2(coordinateRepository, pointOfIntRepository,
-					"Chiesa e Convento dei Cappuccini di Renacavata",camerino, monastero, pointProvaCoords,
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1483,13.102);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository,
+					"Chiesa e Convento dei Cappuccini di Renacavata",camerino, monastero,
+					new Coordinate(43.1483,13.102),
 					orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.131,13.063);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Rocca Borgesca",camerino, rocca,
-					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.131,13.063);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Rocca Borgesca",camerino, rocca,
+					new Coordinate(43.131,13.063), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1885,13.0638);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Rocca d'Ajello",camerino, rocca,
-					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1885,13.0638);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Rocca d'Ajello",camerino, rocca,
+					new Coordinate(43.1885,13.0638), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1103,13.1258);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Rocca Varano",camerino, rocca,
-					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1103,13.1258);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Rocca Varano",camerino, rocca,
+					new Coordinate(43.1103,13.1258), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1357,13.0687);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Palazzo Ducale dei Da Varano",camerino,
-					palazzo, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1357,13.0687);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Palazzo Ducale dei Da Varano",camerino,
+					palazzo, new Coordinate(43.1357,13.0687), orari, timeSlotRepository, contactRepository,
+					addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1373,13.0724);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Tempio dell'Annunziata",camerino, tempio,
-					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1373,13.0724);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Tempio dell'Annunziata",camerino, tempio,
+					new Coordinate(43.1373,13.0724), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1369,13.0671);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Area di sosta di Via Macario Muzio",
-					camerino, sostaMacchine, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1369,13.0671);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Area di sosta di Via Macario Muzio",
+					camerino, sostaMacchine, new Coordinate(43.1369,13.0671), orari, timeSlotRepository,
+					contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1393,13.0727);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Chiesa di S. Chiara",camerino, chiesa,
-					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1393,13.0727);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Chiesa di S. Chiara",camerino, chiesa,
+					new Coordinate(43.1393,13.0727), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1358,13.0684);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Cattedrale di Santa Maria Annunziata",
-					camerino, cattedrale, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1358,13.0684);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Cattedrale di Santa Maria Annunziata",
+					camerino, cattedrale, new Coordinate(43.1358,13.0684), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1347,13.0647);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Chiesa di S. Filippo Neri",camerino,
-					chiesa, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1347,13.0647);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Chiesa di S. Filippo Neri",camerino,
+					chiesa, new Coordinate(43.1347,13.0647), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1319,13.0638);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Santuario di S. Maria in Via",camerino,
-					santuario, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1319,13.0638);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Santuario di S. Maria in Via",camerino,
+					santuario, new Coordinate(43.1319,13.0638), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1377,13.0736);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Basilica di S. Venanzio Martire",camerino,
-					basilica, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1377,13.0736);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Basilica di S. Venanzio Martire",camerino,
+					basilica, new Coordinate(43.1377,13.0736), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1468,13.1303);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Santuario Maria Madre della Misericordia",
-					camerino, santuario, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1468,13.1303);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Santuario Maria Madre della Misericordia",
+					camerino, santuario, new Coordinate(43.1468,13.1303), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.0911,13.1165);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Lago di Polverina",camerino, lago,
-					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.0911,13.1165);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Lago di Polverina",camerino, lago,
+					new Coordinate(43.0911,13.1165), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.136,13.0692);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Biblioteca comunale Valentiniana",
-					camerino, biblioteca, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.136,13.0692);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Biblioteca comunale Valentiniana",
+					camerino, biblioteca, new Coordinate(43.136,13.0692), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
-					orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
-			pointProvaCoords = new Coordinate(43.1658,13.0584);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Mulino Bottacchiari",camerino, mulino,
-					pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//timeSlot = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
+			//		orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
+			//pointProvaCoords = new Coordinate(43.1658,13.0584);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Mulino Bottacchiari",camerino, mulino,
+					new Coordinate(43.1658,13.0584), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			pointProvaCoords = new Coordinate(43.1362,13.07);
-			createPoiProva2(coordinateRepository, pointOfIntRepository,
-					"Orto Botanico Carmela Cortini Università di Camerino",camerino, museo, pointProvaCoords,
+			//pointProvaCoords = new Coordinate(43.1362,13.07);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository,
+					"Orto Botanico Carmela Cortini Università di Camerino",camerino, museo, new Coordinate(43.1362,13.07),
 					orari, timeSlotRepository, contactRepository, addressRepository);
 
-			pointProvaCoords = new Coordinate(43.1377,13.0713);
-			createPoiProva2(coordinateRepository, pointOfIntRepository,
+			//pointProvaCoords = new Coordinate(43.1377,13.0713);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository,
 					"Polo museale di S. Domenico - Museo civico e archeologico – Pinacoteca civica Girolamo di Giovanni",
-					camerino, museo, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+					camerino, museo, new Coordinate(43.1377,13.0713), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			pointProvaCoords = new Coordinate(43.1353,13.067);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Teatro Filippo Marchetti",camerino,
-					teatro, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//pointProvaCoords = new Coordinate(43.1353,13.067);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Teatro Filippo Marchetti",camerino,
+					teatro, new Coordinate(43.1353,13.067), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			pointProvaCoords = new Coordinate(43.1885,13.0638);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Giardini della Rocca d'Ajello",camerino,
-					giardino, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//pointProvaCoords = new Coordinate(43.1885,13.0638);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Giardini della Rocca d'Ajello",camerino,
+					giardino, new Coordinate(43.1885,13.0638), orari, timeSlotRepository, contactRepository, addressRepository);
 
-			pointProvaCoords = new Coordinate(43.1358,13.0698);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "Orto botanico di Camerino",camerino,
-					giardino, pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//pointProvaCoords = new Coordinate(43.1358,13.0698);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "Orto botanico di Camerino",camerino,
+					giardino, new Coordinate(43.1358,13.0698), orari, timeSlotRepository, contactRepository, addressRepository);
 
 
 			cityRepository.save(camerino);
 
-			pointProvaCoords = new Coordinate(43.2104315,13.0526301);
-			createPoiProva2(coordinateRepository, pointOfIntRepository, "PalaSport Castel Raimondo",castelRaimondo,
-					palazzo,pointProvaCoords, orari, timeSlotRepository, contactRepository, addressRepository);
+			//pointProvaCoords = new Coordinate(43.2104315,13.0526301);
+			this.createPoiProva(coordinateRepository, pointOfIntRepository, "PalaSport Castel Raimondo",castelRaimondo,
+					palazzo, new Coordinate(43.2104315,13.0526301), orari, timeSlotRepository, contactRepository, addressRepository);
 			cityRepository.save(castelRaimondo);
 
 			//------------------- Fine Creazione Poi --------------------
@@ -427,39 +419,39 @@ public class Neo4jExampleApplication {
 		};
 	}
 
-	public void createPoiProva2(CoordinateRepository coordinateRepository, PointOfIntRepository pointOfIntRepository,
-								String nome, CityNode camerino, PoiType type, Coordinate coordinate,
-								Map<String, Collection<LocalTime>> orari, TimeSlotRepository timeSlotRepository,
-								ContactRepository contactRepository, AddressRepository addressRepository){
+	public void createPoiProva(CoordinateRepository coordinateRepository, PointOfIntRepository pointOfIntRepository,
+							   String nome, CityNode city, PoiType type, Coordinate coordinate,
+							   Map<String, Collection<LocalTime>> orari, TimeSlotRepository timeSlotRepository,
+							   ContactRepository contactRepository, AddressRepository addressRepository){
 
-		PointOfInterestNode pointProva = new PointOfInterestNode(nome, "prova prova, 1,2,3, prova");
 		coordinateRepository.save(coordinate);
-		pointProva.setCoordinate(coordinate);
-
 		Contact contact = new Contact("asdf@asdf.com","1234567890","nonSoComeSiScriveUnFax");
 		contactRepository.save(contact);
-		pointProva.setContact(contact);
-
 		Address address = new Address("via Qualcosa",6);
 		addressRepository.save(address);
-		pointProva.setAddress(address);
-
-		pointProva.setTicketPrice(0.0);
-		pointProva.setTimeToVisit(20.0);
-
-
-		pointProva.getTypes().add(type);
-		for(TagNode tag : type.getTags()){
-			PoiTagRel poiTagRel = new PoiTagRel(tag);
-			poiTagRel.setBooleanValue(tag.getIsBooleanType());
-			pointProva.getTagValues().add(poiTagRel);
-		}
-
 		TimeSlot hours = new TimeSlot(orari.get("Monday"),orari.get("Tuesday"),orari.get("Wednesday"),
 				orari.get("Thursday"),orari.get("Friday"),orari.get("Saturday"),orari.get("Sunday"));
 		timeSlotRepository.save(hours);
-		pointProva.setHours(hours);
+
+		/*PointOfInterestNode pointProva = new PointOfInterestNode(nome, "prova prova, 1,2,3, prova");
+
+		pointProva.setCoordinate(coordinate);
+		pointProva.setContact(contact);
+		pointProva.setAddress(address);
+		pointProva.setTicketPrice(0.0);
+		pointProva.setTimeToVisit(20.0);
+		pointProva.getTypes().add(type);
+		pointProva.setHours(hours);*/
+		PointOfInterestNode pointProva = new PointOfInterestNode(nome, "prova prova, 1,2,3, prova",coordinate,address,
+				hours,20.0,0.0,contact,type);
+		for(TagNode tag : type.getTags()){
+			PoiTagRel poiTagRel = new PoiTagRel(tag);
+			if(tag.getIsBooleanType())poiTagRel.setBooleanValue(true);
+			else poiTagRel.setStringValue("");
+			pointProva.getTagValues().add(poiTagRel);
+		}
 		pointOfIntRepository.save(pointProva);
-		camerino.getPointOfInterests().add(pointProva);
+		city.getPointOfInterests().add(pointProva);
+
 	}
 }

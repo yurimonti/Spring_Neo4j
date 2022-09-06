@@ -4,6 +4,9 @@ import com.example.Neo4jExample.model.Coordinate;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Represents a data transfer object for the class Coordinate
+ */
 @Data
 @NoArgsConstructor
 public class CoordinateDTO {

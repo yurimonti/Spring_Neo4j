@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Represents a data transfer object for the class PoiType
+ */
 @Data
 @NoArgsConstructor
 public class PoiTypeDTO {
