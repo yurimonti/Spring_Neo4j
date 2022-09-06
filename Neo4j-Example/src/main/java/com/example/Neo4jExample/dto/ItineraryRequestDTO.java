@@ -1,8 +1,6 @@
 package com.example.Neo4jExample.dto;
 
-import com.example.Neo4jExample.model.CityNode;
 import com.example.Neo4jExample.model.ItineraryRequestNode;
-import com.example.Neo4jExample.model.PointOfInterestNode;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -11,6 +9,9 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a data transfer object for the class ItineraryRequestNode
+ */
 @Data
 public class ItineraryRequestDTO {
     private Long id;

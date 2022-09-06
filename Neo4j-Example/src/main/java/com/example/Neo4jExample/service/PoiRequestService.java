@@ -7,10 +7,8 @@ import com.example.Neo4jExample.service.util.MySerializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -29,20 +27,20 @@ public class PoiRequestService {
     private final PointOfIntRepository pointOfIntRepository;
     private final MySerializer<CityDTO> cityDTOMySerializer;
 
-    public void saveRequestByItsPoi(Long poiId){
-        List<PoiRequestNode> requestsToSave = this.getFilteredRequests(r -> r.getPointOfInterestNode().getId()
-                .equals(poiId)).stream().toList();
-        this.poiRequestRepository.saveAll(requestsToSave);
-    }
-
+    /**
+     * Save a point of interest request
+     * @param toSave the request to save
+     */
     public void saveRequest(PoiRequestNode toSave){
         this.poiRequestRepository.save(toSave);
     }
 
-    //create a basic request without some data, like city and poi
-    //TODO: rivedere perché non funziona tag values ecc
+    /**
+     * Create a point of interest request from a body
+     * @param bodyFrom body of the http request that contains values
+     * @return the new point of interest request
+     */
     private PoiRequestNode getBasicRequestFromBody(Map<String, Object> bodyFrom) {
-        //PoiRequestNode poiRequestNode = new PoiRequestNode();
         String username = this.utilityService.getValueFromBody("username", bodyFrom);
         String name = this.utilityService.getValueFromBody("name", bodyFrom);
         String description = this.utilityService.getValueFromBody("description", bodyFrom);
@@ -65,16 +63,6 @@ public class PoiRequestService {
         Collection<PoiTagRel> tagRels = this.utilityService.createPoiTagRel((Collection<Map<String, Object>>) bodyFrom.get("tags"));
         PoiRequestNode poiRequestNode = new PoiRequestNode(name,description,coordinate,timeSlot,timeToVisit,address,
                 ticketPrice,username,poiTypes,contact,tagRels);
-        /*poiRequestNode.setUsername(username);
-        poiRequestNode.setName(name);
-        poiRequestNode.setDescription(description);
-        poiRequestNode.setCoordinate(coordinate);
-        poiRequestNode.setAddress(address);
-        poiRequestNode.setContact(contact);
-        poiRequestNode.setTimeToVisit(timeToVisit);
-        poiRequestNode.setTicketPrice(ticketPrice);
-        poiRequestNode.setHours(timeSlot);
-        poiRequestNode.setTypes(poiTypes);*/
         log.info("tag and Value of request {}: {}",
                 poiRequestNode.getName(), tagRels.stream().map(PoiTagRel::getBooleanValue).toList());
         poiRequestNode.getTagValues().addAll(tagRels);
@@ -84,9 +72,9 @@ public class PoiRequestService {
     }
 
     /**
-     * set poi to target request
-     * @param target to set poi
-     * @param toSet poi to set
+     * Set a point of interest to the target request
+     * @param target point of interest request
+     * @param toSet point of interest to set
      */
     public void setPoiToRequest(PoiRequestNode target, PointOfInterestNode toSet){
         target.setPointOfInterestNode(toSet);
@@ -94,8 +82,8 @@ public class PoiRequestService {
     }
 
     /**
-     * set request to accepted or rejected
-     * @param target to set
+     * Set request to accepted or rejected
+     * @param target point of interest request
      * @param toSet value to set
      */
     public void changeStatusToRequest(PoiRequestNode target,boolean toSet){
@@ -104,9 +92,9 @@ public class PoiRequestService {
     }
 
     /**
-     * create an Add Request of Poi from http body request
-     * @param bodyFrom http body where get values
-     * @return Request created
+     * Create an add point of interest request from body
+     * @param bodyFrom body of the http request that contains values
+     * @return point of interest request created
      */
     public PoiRequestNode createAddRequestFromBody(Map<String, Object> bodyFrom) {
         CityDTO cityDto = this.cityDTOMySerializer.deserialize(
@@ -119,12 +107,12 @@ public class PoiRequestService {
     }
 
     /**
-     * create a Modify Request of Poi from http body request
-     * @param bodyFrom http body where get values
-     * @return Request created
+     * Create a modify point of interest request from body
+     * @param bodyFrom body of the http request that contains values
+     * @return the point of interest request created
+     * @throws NullPointerException if the point of interest is not found in the body
      */
     public PoiRequestNode createModifyRequestFromBody(Map<String, Object> bodyFrom)throws NullPointerException{
-        //da rivedere....
         String poi = this.utilityService.getValueFromBody("poi",bodyFrom);
         log.info("poiId: {}",poi);
         if(Objects.isNull(poi)) throw new NullPointerException("null value");
@@ -144,18 +132,18 @@ public class PoiRequestService {
     }
 
     /**
-     * filter requests with a certain filter
-     * @param filter applicated to
-     * @return Requests filtered
+     * Get a collection of point of interest requests with a certain filter
+     * @param filter the filter to apply
+     * @return a collection of requests filtered
      */
     public Collection<PoiRequestNode> getFilteredRequests(Predicate<PoiRequestNode> filter){
         return this.poiRequestRepository.findAll().stream().filter(filter).toList();
     }
 
     /**
-     * find and return a request by id if is present
-     * @param id of request
-     * @return request by id
+     * Get a point of interest request by its id
+     * @param id id of the request
+     * @return the request if present, null otherwise
      */
     public PoiRequestNode findRequestById(Long id) {
         if (this.poiRequestRepository.findById(id).isPresent()) return this.poiRequestRepository.findById(id).get();

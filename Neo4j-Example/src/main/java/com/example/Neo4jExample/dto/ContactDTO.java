@@ -3,6 +3,9 @@ package com.example.Neo4jExample.dto;
 import com.example.Neo4jExample.model.Contact;
 import lombok.Data;
 
+/**
+ * Represents a data transfer object for the class Contact
+ */
 @Data
 public class ContactDTO {
     private Long id;

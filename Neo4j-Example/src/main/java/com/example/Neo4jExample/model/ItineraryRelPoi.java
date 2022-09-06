@@ -6,6 +6,11 @@ import org.springframework.data.neo4j.core.schema.RelationshipId;
 import org.springframework.data.neo4j.core.schema.RelationshipProperties;
 import org.springframework.data.neo4j.core.schema.TargetNode;
 
+/**
+ * Represents a relationship between an itinerary and
+ * a point of interest contained in it, saving a value to know the position of it
+ * considering the others
+ */
 @RelationshipProperties
 @Data
 @NoArgsConstructor

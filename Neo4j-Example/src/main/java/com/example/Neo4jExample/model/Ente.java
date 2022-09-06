@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
+/**
+ * Represents an ente
+ */
 @NoArgsConstructor
 @Data
 @Node

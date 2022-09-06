@@ -9,6 +9,9 @@ import org.springframework.data.neo4j.core.schema.Node;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Represents a classic user
+ */
 @Node
 @Data
 @NoArgsConstructor

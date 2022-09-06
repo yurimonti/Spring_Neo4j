@@ -11,6 +11,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Represents a point of interest request
+ */
 @Data
 @Node
 public class PoiRequestNode {

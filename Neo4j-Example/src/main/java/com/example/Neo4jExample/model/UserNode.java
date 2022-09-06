@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * Represents a generic user
+ */
 @Node
 @Data
 public class UserNode {

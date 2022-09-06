@@ -7,6 +7,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Represents a data transfer object for the class PointOfInterestNode
+ */
 @Data
 public class PoiDTO {
     private Long id;

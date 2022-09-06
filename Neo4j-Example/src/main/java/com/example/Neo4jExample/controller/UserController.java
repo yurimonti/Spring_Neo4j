@@ -7,16 +7,13 @@ import com.example.Neo4jExample.dto.PoiRequestDTO;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import com.example.Neo4jExample.service.*;
-import com.example.Neo4jExample.service.util.MySerializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
@@ -31,24 +28,13 @@ public class UserController {
     private final PoiRequestService poiRequestService;
     private final CityRepository cityRepository;
     private final ItineraryService itineraryService;
-    //TODO:cancellare
-    /*private final PoiRequestRepository poiRequestRepository;
-    private final ContactRepository contactRepository;
-    private final PoiTypeRepository poiTypeRepository;
-    private final PointOfIntRepository pointOfIntRepository;
-    private final CoordinateRepository coordinateRepository;
-    private final AddressRepository addressRepository;
-    private final TimeSlotRepository timeSlotRepository;
-    private final TagRepository tagRepository;*/
-    //fine cancellazione
     private final PoiService poiService;
     private final UtilityService utilityService;
 
     /**
-     * create a Modify Request for a poi
-     *
-     * @param body http request
-     * @return Modify Request
+     * Create a modify request for a poi
+     * @param body body of the http request that contains values
+     * @return the request if created, BAD REQUEST otherwise
      */
     @PostMapping("/modifyPoi")
     public ResponseEntity<PoiRequestNode> modifyPoi(@RequestBody Map<String, Object> body) {
@@ -64,80 +50,11 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
     }
-   /* @PostMapping("/modifyPoi")
-    public ResponseEntity<PoiRequestNode> modifyPoi(@RequestBody Map<String, Object> body) {
-        List<PoiType> types = this.poiTypeRepository.findAll();
-        types.forEach(t -> log.info("type {}", t.getName()));
-        String poi = (String)body.get("poi");
-        log.info("poiId: {}",poi);
-        if(Objects.isNull(poi)) return ResponseEntity.notFound().build();
-        PointOfInterestNode pointOfInterestNode = this.pointOfIntRepository.findById(Long.parseLong(poi)).orElse(null);
-        if(Objects.isNull(pointOfInterestNode)) return ResponseEntity.notFound().build();
-        CityNode city = this.cityRepository.findAll().stream()
-                .filter(c -> c.getPointOfInterests().stream().map(PointOfInterestNode::getId).toList()
-                        .contains(pointOfInterestNode.getId()))
-                .findFirst().orElse(null);
-        if(Objects.isNull(city)) return ResponseEntity.notFound().build();
-        String username = (String)body.get("username");
-        String name = (String)body.get("name");
-        String description = (String)body.get("description");
-        Coordinate coordinate = new Coordinate(Double.parseDouble((String)body.get("lat")),
-                Double.parseDouble((String)body.get("lon")));
-        this.coordinateRepository.save(coordinate);
-        String street = (String)body.get("street");
-        Integer number = Integer.parseInt((String)body.get("number"));
-        Address address = new Address(street, number);
-        this.addressRepository.save(address);
-        Contact contact = new Contact((String)body.get("email"),(String)body.get("phone"),(String)body.get("fax"));
-        this.contactRepository.save(contact);
-        Double timeToVisit = Double.parseDouble((String)body.get("timeToVisit"));
-        Double ticketPrice = Double.parseDouble((String)body.get("price"));
-        Collection<String> monday = (Collection<String>) body.get("monday");
-        Collection<String> tuesday = (Collection<String>) body.get("tuesday");
-        Collection<String> wednesday = (Collection<String>) body.get("wednesday");
-        Collection<String> thursday = (Collection<String>) body.get("thursday");
-        Collection<String> friday = (Collection<String>) body.get("friday");
-        Collection<String> saturday = (Collection<String>) body.get("saturday");
-        Collection<String> sunday = (Collection<String>) body.get("sunday");
-        TimeSlot timeSlot = new TimeSlot(monday.stream().map(LocalTime::parse).toList(),
-                tuesday.stream().map(LocalTime::parse).toList(),wednesday.stream().map(LocalTime::parse).toList(),
-                thursday.stream().map(LocalTime::parse).toList(),friday.stream().map(LocalTime::parse).toList(),
-                saturday.stream().map(LocalTime::parse).toList(),sunday.stream().map(LocalTime::parse).toList());
-        this.timeSlotRepository.save(timeSlot);
-        *//*TimeSlot timeSlot = this.utilityService.getTimeSlotFromBody(new TimeSlot(),body);*//*
-        Collection<PoiType> poiTypes = ((Collection<String>) body.get("types")).stream()
-                .filter(a -> this.poiTypeRepository.findByName(a).isPresent())
-                .map(a -> this.poiTypeRepository.findByName(a).get())
-                .collect(Collectors.toList());
-        log.info("types: {}",poiTypes);
-        PoiRequestNode poiRequestNode = new PoiRequestNode(name,description,coordinate,timeSlot,timeToVisit,address,
-                ticketPrice,username,poiTypes,contact);
-        for (Map<String, Object> map : ((Collection<Map<String, Object>>) body.get("tags"))) {
-            String tag = (String) map.get("tag");
-            TagNode tagNode = this.tagRepository.findByName(tag).orElse(null);
-            if (!Objects.isNull(tagNode)) {
-                PoiTagRel poiTagRel = new PoiTagRel(tagNode);
-                if (tagNode.getIsBooleanType()) {
-                    poiTagRel.setBooleanValue((Boolean) map.get("value"));
-                } else poiTagRel.setStringValue((String) map.get("value"));
-                log.info("poiTagRel: {}",poiTagRel);
-                poiRequestNode.getTagValues().add(poiTagRel);
-            }
-        }
-        log.info("tag and Value of request {}: {}",poiRequestNode.getName(), poiRequestNode.getTagValues());
-        log.info("Basic Request {}",poiRequestNode.getName());
-        poiRequestNode.setPointOfInterestNode(pointOfInterestNode);
-        poiRequestNode.setCity(city);
-        this.poiRequestRepository.save(poiRequestNode);
-        log.info("{}",poiRequestNode.getTagValues());
-        return ResponseEntity.ok(poiRequestNode);
-    }*/
 
     /**
-     * create an Add Request of a poi
-     *
-     * @param body http request
-     * @return Add Request
+     * Create an add request for a poi
+     * @param body body of the http request that contains values
+     * @return the request if created, BAD REQUEST otherwise
      */
     @PostMapping("/addPoi")
     public ResponseEntity<PoiRequestNode> addPoi(@RequestBody Map<String, Object> body) {
@@ -147,10 +64,9 @@ public class UserController {
     }
 
     /**
-     * get all user's requests
-     *
-     * @param username of user
-     * @return all requests
+     * Get all the user's requests given the username of the user
+     * @param username username of user
+     * @return a collection with all the requests of the user as DTOs
      */
     @GetMapping("/notifies")
     public ResponseEntity<Collection<PoiRequestDTO>> getUserRequests(@RequestParam String username) {
@@ -163,11 +79,10 @@ public class UserController {
     }
 
     /**
-     * get all city's itinerary
-     *
-     * @param username who calls this api
-     * @param cityId   id of city
-     * @return all itineraries of this city
+     * Get all the itineraries of a specific city
+     * @param username username of the user
+     * @param cityId id of the city
+     * @return a collection of itineraries of a specific city as DTOs
      */
     @GetMapping("/itinerary")
     public ResponseEntity<Collection<ItineraryDTO>> getItineries(@RequestParam String username, @RequestParam Long cityId) {
@@ -180,6 +95,11 @@ public class UserController {
                 .map(ItineraryDTO::new).toList());
     }
 
+    /**
+     * Get all the itineraries of a user
+     * @param username username of the user
+     * @return NOT FOUND if the user is not found, a collection of itineraries as DTOs otherwise
+     */
     @GetMapping("/itinerary/owner")
     public ResponseEntity<Collection<ItineraryDTO>> getOwnedItineries(@RequestParam String username) {
         ClassicUserNode user = this.userService.getClassicUserFromUser(username);
@@ -187,7 +107,13 @@ public class UserController {
         return ResponseEntity.ok(user.getItineraries().stream().map(ItineraryDTO::new).toList());
     }
 
-    //FIXME: vedere perche se accetta non compaiono i pois
+    /**
+     * Create a request itinerary for the ente using an itinerary of the user
+     * @param username username of the user
+     * @param id id of the itinerary
+     * @return the new itinerary request as a DTO, INTERNAL SERVER ERROR if the request is not created,
+     * NOT FOUND if the user or the itinerary is not found
+     */
     @PostMapping("/itinerary/owner")
     public ResponseEntity<ItineraryRequestDTO> createUserRequestItinerary(@RequestParam String username, @RequestParam Long id){
         ClassicUserNode user = this.userService.getClassicUserFromUser(username);
@@ -200,6 +126,13 @@ public class UserController {
         return ResponseEntity.ok(new ItineraryRequestDTO(result));
     }
 
+    /**
+     * Create an itinerary with a username of a user and a body
+     * @param username username of the user who is trying to create the itinerary
+     * @param body body of the http request that contains values
+     * @return FORBIDDEN if the user is not found, INTERNAL SERVER ERROR if the itinerary is not created,
+     * CREATED if the itinerary is created
+     */
     @PostMapping("/itinerary")
     public HttpStatus createItinerary(@RequestParam String username,
                                       @RequestBody Map<String, Object> body) {
@@ -220,6 +153,13 @@ public class UserController {
         return HttpStatus.CREATED;
     }
 
+    /**
+     * Delete an itinerary own by the user given its id
+     * @param itineraryId id of the itinerary
+     * @param username username of the user that own the itinerary
+     * @return OK if the itinerary is deleted, FORBIDDEN if the user is not the owner or the itinerary is a default one,
+     * NOT FOUND if the user or the itinerary is not found
+     */
     @DeleteMapping("/itinerary")
     public ResponseEntity<HttpStatus> deleteItinerary(@RequestParam Long itineraryId, @RequestParam String username) {
         ClassicUserNode user = this.userService.getClassicUserFromUser(username);

@@ -14,6 +14,9 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Represents an itinerary
+ */
 @Node
 @Data
 public class ItineraryNode {

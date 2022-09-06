@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
+/**
+ * Represents a data transfer object for the class PoiRequestNode
+ */
 @Data
 @NoArgsConstructor
 public class PoiRequestDTO {
@@ -42,7 +45,6 @@ public class PoiRequestDTO {
         else this.status = StatusEnum.REJECTED;
     }
 
-    //TODO:aggiungere su ogni Request gli attributi mancanti
     public PoiRequestDTO(PoiRequestNode poiRequestNode) {
         this.id = poiRequestNode.getId();
         this.name = poiRequestNode.getName();

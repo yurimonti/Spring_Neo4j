@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * Represents a menu
+ */
 @Data
 @Node
 public class MenuNode {

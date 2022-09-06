@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * Represents a point of interest
+ */
 @Data
 @Node
 public class PointOfInterestNode {

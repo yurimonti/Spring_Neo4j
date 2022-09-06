@@ -1,6 +1,5 @@
 package com.example.Neo4jExample.model;
 
-//import com.example.Neo4jExample.model.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
@@ -11,6 +10,9 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * Represents a type of point of interest
+ */
 @Node
 @NoArgsConstructor
 @Data
