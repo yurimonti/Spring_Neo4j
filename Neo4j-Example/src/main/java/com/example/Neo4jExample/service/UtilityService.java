@@ -208,7 +208,6 @@ public class UtilityService {
         poi.getHours().setIsOpen(toSet);
         this.timeSlotRepository.save(poi.getHours());
         this.pointOfIntRepository.save(poi);
-        this.itineraryService.updateItinerariesByPoiModify(poi);
     }
 
     /**

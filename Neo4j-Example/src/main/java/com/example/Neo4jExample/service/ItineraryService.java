@@ -20,10 +20,6 @@ public class ItineraryService {
     private final ItineraryRepository itineraryRepository;
     private final ItineraryRequestRepository itineraryRequestRepository;
     private final UserService userService;
-
-    private final CityRepository cityRepository;
-
-
     private void setTimeToVisit(ItineraryNode result, Collection<PointOfInterestNode> pois) {
         result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum) * 60);
     }
@@ -58,14 +54,12 @@ public class ItineraryService {
      * @param poi the modified point of interest
      */
     public void updateItinerariesByPoiModify(PointOfInterestNode poi) {
-        Collection<ItineraryNode> toModify = this.itineraryRepository.findAll().stream()
-                .filter(it -> it.getPoints().stream().map(ItineraryRelPoi::getPoi).toList()
-                .contains(poi)).toList();
-
+        Collection<ItineraryNode> toModify = this.itineraryRepository.findAll().stream().filter(it -> it.getPoints()
+                .stream().map(i -> i.getPoi().getId()).toList()
+                .contains(poi.getId())).toList();
         toModify.forEach(it -> setTimeToVisit(it, it.getPoints().stream().map(ItineraryRelPoi::getPoi).toList()));
         this.itineraryRepository.saveAll(toModify);
     }
-
 
     /**
      * Find a request by id if present

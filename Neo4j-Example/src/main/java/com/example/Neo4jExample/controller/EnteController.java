@@ -99,7 +99,6 @@ public class EnteController {
      * @param body body of the http request that contains values
      * @return the point of interest modified
      */
-    //TODO controllare il doc rispetto al metodo
     @PostMapping("/notifies/modify")
     public ResponseEntity<PointOfInterestNode> setRequestTo(@RequestParam Long id, @RequestParam String username,
                                                             @RequestBody Map<String, Object> body) {
@@ -134,9 +133,9 @@ public class EnteController {
         Ente ente = this.getEnteFromUsername(username);
         PointOfInterestNode toModify = this.poiService.findPoiById(id);
         if (Objects.isNull(ente) || Objects.isNull(toModify)) return ResponseEntity.notFound().build();
-        log.info("Poi before modifying {}", toModify);
+        log.info("Poi before modifying {}", toModify.getName());
         this.poiService.modifyPoiFromBody(toModify, body);
-        log.info("Poi after modifying {}", toModify);
+        log.info("Poi after modifying {}", toModify.getName());
         this.itineraryService.updateItinerariesByPoiModify(toModify);
         return ResponseEntity.ok(toModify);
     }

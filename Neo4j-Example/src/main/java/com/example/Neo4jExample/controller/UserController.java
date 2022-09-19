@@ -144,7 +144,6 @@ public class UserController {
         Collection<String> poiIds = (Collection<String>) body.get("poiIds");
         Collection<Long> ids = poiIds.stream().map(Long::parseLong).toList();
         log.info("poiIds: {}", ids);
-        //FIXME: errore in questa riga
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
         log.info("pois: {}", pois);
         Collection<CityNode> poiCities = pois.stream().map(PointOfInterestNode::getId)
