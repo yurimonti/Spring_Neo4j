@@ -1,18 +1,17 @@
 package com.example.Neo4jExample.service;
 
 import com.example.Neo4jExample.model.*;
+import com.example.Neo4jExample.repository.CityRepository;
 import com.example.Neo4jExample.repository.ItineraryRepository;
 import com.example.Neo4jExample.repository.ItineraryRequestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +20,8 @@ public class ItineraryService {
     private final ItineraryRepository itineraryRepository;
     private final ItineraryRequestRepository itineraryRequestRepository;
     private final UserService userService;
+
+    private final CityRepository cityRepository;
 
 
     private void setTimeToVisit(ItineraryNode result, Collection<PointOfInterestNode> pois) {
@@ -57,9 +58,10 @@ public class ItineraryService {
      * @param poi the modified point of interest
      */
     public void updateItinerariesByPoiModify(PointOfInterestNode poi) {
-        Collection<ItineraryNode> toModify = this.itineraryRepository.findAll().stream().filter(it -> it.getPoints()
-                .stream().map(ItineraryRelPoi::getPoi).toList()
+        Collection<ItineraryNode> toModify = this.itineraryRepository.findAll().stream()
+                .filter(it -> it.getPoints().stream().map(ItineraryRelPoi::getPoi).toList()
                 .contains(poi)).toList();
+
         toModify.forEach(it -> setTimeToVisit(it, it.getPoints().stream().map(ItineraryRelPoi::getPoi).toList()));
         this.itineraryRepository.saveAll(toModify);
     }

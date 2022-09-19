@@ -23,7 +23,6 @@ com/example/Neo4jExample/repository/DishNodeRepository.class
 com/example/Neo4jExample/model/CityNode.class
 com/example/Neo4jExample/repository/CategoryRepository.class
 com/example/Neo4jExample/model/Contact.class
-com/example/Neo4jExample/service/ProvaService.class
 com/example/Neo4jExample/repository/ItineraryRepository.class
 com/example/Neo4jExample/repository/UserNodeRepository.class
 com/example/Neo4jExample/model/ClassicUserNode.class
@@ -41,7 +40,6 @@ com/example/Neo4jExample/repository/PoiTypeRepository.class
 com/example/Neo4jExample/service/PoiServiceInterface.class
 com/example/Neo4jExample/repository/RestaurantPoiRepository.class
 com/example/Neo4jExample/model/UserRole.class
-com/example/Neo4jExample/service/ProvaService$1.class
 com/example/Neo4jExample/dto/PoiTagRelDTO.class
 com/example/Neo4jExample/service/util/MySerializer.class
 com/example/Neo4jExample/model/MenuNode.class

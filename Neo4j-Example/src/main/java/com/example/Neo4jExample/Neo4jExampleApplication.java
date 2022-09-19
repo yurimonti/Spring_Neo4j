@@ -2,7 +2,6 @@ package com.example.Neo4jExample;
 
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
-import com.example.Neo4jExample.service.ProvaService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,7 +27,7 @@ public class Neo4jExampleApplication {
 								   PoiTypeRepository poiTypeRepository, RestaurantPoiRepository restaurantPoiRepository,
 								   TagRepository tagRepository, TimeSlotRepository timeSlotRepository,
 								   ItineraryRepository itineraryRepo,PoiRequestRepository poiRequestRepository,
-								   ProvaService provaService,UserNodeRepository userNodeRepository,
+								   UserNodeRepository userNodeRepository,
 								   UserRoleRepository userRoleRepository,ItineraryRequestRepository itineraryRequestRepository,
 								   ClassicUserRepository classicUserRepository){
 		return args -> {

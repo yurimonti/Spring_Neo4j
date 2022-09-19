@@ -3,9 +3,7 @@ package com.example.Neo4jExample.service;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.util.ErrorPageSupport;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalTime;
@@ -125,9 +123,13 @@ public class UtilityService {
      * @return the City of the PointOfInterestNode
      */
     public CityNode getCityOfPoi(Long poiId) {
-        return this.cityRepository.findAll().stream().filter(cityNode -> cityNode.getPointOfInterests().stream()
+        PointOfInterestNode poi = this.pointOfIntRepository.findById(poiId)
+                .orElseThrow(()->new NullPointerException("Poi not found"));
+        return this.cityRepository.findAll().stream().filter(c -> c.getPointOfInterests().contains(poi))
+                .findFirst().orElseThrow(()-> new NullPointerException("No city found for this poi"));
+        /*return this.cityRepository.findAll().stream().filter(cityNode -> cityNode.getPointOfInterests().stream()
                         .map(PointOfInterestNode::getId).toList().contains(poiId))
-                .findFirst().orElse(null);
+                .findFirst().orElse(null);*/
     }
 
     /**

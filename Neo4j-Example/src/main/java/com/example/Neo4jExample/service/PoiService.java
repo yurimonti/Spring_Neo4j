@@ -97,7 +97,7 @@ public class PoiService {
      * @return the point of interest or null if not found
      */
     public PointOfInterestNode findPoiById(Long id){
-        return this.pointOfIntRepository.findById(id).orElse(null);
+        return this.pointOfIntRepository.findById(id).orElseThrow(()->new NullPointerException("Could not find point of interest for id "+ id));
     }
 
     /**
