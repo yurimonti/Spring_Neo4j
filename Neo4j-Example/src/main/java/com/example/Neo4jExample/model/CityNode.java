@@ -19,7 +19,7 @@ public class CityNode {
     @GeneratedValue
     private Long id;
     private String name;
-    @Relationship(type = "CONTAINED",direction = Relationship.Direction.INCOMING)
+    @Relationship(type = "CITY_HAS_POI",direction = Relationship.Direction.OUTGOING)
     private Collection<PointOfInterestNode> pointOfInterests;
 
     @Relationship(type = "CITY_HAS_COORDS",direction = Relationship.Direction.OUTGOING)

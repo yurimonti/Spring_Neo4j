@@ -1,13 +1,11 @@
 package com.example.Neo4jExample.service;
 
 import com.example.Neo4jExample.model.*;
-import com.example.Neo4jExample.repository.CityRepository;
 import com.example.Neo4jExample.repository.ItineraryRepository;
 import com.example.Neo4jExample.repository.ItineraryRequestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,6 +72,17 @@ public class ItineraryService {
         else return null;
     }
 
+    private void setRealCategory(ItineraryNode itineraryNode){
+        Collection<PointOfInterestNode> pointOfInterestNodes = itineraryNode.getPoints().stream()
+                .map(ItineraryRelPoi::getPoi).toList();
+        Collection<CategoryNode> categoriesNodes = new ArrayList<>();
+        Collection<PoiType> poiTypes = new ArrayList<>();
+        pointOfInterestNodes.forEach(pointOfInterestNode -> poiTypes.addAll(pointOfInterestNode.getTypes()));
+        Collection<PoiType> pois = poiTypes.stream().distinct().toList();
+        pois.forEach(poiType -> categoriesNodes.addAll(poiType.getCategories()));
+        itineraryNode.getCategories().addAll(categoriesNodes.stream().distinct().toList());
+    }
+
     /**
      * Create an itinerary
      * @param pois the points of interest contained in the itinerary
@@ -87,29 +96,38 @@ public class ItineraryService {
                                          Collection<String> geoJsonList, String createdBy, Boolean isDefault,
                                          CityNode... cities) {
         for (CityNode c : cities) {
-            log.info("pre new -> save city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
+            log.info("pre new -> save city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests()
+                    .size());
         }
-        ItineraryNode result = new ItineraryNode(name, description, this.indexedPoints(pois), geoJsonList, createdBy,
-                isDefault, cities);
+        ItineraryNode result = new ItineraryNode();
         for (CityNode c : result.getCities()) {
-            log.info("post new -> save city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
+            log.info("post new -> save city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests()
+                    .size());
         }
+        result.setName(name);
+        result.setDescription(description);
+        result.getPoints().addAll(this.indexedPoints(pois));
+        result.getGeoJsonList().addAll(geoJsonList);
+        result.setCreatedBy(createdBy);
+        result.setIsDefault(isDefault);
+        for (CityNode city : cities) {
+            result.getCities().add(city);
+        }
+        this.setRealCategory(result);
+        this.setTimeToVisit(result, pois);
+        for (CityNode c : cities) {
+            log.info("set time->city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
+        }
+        /*ItineraryNode result = new ItineraryNode(name, description, this.indexedPoints(pois), geoJsonList, createdBy,
+                isDefault, cities);*/
+
         for (CityNode c : cities) {
             log.info("pre save city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
         }
         //FIXME: problema causato da questa linea di codice
         this.itineraryRepository.save(result);
-
         for (CityNode c : cities) {
             log.info("1 save city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
-        }
-        this.setTimeToVisit(result, pois);
-        for (CityNode c : cities) {
-            log.info("set time->city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
-        }
-        this.itineraryRepository.save(result);
-        for (CityNode c : cities) {
-            log.info("post 1 save city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
         }
         log.info("itinerary : {} created",result.getName());
         return result;
@@ -179,10 +197,10 @@ public class ItineraryService {
             target.setAccepted(true);
             log.info("accepted!");
             result = this.createItineraryFromRequest(target);
-            log.info("points in itinerary accepted : {}",result.getPoints());
+            log.info("points in itinerary accepted : {}",result.getPoints().stream().map(ItineraryRelPoi::getPoi).toList());
         }
         this.itineraryRequestRepository.save(target);
-        log.info("itinerary after save it : {}",target);
+        log.info("itinerary saved : {}",target.getName());
         return result;
     }
 

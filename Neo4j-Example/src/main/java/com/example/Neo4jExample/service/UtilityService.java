@@ -139,7 +139,6 @@ public class UtilityService {
      * @return a collection of the points of interest in the db
      */
     public Collection<PointOfInterestNode> getAllPois() {
-        this.updateOpenPois(new Date());
         return pointOfIntRepository.findAll();
     }
 
