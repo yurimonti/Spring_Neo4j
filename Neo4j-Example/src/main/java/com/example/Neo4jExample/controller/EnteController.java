@@ -189,20 +189,18 @@ public class EnteController {
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
         log.info("list of pois to insert in itinerary : {}",pois.stream().map(PointOfInterestNode::getName).toList());
         //aggiunta controllo delle citta'
-        Collection<CityNode> poiCities = pois.stream().map(PointOfInterestNode::getId)
-                .map(this.utilityService::getCityOfPoi).distinct().toList();
+        Collection<CityNode> poiCities = ids.stream().map(this.utilityService::getCityOfPoi).distinct().toList();
         log.info("list of cities to insert in itinerary : {}",poiCities.stream().map(CityNode::getName).toList());
-        if (!poiCities.contains(ente.getCity())) return NOT_ACCEPTABLE;
+        if (!poiCities.stream().map(CityNode::getId).toList().contains(ente.getCity().getId()))
+            return NOT_ACCEPTABLE;
         if (poiCities.size() > 1) {
             ItineraryRequestNode result = this.itineraryService.createItineraryRequest(name,description,pois, geoJsonList,
                     ente.getUser().getUsername(), poiCities.toArray(CityNode[]::new));
-            log.info("itinerary request created : {}",result.toString());
             return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
         }
         //fine controllo
         ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
                 ente.getUser().getUsername(),true, ente.getCity());
-        log.info("itinerary created : {}",result.toString());
         return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
     }
 

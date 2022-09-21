@@ -7,8 +7,10 @@ import com.example.Neo4jExample.repository.ItineraryRequestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -80,15 +82,36 @@ public class ItineraryService {
      * @param cities a collection of cities that the itinerary passes through
      * @return the created itinerary
      */
+    //FIXME: cancella tutti i poi nelle città che non sono compresi nell'itinerario...
     public ItineraryNode createItinerary(String name, String description, Collection<PointOfInterestNode> pois,
                                          Collection<String> geoJsonList, String createdBy, Boolean isDefault,
                                          CityNode... cities) {
-        ItineraryNode result = new ItineraryNode(name, description, indexedPoints(pois), geoJsonList, createdBy, isDefault, cities);
-        log.info("itinerary without save it : {}",result);
-        setTimeToVisit(result, pois);
-        log.info("added timetovisit to itinerary : {}",result);
+        for (CityNode c : cities) {
+            log.info("pre new -> save city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
+        }
+        ItineraryNode result = new ItineraryNode(name, description, this.indexedPoints(pois), geoJsonList, createdBy,
+                isDefault, cities);
+        for (CityNode c : result.getCities()) {
+            log.info("post new -> save city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
+        }
+        for (CityNode c : cities) {
+            log.info("pre save city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
+        }
+        //FIXME: problema causato da questa linea di codice
         this.itineraryRepository.save(result);
-        log.info("itinerary after save : {}",result);
+
+        for (CityNode c : cities) {
+            log.info("1 save city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
+        }
+        this.setTimeToVisit(result, pois);
+        for (CityNode c : cities) {
+            log.info("set time->city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
+        }
+        this.itineraryRepository.save(result);
+        for (CityNode c : cities) {
+            log.info("post 1 save city: {} {} -> number of poi {}",c.getId(),c.getName(),c.getPointOfInterests().size());
+        }
+        log.info("itinerary : {} created",result.getName());
         return result;
     }
 
@@ -106,13 +129,12 @@ public class ItineraryService {
                                                        CityNode... cities) {
         ItineraryRequestNode result = new ItineraryRequestNode(name, description, this.indexedPoints(pois), geoJsonList,
                 createdBy, cities);
-        log.info("itinerary request without save it : {}",result);
         setTimeToVisit(result, pois);
-        log.info("added timetovisit to itinerary request : {}",result);
+        log.info("added timetovisit to itinerary request : {}",result.getName());
         if (this.userService.userHasRole(createdBy, "ente"))
             result.getConsensus().add(createdBy);
         this.itineraryRequestRepository.save(result);
-        log.info("itinerary request after save : {}",result);
+        log.info("itinerary saved : {}",result.getName());
         return result;
     }
 

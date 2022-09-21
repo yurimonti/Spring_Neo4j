@@ -3,7 +3,9 @@ package com.example.Neo4jExample.service;
 import com.example.Neo4jExample.model.*;
 import com.example.Neo4jExample.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalTime;
@@ -12,6 +14,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UtilityService {
     private final TagRepository tagRepository;
     private final AddressRepository addressRepository;
@@ -22,7 +25,6 @@ public class UtilityService {
     private final PointOfIntRepository pointOfIntRepository;
     private final CategoryRepository categoryRepository;
     private final PoiTypeRepository poiTypeRepository;
-    private final ItineraryService itineraryService;
 
     /**
      * Create coordinates from string values
@@ -123,13 +125,13 @@ public class UtilityService {
      * @return the City of the PointOfInterestNode
      */
     public CityNode getCityOfPoi(Long poiId) {
-        PointOfInterestNode poi = this.pointOfIntRepository.findById(poiId)
-                .orElseThrow(()->new NullPointerException("Poi not found"));
-        return this.cityRepository.findAll().stream().filter(c -> c.getPointOfInterests().contains(poi))
-                .findFirst().orElseThrow(()-> new NullPointerException("No city found for this poi"));
-        /*return this.cityRepository.findAll().stream().filter(cityNode -> cityNode.getPointOfInterests().stream()
+        /*PointOfInterestNode poi = this.pointOfIntRepository.findById(poiId)
+                .orElseThrow(()->new NullPointerException("Poi not found"));*/
+        CityNode city = this.cityRepository.findAll().stream().filter(c -> c.getPointOfInterests().stream()
                         .map(PointOfInterestNode::getId).toList().contains(poiId))
-                .findFirst().orElse(null);*/
+                .findFirst().orElseThrow(()-> new NullPointerException("No city found for this poi"));
+        log.info("city: {} {} -> number of poi {}",city.getId(),city.getName(),city.getPointOfInterests().size());
+        return city;
     }
 
     /**
@@ -137,6 +139,7 @@ public class UtilityService {
      * @return a collection of the points of interest in the db
      */
     public Collection<PointOfInterestNode> getAllPois() {
+        this.updateOpenPois(new Date());
         return pointOfIntRepository.findAll();
     }
 
@@ -162,7 +165,7 @@ public class UtilityService {
      * @return all the poi types of a collection of categories in the db
      */
     public Collection<PoiType> getPoiTypes(Collection<CategoryNode> categoriesFilter){
-        return getPoiTypes().stream().filter(t->
+        return this.getPoiTypes().stream().filter(t->
                 t.getCategories().containsAll(categoriesFilter)).toList();
     }
 

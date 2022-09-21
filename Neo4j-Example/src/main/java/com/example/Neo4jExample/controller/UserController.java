@@ -145,15 +145,18 @@ public class UserController {
         Collection<Long> ids = poiIds.stream().map(Long::parseLong).toList();
         log.info("poiIds: {}", ids);
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
-        log.info("pois: {}", pois);
-        Collection<CityNode> poiCities = pois.stream().map(PointOfInterestNode::getId)
-                .map(this.utilityService::getCityOfPoi).distinct().toList();
+        log.info("pois: {}", pois.stream().map(PointOfInterestNode::getName).toList());
+        //FIXME:
+        Collection<CityNode> poiCities = ids.stream().map(this.utilityService::getCityOfPoi).distinct().toList();
+
         log.info("list of cities: " + poiCities.stream().map(CityNode::getId).toList());
         System.out.println(poiCities.stream().map(CityDTO::new).toList());
         ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
                 user.getUser().getUsername(),false, poiCities.toArray(CityNode[]::new));
+        poiCities.forEach(city -> log.info("1 exit city: {} {} -> number of poi {}",city.getId(),city.getName(),city.getPointOfInterests().size()));
         if(Objects.isNull(result)) return HttpStatus.INTERNAL_SERVER_ERROR;
         this.userService.addItineraryToUser(user,result);
+        poiCities.forEach(city -> log.info("2 exit city: {} {} -> number of poi {}",city.getId(),city.getName(),city.getPointOfInterests().size()));
         return HttpStatus.CREATED;
     }
 
