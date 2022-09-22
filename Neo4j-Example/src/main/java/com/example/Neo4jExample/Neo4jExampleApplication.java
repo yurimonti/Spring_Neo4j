@@ -175,12 +175,12 @@ public class Neo4jExampleApplication {
 			poiTypeRepository.save(teatro);
 
 			PoiType mulino = new PoiType("Mulino");
-			mulino.getCategories().addAll(Arrays.asList(culturale,architetturale));
+			mulino.getCategories().addAll(Arrays.asList(culturale,architetturale,naturalistica));
 			mulino.getTags().addAll(Arrays.asList(tag1,tag2));
 			poiTypeRepository.save(mulino);
 
 			PoiType giardino = new PoiType("Giardino");
-			giardino.getCategories().addAll(Arrays.asList(culturale,architetturale));
+			giardino.getCategories().addAll(Arrays.asList(culturale,architetturale,naturalistica));
 			giardino.getTags().addAll(Arrays.asList(tag1,tag2));
 			poiTypeRepository.save(giardino);
 

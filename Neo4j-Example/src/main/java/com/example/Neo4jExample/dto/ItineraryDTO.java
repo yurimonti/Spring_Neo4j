@@ -44,7 +44,8 @@ public class ItineraryDTO {
         this.description = itineraryNode.getDescription();
         this.categories = itineraryNode.getCategories().stream().map(CategoryDTO::new).toList();
         this.createdBy = itineraryNode.getCreatedBy();
-        this.points = itineraryNode.getPoints().stream().map(ItineraryRelPoiDTO::new).sorted(Comparator.comparingInt(ItineraryRelPoiDTO::getIndex)).collect(Collectors.toList());
+        this.points = itineraryNode.getPoints().stream().map(ItineraryRelPoiDTO::new)
+                .sorted(Comparator.comparingInt(ItineraryRelPoiDTO::getIndex)).collect(Collectors.toList());
         this.timeToVisit = itineraryNode.getTimeToVisit();
         this.geoJsonList = itineraryNode.getGeoJsonList();
         this.cities = itineraryNode.getCities().stream().map(CityDTO::new).toList();

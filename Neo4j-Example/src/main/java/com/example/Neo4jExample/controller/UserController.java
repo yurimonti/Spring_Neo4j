@@ -104,7 +104,10 @@ public class UserController {
     public ResponseEntity<Collection<ItineraryDTO>> getOwnedItineries(@RequestParam String username) {
         ClassicUserNode user = this.userService.getClassicUserFromUser(username);
         if (Objects.isNull(user)) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(user.getItineraries().stream().map(ItineraryDTO::new).toList());
+        //FIXME: coordinate getId is null when create a dto
+        Collection<ItineraryDTO> itineraries = user.getItineraries().stream().map(ItineraryDTO::new).toList();
+        log.info("Itineraries DTO size{}", itineraries.size());
+        return ResponseEntity.ok(itineraries);
     }
 
     /**
@@ -153,6 +156,8 @@ public class UserController {
         System.out.println(poiCities.stream().map(CityDTO::new).toList());
         ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
                 user.getUser().getUsername(),false, poiCities.toArray(CityNode[]::new));
+        result.getCities().addAll(poiCities);
+        this.itineraryService.saveItinerary(result);
         poiCities.forEach(city -> log.info("1 exit city: {} {} -> number of poi {}",city.getId(),city.getName(),city.getPointOfInterests().size()));
         if(Objects.isNull(result)) return HttpStatus.INTERNAL_SERVER_ERROR;
         this.userService.addItineraryToUser(user,result);

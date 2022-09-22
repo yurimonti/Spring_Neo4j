@@ -38,6 +38,10 @@ public class ItineraryService {
         return pointsNodes;
     }
 
+    public void saveItinerary(ItineraryNode toSave){
+        this.itineraryRepository.save(toSave);
+    }
+
     /**
      * Get all the itinerary requests or a collection of filtered itinerary request if a filter is present
      * @param predicate filter to apply
@@ -110,9 +114,9 @@ public class ItineraryService {
         result.getGeoJsonList().addAll(geoJsonList);
         result.setCreatedBy(createdBy);
         result.setIsDefault(isDefault);
-        for (CityNode city : cities) {
+        /*for (CityNode city : cities) {
             result.getCities().add(city);
-        }
+        }*/
         this.setRealCategory(result);
         this.setTimeToVisit(result, pois);
         for (CityNode c : cities) {
