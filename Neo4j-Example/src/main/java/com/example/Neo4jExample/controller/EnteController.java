@@ -199,8 +199,12 @@ public class EnteController {
             return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
         }
         //fine controllo
+        CityNode city = ente.getCity();
         ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
-                ente.getUser().getUsername(),true, ente.getCity());
+                ente.getUser().getUsername(),true, city);
+        result.getCities().add(city);
+        this.itineraryService.saveItinerary(result);
+        log.info("1 exit city: {} {} -> number of poi {}",city.getId(),city.getName(),city.getPointOfInterests().size());
         return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
     }
 

@@ -156,7 +156,7 @@ public class UserController {
         System.out.println(poiCities.stream().map(CityDTO::new).toList());
         ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
                 user.getUser().getUsername(),false, poiCities.toArray(CityNode[]::new));
-        result.getCities().addAll(poiCities);
+        result.setCities(poiCities);
         this.itineraryService.saveItinerary(result);
         poiCities.forEach(city -> log.info("1 exit city: {} {} -> number of poi {}",city.getId(),city.getName(),city.getPointOfInterests().size()));
         if(Objects.isNull(result)) return HttpStatus.INTERNAL_SERVER_ERROR;
