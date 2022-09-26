@@ -122,9 +122,14 @@ public class UserController {
         ClassicUserNode user = this.userService.getClassicUserFromUser(username);
         ItineraryNode toSet = this.itineraryService.findItineraryById(id);
         if (Objects.isNull(user) || Objects.isNull(toSet)) return ResponseEntity.notFound().build();
-        Collection<PointOfInterestNode> pois = toSet.getPoints().stream().map(ItineraryRelPoi::getPoi).toList();
+        Collection<ItineraryRelPoi> poiRels = toSet.getPoints();
+        Collection<PointOfInterestNode> poiNodes = new ArrayList<>();
+        for (int i = 0; i < poiRels.size(); i++){
+            int finalI = i;
+            poiNodes.add(poiRels.stream().filter(rel -> rel.getIndex() == finalI).findFirst().get().getPoi());
+        }
         ItineraryRequestNode result = this.itineraryService.createItineraryRequest(toSet.getName(),toSet.getDescription()
-                ,pois,toSet.getGeoJsonList(),username, toSet.getCities().toArray(CityNode[]::new));
+                ,poiNodes,toSet.getGeoJsonList(),username, toSet.getCities().toArray(CityNode[]::new));
         if(Objects.isNull(result)) return ResponseEntity.internalServerError().build();
         return ResponseEntity.ok(new ItineraryRequestDTO(result));
     }
