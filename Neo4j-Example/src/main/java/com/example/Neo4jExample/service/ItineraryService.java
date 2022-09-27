@@ -1,16 +1,15 @@
 package com.example.Neo4jExample.service;
 
 import com.example.Neo4jExample.model.*;
+import com.example.Neo4jExample.repository.CityRepository;
 import com.example.Neo4jExample.repository.ItineraryRepository;
 import com.example.Neo4jExample.repository.ItineraryRequestRepository;
+import com.example.Neo4jExample.repository.PointOfIntRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 
 @Service
@@ -20,6 +19,7 @@ public class ItineraryService {
     private final ItineraryRepository itineraryRepository;
     private final ItineraryRequestRepository itineraryRequestRepository;
     private final UserService userService;
+    private final CityRepository cityRepository;
     private void setTimeToVisit(ItineraryNode result, Collection<PointOfInterestNode> pois) {
         result.setTimeToVisit(pois.stream().map(PointOfInterestNode::getTimeToVisit).reduce(0.0, Double::sum) * 60);
     }
@@ -40,6 +40,9 @@ public class ItineraryService {
 
     public void saveItinerary(ItineraryNode toSave){
         this.itineraryRepository.save(toSave);
+    }
+    public void saveItineraryRequest(ItineraryRequestNode toSave){
+        this.itineraryRequestRepository.save(toSave);
     }
 
     /**
@@ -235,5 +238,31 @@ public class ItineraryService {
         if (this.itineraryRepository.findById(id).isPresent())
             return this.itineraryRepository.findById(id).get();
         else return null;
+    }
+
+    // nuovi metodi per creazione itinerario
+    public ItineraryNode createNewItinerary(String name, String description, Collection<PointOfInterestNode> POIs,
+                                          Collection<String> geoJsonList, String createdBy, Boolean isDefault,
+                                          Long... cities){
+        ItineraryNode result = new ItineraryNode(name,description,createdBy,isDefault);
+        for (Long city : cities) {
+            result.getCities().add(this.cityRepository.findById(city).get());
+        }
+        result.setGeoJsonList(geoJsonList);
+        result.getPoints().addAll(this.indexedPoints(POIs));
+        this.setRealCategory(result);
+        this.setTimeToVisit(result,POIs);
+        return result;
+    }
+    public ItineraryRequestNode createNewItineraryRequest(String name, String description,
+                                                          Collection<PointOfInterestNode> POIs,
+                                                          Collection<String> geoJsonList, String createdBy,
+                                                          Collection<CityNode> cities){
+        ItineraryRequestNode result = new ItineraryRequestNode(name, description,createdBy);
+        result.setCities(cities);
+        result.setGeoJsonList(geoJsonList);
+        result.getPoints().addAll(this.indexedPoints(POIs));
+        this.setTimeToVisit(result, POIs);
+        return result;
     }
 }

@@ -37,7 +37,14 @@ public class ItineraryRequestNode {
         this.accepted = null;
     }
 
-    public ItineraryRequestNode(String name, String description,Collection<ItineraryRelPoi> points,Collection<String> geoJsonList, String createdBy, CityNode ...cities){
+    public ItineraryRequestNode(String name, String description, String createdBy) {
+        this();
+        this.name = name;
+        this.description = description;
+        this.createdBy = createdBy;
+    }
+
+    public ItineraryRequestNode(String name, String description, Collection<ItineraryRelPoi> points, Collection<String> geoJsonList, String createdBy, CityNode ...cities){
         this();
         this.name = name;
         this.description = description;

@@ -57,8 +57,17 @@ public class ItineraryNode {
         this.points = new ArrayList<>();
         this.cities = new ArrayList<>();
     }
-    public ItineraryNode(String name,String description,Collection<ItineraryRelPoi> points, Collection<String> geoJsonList,
-                         String createdBy,Boolean isDefault,CityNode ...cities) {
+
+    public ItineraryNode(String name, String description, String createdBy, Boolean isDefault) {
+        this();
+        this.name = name;
+        this.description = description;
+        this.createdBy = createdBy;
+        this.isDefault = isDefault;
+    }
+
+    public ItineraryNode(String name, String description, Collection<ItineraryRelPoi> points, Collection<String> geoJsonList,
+                         String createdBy, Boolean isDefault, CityNode ...cities) {
         this();
         this.name = name;
         this.description = description;

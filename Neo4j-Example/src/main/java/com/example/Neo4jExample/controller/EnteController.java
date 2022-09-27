@@ -30,6 +30,7 @@ public class EnteController {
     private final PoiRequestService poiRequestService;
     private final ItineraryService itineraryService;
     private final UserService userService;
+    private final EnteService enteService;
 
     private final UtilityService utilityService;
 
@@ -180,12 +181,13 @@ public class EnteController {
                                       @RequestBody Map<String, Object> body) {
         Ente ente = this.getEnteFromUsername(username);
         if (Objects.isNull(ente)) return FORBIDDEN;
+
         String name = (String) body.get("name");
         String description = (String) body.get("description");
         Collection<String> geoJsonList = (Collection<String>) body.get("geoJsonList");
         if(geoJsonList.size() == 0) return NOT_FOUND;
         Collection<String> poiIds = (Collection<String>) body.get("poiIds");
-        Collection<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
+        List<Long> ids = poiIds.stream().map(p -> Long.parseLong(p)).toList();
         Collection<PointOfInterestNode> pois = ids.stream().map(this.poiService::findPoiById).toList();
         log.info("list of pois to insert in itinerary : {}",pois.stream().map(PointOfInterestNode::getName).toList());
         //aggiunta controllo delle citta'
@@ -194,17 +196,12 @@ public class EnteController {
         if (!poiCities.stream().map(CityNode::getId).toList().contains(ente.getCity().getId()))
             return NOT_ACCEPTABLE;
         if (poiCities.size() > 1) {
-            ItineraryRequestNode result = this.itineraryService.createItineraryRequest(name,description,pois, geoJsonList,
-                    ente.getUser().getUsername(), poiCities.toArray(CityNode[]::new));
+            ItineraryRequestNode result = this.enteService.createItineraryRequest(ente,name,description,geoJsonList,
+                    ids,poiCities);
             return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
         }
         //fine controllo
-        CityNode city = ente.getCity();
-        ItineraryNode result = this.itineraryService.createItinerary(name,description,pois, geoJsonList,
-                ente.getUser().getUsername(),true, city);
-        result.getCities().add(city);
-        this.itineraryService.saveItinerary(result);
-        log.info("1 exit city: {} {} -> number of poi {}",city.getId(),city.getName(),city.getPointOfInterests().size());
+        ItineraryNode result = this.enteService.createItinerary(ente,name,description,geoJsonList,ids);
         return Objects.isNull(result) ? INTERNAL_SERVER_ERROR : CREATED;
     }
 
